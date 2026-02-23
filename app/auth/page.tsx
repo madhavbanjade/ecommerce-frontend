@@ -1,25 +1,20 @@
 "use client";
-
 import FormContainer from "@/src/components/ui/FormContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
 import { google } from "@/src/assets";
 import Image from "next/image";
-import {
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import AuthLayout from "./AuthLayout";
+import { fetchAPI } from "@/src/utils/apiService";
 
 export default function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const mode = searchParams.get("auth");
   const isRegister = mode !== "login"; // default = register
-
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     email?: string;
@@ -28,7 +23,7 @@ export default function AuthPage() {
   }>({});
   const [loading, setLoading] = useState(false);
 
-  async function handleAuth(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     setError(null);
@@ -53,47 +48,80 @@ export default function AuthPage() {
       return;
     }
 
-    console.log(isRegister ? "Registering..." : "Logging in...");
+    const endPoint = isRegister ? "users/register" : "users/login";
+    const payload = isRegister
+      ? { username, email, password }
+      : { username, password };
+    const res = await fetchAPI({
+      endPoint,
+      method: "POST",
+      data: payload,
+      setError,
+    });
+    console.log("user", res)
+    if (res.success) {
+      //after register switch to login
+      if (isRegister) {
+        router.replace("?auth=login");
+      } else {
+        router.push("/");
+      }
+    }
     setLoading(false);
   }
+const handleGoogle = () => {
+  window.location.href =
+    "http://localhost:3333/api/v1/auth/google/login";
+};
+
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("token");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      router.push("/");
+    }
+  }, []);
+
+
 
   return (
     <AuthLayout leftText="From Coffee Runs to Night Outs. We've Got You.">
       <FormContainer>
         {/* Tabs */}
-        <div className="relative flex gap-4 w-full mb-6">
-          {/* Sliding Background */}
-          <motion.div
-            layout
-            className="absolute top-0 h-11 w-1/2 rounded-2xl bg-gradient-to-r from-black via-gray-800 to-black"
-            animate={{ x: isRegister ? "0%" : "100%" }}
-            transition={{ duration: 0.3 }}
-          />
+      <div className="relative flex gap-4 w-full mb-6">
+  {/* Sliding Background */}
+  <motion.div
+    layout
+    className="absolute top-0 h-11 w-1/2 rounded-2xl bg-gradient-to-r from-black via-gray-200 to-black"
+    animate={{ x: isRegister ? "0%" : "100%" }}
+    transition={{ duration: 0.3 }}
+  />
 
-          <Button
-            type="button"
-            onClick={() => router.push("?auth=register")}
-            className={`relative flex-1 h-11 rounded-2xl transition-all duration-300 ${
-              isRegister
-                ? "text-white"
-                : "bg-white text-black border border-gray-300"
-            }`}
-          >
-            Register
-          </Button>
+  <Button
+    type="button"
+    onClick={() => router.push("?auth=register")}
+    className={`relative flex-1 h-11 rounded-2xl transition-all duration-300 ${
+      isRegister
+        ? "btn-primary"
+        : "bg-white text-black border border-gray-300"
+    }`}
+  >
+    Register
+  </Button>
 
-          <Button
-            type="button"
-            onClick={() => router.push("?auth=login")}
-            className={`relative flex-1 h-11 rounded-2xl transition-all duration-300 ${
-              !isRegister
-                ? "text-white"
-                : "bg-white text-black border border-gray-300"
-            }`}
-          >
-            Login
-          </Button>
-        </div>
+  <Button
+    type="button"
+    onClick={() => router.push("?auth=login")}
+    className={`relative flex-1 h-11 rounded-2xl transition-all duration-300 ${
+      !isRegister
+        ? "btn-primary"
+        : "bg-white text-black border border-gray-300"
+    }`}
+  >
+    Login
+  </Button>
+</div>
 
         {error && (
           <p className="text-red-500 text-sm text-center mb-4">{error}</p>
@@ -103,7 +131,7 @@ export default function AuthPage() {
         <AnimatePresence mode="wait">
           <motion.form
             key={isRegister ? "register" : "login"}
-            onSubmit={handleAuth}
+            onSubmit={handleSubmit}
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
@@ -112,7 +140,7 @@ export default function AuthPage() {
           >
             {/* Username */}
             <div>
-              <label className="text-primary text-sm">Username</label>
+              <label className="text-dark text-sm">Username</label>
               <Input
                 name="username"
                 placeholder="eg: John Doe"
@@ -133,7 +161,7 @@ export default function AuthPage() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <label className="text-primary text-sm">Email</label>
+                <label className="text-dark text-sm">Email</label>
                 <Input
                   name="email"
                   type="email"
@@ -150,7 +178,7 @@ export default function AuthPage() {
 
             {/* Password */}
             <div>
-              <label className="text-primary text-sm">Password</label>
+              <label className="text-dark text-sm">Password</label>
               <Input
                 name="password"
                 type="password"
@@ -167,7 +195,7 @@ export default function AuthPage() {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full h-11 bg-gradient-to-r from-black to-gray-700 text-white"
+              className="w-full h-11 btn-primary"
               disabled={loading}
             >
               {loading
@@ -175,20 +203,18 @@ export default function AuthPage() {
                   ? "Creating Account..."
                   : "Logging in..."
                 : isRegister
-                ? "Create Account"
-                : "Login"}
+                  ? "Create Account"
+                  : "Login"}
             </Button>
 
             {/* Switch Text */}
-            <p className="text-center text-sm text-primary">
+            <p className="text-center text-sm text-dark">
               {isRegister
                 ? "Already have an account?"
                 : "Don't have an account?"}{" "}
               <span
                 onClick={() =>
-                  router.push(
-                    isRegister ? "?auth=login" : "?auth=register"
-                  )
+                  router.push(isRegister ? "?auth=login" : "?auth=register")
                 }
                 className="text-gray-700 font-medium hover:underline cursor-pointer"
               >
@@ -205,9 +231,10 @@ export default function AuthPage() {
 
             {/* Google Button */}
             <Button
+            onClick={handleGoogle}
               type="button"
               variant="outline"
-              className="w-full h-11 bg-gradient-to-r from-black to-gray-700 text-white"
+              className="w-full h-11 btn-primary"
             >
               <Image src={google} alt="Google" width={20} height={20} />
               Continue with Google

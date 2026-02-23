@@ -8,7 +8,7 @@ interface AuthLayoutProps {
 
 function AuthLayout({ children, leftText }: AuthLayoutProps) {
   return (
-    <main className="min-h-screen w-full flex overflow-hidden bg-accent">
+    <main className="min-h-screen w-full flex overflow-hidden bg-primary">
 
       {/* Left panel — only shows on lg+ */}
       {leftText && (
