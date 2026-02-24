@@ -15,7 +15,7 @@ export default function Brands() {
 
 
         {/* ✅ absolute positions the breadcrumb over the image */}
-          <Breadcrumb className="container">
+          <Breadcrumb >
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="/" >

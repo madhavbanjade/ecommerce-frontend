@@ -1,6 +1,7 @@
 
 :root{
     --color-primary: #ffffff;
+    --color-div: #1c2328;
     --color-dark: #111111;
     --color-accent: #f5f0eae5;
     --color-sale: #E63946;
@@ -94,6 +95,7 @@ h5, .heading-h5 {
 
 /* background */
 .bg-primary {background-color: var(--color-primary);}
+.bg-div {background-color: var(--color-div);}
 .bg-dark {background-color: var(--color-dark);}
 .bg-accent {background-color: var(--color-accent);}
 .bg-sale {background-color: var(--color-sale);}
@@ -108,27 +110,7 @@ h5, .heading-h5 {
   box-shadow: 0px 4px 32px 0px #00000014;
 }
 
-/* button */
-.btn-primary {
-  background: linear-gradient(to right, #000000, #3f3f3f);
-  color: white;
-  transition: all 0.3s ease;
-}
 
-.btn-primary:hover {
-  background: linear-gradient(to right, #1a1a1a, #555555);
-  cursor: pointer;
-}
-.btn-shop{
-  background: linear-gradient(to right, #4285F4, #da4047);
-  color: white;
-  transition: all 0.3s ease;
-}
-
-.btn-shop:hover {
-  background: linear-gradient(to right, #3f8288, #E50914);
-  cursor: pointer;
-}
 
 /* product */
 .product-card {

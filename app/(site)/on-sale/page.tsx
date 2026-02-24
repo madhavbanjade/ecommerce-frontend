@@ -16,7 +16,7 @@ export default function Brands() {
 
      
 
-          <Breadcrumb className="container">
+          <Breadcrumb >
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="/" >

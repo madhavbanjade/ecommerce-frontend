@@ -9,17 +9,24 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
+  default:
+    "bg-transparent cursor-pointer border border-white/40 hover:border-[#3f4042] hover:bg-black tracking-[0.3em] uppercase transition-all duration-300",
+
+  destructive:
+    "bg-transparent cursor-pointer border border-white/40 hover:border-[#3f4042] hover:bg-black text-white uppercase transition-all duration-300 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+
+  outline:
+    "border cursor-pointer border-white/20 bg-[#1c2328] text-white shadow-xs hover:bg-[#252d34] hover:border-white/100 transition-all duration-300 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+
+  secondary:
+    "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300",
+
+  ghost:
+    "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 transition-all duration-300",
+
+  link:
+    "text-primary underline-offset-4 hover:underline transition-all duration-300",
+},
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
@@ -39,7 +46,7 @@ const buttonVariants = cva(
 )
 
 function Button({
-  className,
+  className = "mt-2",
   variant = "default",
   size = "default",
   asChild = false,

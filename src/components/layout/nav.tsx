@@ -23,7 +23,7 @@ export function NavPage() {
     <div className="w-screen">
 
       {/* ── Announcement Bar ── */}
-      <div className="bg-[#1c2328] text-white tracking-wide uppercase text-xs py-2">
+      <div className="bg-div text-white tracking-wide uppercase text-xs py-2">
        <div className="container   flex justify-between">
           <div className="lg:block hidden">+977-9749344926</div>
           <div className="flex gap-2 mx-auto lg:mx-0">
@@ -109,7 +109,7 @@ export function NavPage() {
               />
             </div>
 
-            <Button className="hidden xl:block btn-shop text-xs px-4 py-2">Shop now</Button>
+            <Button variant={"outline"} className="">Shop now</Button>
 
             <Link href="/cart">
               <Image src={cart} alt="cart" width={22} height={22} />

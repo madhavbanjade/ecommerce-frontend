@@ -1,5 +1,4 @@
-import { naya } from "@/src/assets";
-import { NavPage } from "@/src/components/layout/nav";
+import { brands, naya } from "@/src/assets";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,8 +11,21 @@ import Image from "next/image";
 
 export default function Brands() {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] gap-6 text-dark">
-       <Breadcrumb className="container">
+    <div className="grid grid-rows-[auto_1fr_auto] text-dark">
+      
+     
+<div className="relative w-full h-100">
+  <Image
+    src={naya}
+    alt="hero"
+    fill
+    className="object-cover"
+    priority
+  />
+</div>
+          
+      
+      <Breadcrumb >
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink href="/" >
@@ -28,11 +40,8 @@ export default function Brands() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-      
-      {/* Image container with breadcrumb overlaid */}
-      <div className="relative h-100">
-        <Image src={naya} alt="hero" fill className="object-contain" priority />
-      </div>
+
+
     </div>
   );
 }

@@ -6,6 +6,9 @@ import Image from "next/image";
 import { menImg, womenImg } from "../../assets";
 import { motion,  } from "framer-motion";
 
+import { CountUp } from "./count-up";
+
+
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
@@ -24,23 +27,23 @@ const slideIn = (delay = 0, direction: "left" | "right" = "left") => ({
   transition: { duration: 0.9, ease: "easeOut" as const, delay },
 });
 
+
 export default function Hero() {
   return (
-    <section className="w-screen h-fit bg-[#1c2328] grid overflow-hidden mb-8">
+    <section className="relative w-screen p-4 bg-div grid overflow-hidden mb-8">
 
       {/* Background texture */}
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
+      
       />
 
       {/* Animated ambient glow */}
       <motion.div
-        className="absolute top-1/3 left-1/4 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(66,133,244,0.08) 0%, transparent 70%)" }}
-        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+         className="absolute inset-0 opacity-[0.02] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+        animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.05, 0.05] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
@@ -66,7 +69,7 @@ export default function Hero() {
 
           <motion.h2
             {...fadeUp(0.25)}
-            className="text-white !tracking-widest "
+            className="text-white tracking-widest !text-4xl  md:!text-6xl !xl:text-8xl !2xl:text-9xl"
             style={{ fontFamily: "'Cormorant Garamond', serif" }}
           >
             Redefine{" "}
@@ -93,7 +96,7 @@ export default function Hero() {
 
           <motion.div {...fadeUp(0.55)} className="flex gap-4 items-center">
             <Link href="/products">
-              <Button className="bg-transparent border border-white/20 hover:border-[#3f4042]  text-white px-6 py-2.5 text-xs tracking-[0.3em] uppercase transition-all duration-300 w-fit">
+              <Button variant={"default"}>
                 Shop Collection
               </Button>
             </Link>
@@ -112,7 +115,7 @@ export default function Hero() {
         <div className="hidden xl:grid grid-cols-2 gap-4">
 
           {/* Column 1 */}
-          <motion.div {...slideIn(0.3, "right")} className="grid gap-4">
+          <motion.div {...slideIn(0.3, "right")} className="grid gap-4 pt-12 ">
 
             {/* Men's image card */}
             <motion.div
@@ -148,7 +151,7 @@ export default function Hero() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.9, duration: 0.8 }}
                 >
-                  200+
+              <CountUp start={0} target={200} suffix="+" />
                 </motion.span>
                 <span className="block text-xs tracking-widest uppercase text-[#4285F4]/60 mt-1">
                   Curated Brands
@@ -208,3 +211,4 @@ export default function Hero() {
     </section>
   );
 }
+
