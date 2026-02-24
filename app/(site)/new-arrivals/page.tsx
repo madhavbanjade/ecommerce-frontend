@@ -1,47 +1,24 @@
-import { brands, naya } from "@/src/assets";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
+import {  naya } from "@/src/assets";
 import Image from "next/image";
+
 
 export default function Brands() {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] text-dark">
-      
-     
-<div className="relative w-full h-100">
-  <Image
-    src={naya}
-    alt="hero"
-    fill
-    className="object-cover"
-    priority
-  />
-</div>
-          
-      
-      <Breadcrumb >
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/" >
-                  Home
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage >
-                  Brands
-                </BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+<section className="w-full">
+  <div className="relative min-w-screen aspect-[16/9] sm:aspect-[21/9] overflow-hidden">
+
+    <Image
+      src={naya}
+      alt="Brand Banner"
+      fill
+      priority
+      className="object-cover object-center"
+    />
+  <div className="absolute inset-0 bg-black/30 backdrop-blur-xs"></div>
+
+  </div>
+</section>
 
 
-    </div>
   );
 }

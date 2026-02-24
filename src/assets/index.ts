@@ -12,6 +12,7 @@ import offer from "../../public/image/offer.jpg";
 import salebanner from "../../public/image/salebanner.png";
 import menImg from "../../public/image/menImg.jpg"
 import womenImg from "../../public/image/womenImg.jpg"
+import sale from "../../public/image/sale.jpg"
 
 export {
   logo,
@@ -27,5 +28,6 @@ export {
   offer,
   salebanner,
   menImg,
-  womenImg
+  womenImg,
+  sale
 };
