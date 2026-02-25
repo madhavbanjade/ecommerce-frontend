@@ -13,6 +13,7 @@ import salebanner from "../../public/image/salebanner.png";
 import menImg from "../../public/image/menImg.jpg"
 import womenImg from "../../public/image/womenImg.jpg"
 import sale from "../../public/image/sale.jpg"
+import arrow from "../../public/icons/arrow.png"
 
 export {
   logo,
@@ -29,5 +30,6 @@ export {
   salebanner,
   menImg,
   womenImg,
-  sale
+  sale,
+  arrow
 };

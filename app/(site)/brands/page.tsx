@@ -42,7 +42,7 @@ export default function Brands() {
   }, [emblaApi]);
 
   return (
-    <div className="grid grid-rows-[auto_1fr_auto] gap-6 text-dark">
+    <div className="grid grid-rows-[auto_1fr_auto] gap-6 text-dark mb-8">
 
       {/* Breadcrumb */}
       <div className="container">

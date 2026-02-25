@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { cart, logo, search, user } from "../../assets";
+import { arrow, cart, logo, search, user } from "../../assets";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -176,7 +176,7 @@ export function NavPage() {
                   }
                   ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}`}
               >
-                {item.label}
+                {item.label} 
               </Link>
             </li>
           );
