@@ -68,7 +68,7 @@ h3, .heading-h3 {
   font-family: var(--font-heading);
   font-weight: var(--weight-semibold);
   font-size: var(--h3-size);
-  line-height: 120%;
+  line-height: 120%;   
 }
 
 h4, .heading-h4 {
