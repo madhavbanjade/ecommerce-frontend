@@ -8,8 +8,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb"
+import { Card, CardFooter, CardHeader } from "@/src/components/ui/card"
 
 export default function Brands() {
+  
   return (
     <div className="grid grid-rows-[auto_1fr_auto] gap-6 text-dark">
 
@@ -30,6 +32,16 @@ export default function Brands() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+{/* body */}
+          <Card >
+
+            <CardHeader>
+              home
+            </CardHeader>
+            <CardFooter>
+Card Footervdfds
+            </CardFooter>
+          </Card>
         </div>
    
   )
