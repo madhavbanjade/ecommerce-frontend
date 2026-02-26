@@ -20,8 +20,7 @@ export function NavPage() {
   const pathname = usePathname();
 
   return (
-    <div className="w-screen">
-
+    <div className="">
       {/* ── Announcement Bar ── */}
       <div className="bg-div text-white tracking-wide uppercase text-xs py-2">
        <div className="container   flex justify-between">
@@ -37,7 +36,7 @@ export function NavPage() {
       </div>
 
       {/* ── Nav ── */}
-      <nav className="w-screen shadow-md">
+      <nav className="shadow-md">
         <div className="container flex justify-between items-center py-3">
 
           {/* LEFT — Logo + Hamburger */}
