@@ -19,8 +19,10 @@ export interface ProductCardUi{
   id: number;
   product_name: string;
   product_description: string;
+  images: string[];
   original_price: number;
   discounted_percentage?: number | null;
+  discounted_price?:  number | null;
   badge?: string | null;
 }
 export interface Product {

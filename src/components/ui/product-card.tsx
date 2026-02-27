@@ -17,32 +17,32 @@ export default function ProductCard({ product }: ProductCardProps) {
   {/* Image wrapper — no padding, flush to card edges */}
   <div className="relative w-full aspect-[3/4]">
     <Image
-      src={womenImg}
-      alt="product-image"
+      src={product.images[1]}
+      alt={product.product_name}
       fill
+      unoptimized
       className="object-cover object-top"
     />
   </div>
 
   <CardHeader className="w-full">
     <CardTitle>
-      <h5>Hoodie</h5>
+      <h5>{product.product_name}</h5>
     </CardTitle>
     <CardAction className="flex gap-3">
-      <p className="text-lg">$120</p>
-      <p className="line-through text-sm text-sale">$120</p>
+      <p className="text-lg">Rs.{product.discounted_price}</p>
+      <p className="line-through text-sm text-sale">Rs.{product.original_price}</p>
     </CardAction>
   </CardHeader>
 
   <CardContent>
     <CardDescription className="max-w-none">
-      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ratione et
-      sequi laboriosam iste eaque perspiciatis ullam accusamus totam error impedit!
+{product.product_description}
     </CardDescription>
   </CardContent>
 
   <CardFooter>
-    <Button variant={"filter"} className="w-full">Quick View</Button>
+    <Button variant={"filter"} className="w-full">{product.badge}</Button>
   </CardFooter>
 
 </Card>
