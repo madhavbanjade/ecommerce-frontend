@@ -1,18 +1,10 @@
-import { arrow, brands, heroImg, menImg, naya, womenImg } from "@/src/assets";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
-import { Button } from "@/src/components/ui/button";
 import Image from "next/image";
+import { Button } from "../ui/button";
+import { naya } from "@/src/assets";
 
-export default function Brands() {
-  return (
-    <div className="">
+export default function NewArrivals() {
+    return(
+         <div className="">
   
 {/* bg-image */}
   <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-red-600  overflow-hidden">
@@ -20,17 +12,6 @@ export default function Brands() {
 <Image src={naya} alt="New-arrivals" fill priority className="object-cover "  />
 {/* effect */}
 <div className="absolute inset-0 bg-black/50 backdrop:blur-xs">
-    <Breadcrumb className="py-3">
-    <BreadcrumbList>
-      <BreadcrumbItem>
-        <BreadcrumbLink href="/" className="hover:text-white">Home</BreadcrumbLink>
-      </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        <BreadcrumbPage className="text-white">Brands</BreadcrumbPage>
-      </BreadcrumbItem>
-    </BreadcrumbList>
-  </Breadcrumb>
   <div className="container h-full flex items-center">
   <div className="text-white flex flex-col items-start gap-4  max-w-2xl">
     <h1 className="text-4xl font-bold">New Arrivals</h1>
@@ -51,7 +32,5 @@ export default function Brands() {
 
 </div>
     </div>
-  
-    
-  );
+    )
 }

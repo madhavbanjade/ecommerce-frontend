@@ -1,16 +1,9 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb"
+
 import ProductCard from "@/src/components/ui/product-card"
 import { fetchAPI } from "@/src/utils/apiService"
 
 
-export default async function Brands() {
+export default async function Products() {
 
 const res = await  fetchAPI({
   endPoint: 'products'
@@ -28,22 +21,7 @@ const error = res.error ?? null;
     <div className="grid grid-rows-[auto_1fr_auto] gap-6 text-dark">
 
 
-        {/* ✅ absolute positions the breadcrumb over the image */}
-          <Breadcrumb >
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/" >
-                  Home
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage >
-                  Brands
-                </BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+       
   <div className="container">
   {error && (
     <p className="text-sale font-medium">{error}</p>

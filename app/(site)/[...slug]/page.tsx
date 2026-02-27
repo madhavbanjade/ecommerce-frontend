@@ -1,65 +1,32 @@
-import { NavPage } from "@/src/components/layout/nav";
+import NewArrivals from "@/src/components/layout/new-arrivals";
+import OnSale from "@/src/components/layout/on-sale";
+import SliderSection from "@/src/components/layout/slider-section";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
-
+const pageMap: Record<
+  string,
+  { component: React.ComponentType<any>; maxDepth: number }
+> = {
+  brands: { component: SliderSection, maxDepth: 1 },
+  "new-arrivals": { component: NewArrivals, maxDepth: 1 },
+  "on-sale": { component: OnSale, maxDepth: 1 },
+};
 interface PageProps {
-  params: Promise<{ slug?: string[] }>;
+  params: Promise<{ slug: string[] }>;
 }
-
-function formatSlug(slug: string) {
-  return slug
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
 export default async function Slug({ params }: PageProps) {
-  const resolvedParams = await params;
+  const { slug } = await params;
+  const firstSlug = slug[0];
+  const route = pageMap[firstSlug];
 
-  // safety fallback
-  const slugArray = resolvedParams.slug ?? [];
+  if (!route) return "Not-Found";
+
+  if (slug.length > route.maxDepth) return "Not-Found";
+
+  const PageComponent = route.component;
 
   return (
     <div className="text-dark">
-
-      <div className="px-8 py-4">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-
-            {slugArray.map((slug, index) => {
-              const href =
-                "/" + slugArray.slice(0, index + 1).join("/");
-
-              return (
-                <div key={index} className="flex items-center">
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    {index === slugArray.length - 1 ? (
-                      <BreadcrumbPage>
-                        {formatSlug(slug)}
-                      </BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink href={href}>
-                        {formatSlug(slug)}
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
-                </div>
-              );
-            })}
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+      <PageComponent slug={slug} />
     </div>
   );
 }

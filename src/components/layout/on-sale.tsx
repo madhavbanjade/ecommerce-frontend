@@ -1,33 +1,14 @@
-import {  arrow, offer, sale } from "@/src/assets"
-import { NavPage } from "@/src/components/layout/nav"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb"
-import { Button } from "@/src/components/ui/button"
-import Image from "next/image"
+import Image from "next/image";
+import { Button } from "../ui/button";
+import { arrow, sale } from "@/src/assets";
 
-export default function Brands() {
-  return (
-    <section className="w-full">
+export default function OnSale(){
+    return(
+           <section className="w-full">
       <div className="relative min-w-screen aspect-[16/9] sm:aspect-[21/9] overflow-hidden">
         <Image  src={sale} alt="Sale Banner" fill priority className="object-cover object-center" />
   <div className="absolute inset-0 bg-black/30 backdrop-blur-xs">
-  <Breadcrumb >
-    <BreadcrumbList>
-      <BreadcrumbItem>
-        <BreadcrumbLink href="/" className="hover:text-white">Home</BreadcrumbLink>
-      </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        <BreadcrumbPage className="text-white">Brands</BreadcrumbPage>
-      </BreadcrumbItem>
-    </BreadcrumbList>
-  </Breadcrumb>
+
   </div>
 
       </div>
@@ -46,5 +27,5 @@ export default function Brands() {
 </div>
  
     </section>
-  )
+    )
 }
