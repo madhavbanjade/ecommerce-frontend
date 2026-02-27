@@ -15,12 +15,12 @@ export interface ProductSize {
   size: "XS" | "S" | "M" | "L" | "XL" | "XXL" | "3XL";
   stock_quantity: number;
 }
-export interface ProductCardUi {
+export interface ProductCardUi{
   id: number;
   product_name: string;
   product_description: string;
   original_price: number;
-  discounted_price?: number | null;
+  discounted_percentage?: number | null;
   badge?: string | null;
 }
 export interface Product {
