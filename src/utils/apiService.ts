@@ -1,7 +1,7 @@
 import { APIResponse } from "../types";
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333/api/v1";
+ "http://localhost:3333/api/v1";
 
 //Defines the options you can pass to the fetchAPI.
 interface FetchAPIOptions<T = unknown> {
@@ -105,7 +105,7 @@ export const fetchAPI = async <TResponse = any, TData = unknown>({
   if (slug) urlParts.push(slug);
   else if (id) urlParts.push(String(id));
   const url = urlParts.join("/");
-
+console.log(endPoint)
   //Checks if data contains files. If yes, it converts to FormData.
 //If no files, sets Content-Type to application/json.
   const headers: Record<string, string> = { ...customHeaders };
@@ -120,7 +120,7 @@ console.log("API Request Data:", data);
       headers["Content-Type"] = "application/json";
     }
   }
-
+console.log(url)
 
   //send fetch request with following fileds
   try {

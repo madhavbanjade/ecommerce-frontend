@@ -1,5 +1,3 @@
-import {  offer } from "@/src/assets"
-import { NavPage } from "@/src/components/layout/nav"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,17 +6,23 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb"
-import { Card, CardFooter, CardHeader } from "@/src/components/ui/card"
 import ProductCard from "@/src/components/ui/product-card"
-import { ProductCardUi} from "@/src/types"
-import { useEffect } from "react"
+import { fetchAPI } from "@/src/utils/apiService"
 
 
-export default function Brands() {
+export default async function Brands() {
 
-  useEffect(() => {
+const res = await  fetchAPI({
+  endPoint: 'products'
+}
+)
 
-  }, [])
+
+const products =  res.data?.data ?? null;
+const error = res.error ?? null;
+
+
+
   
   return (
     <div className="grid grid-rows-[auto_1fr_auto] gap-6 text-dark">
@@ -41,8 +45,11 @@ export default function Brands() {
             </BreadcrumbList>
           </Breadcrumb>
   <div className="container">
+  {error && (
+    <p className="text-sale font-medium">{error}</p>
+  )}
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      {products.map((product) => (
+      {products && products.map((product:any) => (
         <ProductCard key={product.id} product={product} />  
       ))}
     </div>
