@@ -3,7 +3,6 @@
 import { ProductCardUi } from "@/src/types"
 import Image from "next/image"
 import { Button } from "./button"
-import { heroImg, menImg, womenImg } from "@/src/assets"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card"
 
 interface ProductCardProps {
@@ -17,7 +16,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   {/* Image wrapper — no padding, flush to card edges */}
   <div className="relative w-full aspect-[3/4]">
     <Image
-      src={product.images[1]}
+      src={product.images[0]}
       alt={product.product_name}
       fill
       unoptimized

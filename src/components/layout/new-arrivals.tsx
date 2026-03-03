@@ -28,7 +28,7 @@ export default function NewArrivals() {
  </div>
 
 <div className="container">
-  hg1jaisisbsjhsbjhbsjbsj
+ Auncha yesma kura haru aatinu pardaina 
 
 </div>
     </div>
