@@ -23,7 +23,7 @@ export interface ProductCardUi{
   original_price: number;
   discounted_percentage?: number | null;
   discounted_price?:  number | null;
-  badge?: string | null;
+  tag?: string | null;
 }
 export interface Product {
   id: number;
@@ -36,7 +36,7 @@ export interface Product {
   quantity: number;
   is_avilable: boolean;
   sizes: ProductSize[]; 
-  badge?: string | null;
+  tag?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

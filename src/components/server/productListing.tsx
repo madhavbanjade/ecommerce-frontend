@@ -12,9 +12,12 @@ export default async function ProductListing({slug}: Props){
 const firstSlug = slug[0];
  let endpoint = "products";
 
-//    if (firstSlug === "new-arrivals") {
-//     endpoint = "products/new-arrivals"
-//   }
+   if (firstSlug === "new-arrivals") {
+    endpoint = "products?tag=new"
+  }
+   if (firstSlug === "on-sale") {
+    endpoint = "products?tag=on-sale"
+  }
 
 
  const res = await fetchAPI({endPoint: endpoint});

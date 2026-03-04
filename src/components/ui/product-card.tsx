@@ -41,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   </CardContent>
 
   <CardFooter>
-    <Button variant={"filter"} className="w-full">{product.badge}</Button>
+    <Button variant={"filter"} className="w-full">{product.tag}</Button>
   </CardFooter>
 
 </Card>

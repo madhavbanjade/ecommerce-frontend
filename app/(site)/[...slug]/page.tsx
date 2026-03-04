@@ -1,6 +1,6 @@
-import NewArrivals from "@/src/components/layout/new-arrivals";
-import OnSale from "@/src/components/layout/on-sale";
 import SliderSection from "@/src/components/layout/slider-section";
+import NewProducts from "@/src/components/server/newProducts";
+import SaleProducts from "@/src/components/server/onSale.";
 import ProductListing from "@/src/components/server/productListing";
 import { notFound } from "next/navigation";
 
@@ -11,9 +11,9 @@ const pageMap: Record<
   { component: React.ComponentType<any>; maxDepth: number }
 > = {
   "products": {component: ProductListing, maxDepth: 1},
-  brands: { component: SliderSection, maxDepth: 1 },
-  "new-arrivals": { component: NewArrivals, maxDepth: 1 },
-  "on-sale": { component: OnSale, maxDepth: 1 },
+  "category": { component: SliderSection, maxDepth: 1 },
+  "new-arrivals": { component: NewProducts, maxDepth: 1 },
+  "on-sale": { component: SaleProducts, maxDepth: 1 },
 };
 
 //this takes the props from the url in array ["brands", "on-sale"]

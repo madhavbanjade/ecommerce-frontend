@@ -27,10 +27,7 @@ export default function NewArrivals() {
 
  </div>
 
-<div className="container">
- Auncha yesma kura haru aatinu pardaina 
 
-</div>
     </div>
     )
 }
