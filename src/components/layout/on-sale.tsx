@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { arrow, sale } from "@/src/assets";
+import ProductListing from "../server/productListing";
 
-export default function OnSale(){
+export default function OnSale({slug}:any){
     return(
            <section className="w-full">
       <div className="relative min-w-screen aspect-[16/9] sm:aspect-[21/9] overflow-hidden">
@@ -25,7 +26,7 @@ export default function OnSale(){
 
   
 </div>
- 
+  <ProductListing slug={slug} />
     </section>
     )
 }

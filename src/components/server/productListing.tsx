@@ -18,6 +18,9 @@ const firstSlug = slug[0];
    if (firstSlug === "on-sale") {
     endpoint = "products?tag=on-sale"
   }
+  if(firstSlug === "category"){
+    endpoint = `products?category=${slug[1]}`
+  }
 
 
  const res = await fetchAPI({endPoint: endpoint});

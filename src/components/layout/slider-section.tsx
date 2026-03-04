@@ -5,6 +5,8 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { aspire, heroImg, naya, offer } from "@/src/assets";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 const heroSlides = [aspire, naya, heroImg, offer];
 
@@ -70,6 +72,12 @@ export default function SliderSection() {
           ))}
         </div>
       </div>
+        <div className="container ">
+          <Link href="/category/shoes">
+          <Button variant={"filter"} >Shoes
+          </Button>
+          </Link>
+        </div>
         </div>
     )
 }

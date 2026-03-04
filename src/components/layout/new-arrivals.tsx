@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { naya } from "@/src/assets";
+import ProductListing from "../server/productListing";
 
-export default function NewArrivals() {
+export default function NewArrivals({slug}:any) {
     return(
          <div className="">
   
@@ -26,7 +27,7 @@ export default function NewArrivals() {
   </div>
 
  </div>
-
+ <ProductListing slug={slug} />
 
     </div>
     )
