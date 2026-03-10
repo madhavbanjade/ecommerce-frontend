@@ -44,3 +44,5 @@ export default async function Slug({ params }: PageProps) {
     </div>
   );
 }
+
+

@@ -11,7 +11,7 @@ interface Props{
 export default async function ProductListing({slug}: Props){
 const firstSlug = slug[0];
  let endpoint = "products";
-
+//avoid special case as below
    if (firstSlug === "new-arrivals") {
     endpoint = "products?tag=new"
   }
@@ -22,6 +22,8 @@ const firstSlug = slug[0];
     endpoint = `products?category=${slug[1]}`
   }
 
+
+  
 
  const res = await fetchAPI({endPoint: endpoint});
 
