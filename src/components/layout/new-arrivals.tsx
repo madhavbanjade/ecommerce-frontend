@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { naya } from "@/src/assets";
 import ProductListing from "../server/productListing";
 
-export default function NewArrivals({slug}:any) {
+export default function NewArrivals({ products }: { products: any[] }) {
     return(
          <div className="">
   
@@ -27,7 +27,6 @@ export default function NewArrivals({slug}:any) {
   </div>
 
  </div>
- <ProductListing slug={slug} />
 
     </div>
     )

@@ -1,48 +1,76 @@
+import { fetchAPI } from "@/src/utils/apiService";
+import ProductCard from "@/src/components/ui/product-card";
 import NewArrivals from "@/src/components/layout/new-arrivals";
 import OnSale from "@/src/components/layout/on-sale";
+import Banner from "@/src/components/layout/banner";
 import SliderSection from "@/src/components/layout/slider-section";
-import ProductListing from "@/src/components/server/productListing";
-import { notFound } from "next/navigation";
 
-
-//map any page in the slug in key value pair -> key/pageMap(brands)-> component, value-> maxDepth
 const pageMap: Record<
   string,
-  { component: React.ComponentType<any>; maxDepth: number }
+  { endpoint: string; Component: React.ComponentType<any> | null }
 > = {
-  "products": {component: ProductListing, maxDepth: 1},
-  "category": { component: SliderSection, maxDepth: 1 },
-  "new-arrivals": { component: NewArrivals, maxDepth: 1 },
-  "on-sale": { component: OnSale, maxDepth: 1 },
+  products: { endpoint: "products", Component: null },
+  "products/new-arrivals": {
+    endpoint: "products?tag=new",
+    Component: NewArrivals,
+  },
+  "products/on-sale": { endpoint: "products?tag=on-sale", Component: OnSale },
+  "products/category": { endpoint: "products?category=Men", Component: SliderSection},
 };
 
-//this takes the props from the url in array ["brands", "on-sale"]
 interface PageProps {
   params: Promise<{ slug: string[] }>;
+  //products?tag=new
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+export default async function SlugPage({ params, searchParams }: PageProps) {
+  const [resolvedParams] = await Promise.all([params, searchParams]);
+  const slug = resolvedParams.slug ?? [];
 
-export default async function Slug({ params }: PageProps) {
-  //wait for a slug /new-arrivals
-  const { slug } = await params;
-  //You only care about the first part of the URL /brands firstSlug = "brands"
-  const firstSlug = slug[0];
-  //Does the first part of URL exist inside pageMap?
-  const route = pageMap[firstSlug];
+  //url derived fromm segment
+  const pageKey = slug.join("/");
+  const page = pageMap[pageKey];
 
-  if (!route) return notFound();
+  if (!page) {
+    return <p className="container text-gray-500">Page not found!</p>;
+  }
 
-  if (slug.length > route.maxDepth) return notFound();
+  //fetch products
+  const res = await fetchAPI({ endPoint: page.endpoint });
+  const products = res.data?.data ?? [];
 
-  //Now you store the selected component inside a variable.
-  const PageComponent = route.component;
+  // Has a layout component → render it
+  if (page.Component) {
+    return (
+      <>
+        <page.Component />
+        <div className="container">
+          {products.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {products.map((product: any) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-start text-gray-500">No products found</p>
+          )}
+        </div>
+      </>
+    );
+  }
 
   return (
-    <div className="text-dark">
-      {/*  //You render the component dynamically.<NewArrivals slug={["new-arrivals"]} /> */}
-      <PageComponent slug={slug} />
+    <div className="container">
+      {products.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product: any) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-start text-gray-500">No products found</p>
+      )}
     </div>
   );
 }
-
-

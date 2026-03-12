@@ -10,17 +10,17 @@ import { Button } from "../ui/button";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/products" },
-  { label: "Category", href: "/category" },
-  { label: "On-sale", href: "/on-sale" },
-  { label: "New-Arrivals", href: "/new-arrivals" },
+  { label: "Category", href: "/products/category" },
+  { label: "On-sale", href: "/products/on-sale" },
+  { label: "New-Arrivals", href: "/products/new-arrivals" },
 ];
-
+ 
 export function NavPage() {
   const [toggleMenu, setToggleMenu] = useState(false);
   const pathname = usePathname();
 
   return (
-    <div className="">
+    <>
       {/* ── Announcement Bar ── */}
       <div className="bg-div text-white tracking-wide uppercase text-xs py-2">
        <div className="container   flex justify-between">
@@ -192,6 +192,6 @@ export function NavPage() {
         </div>
       </ul>
 
-    </div>
+    </>
   );
 }
