@@ -18,6 +18,7 @@ export interface ProductSize {
 export interface ProductCardUi{
   id: number;
   product_name: string;
+  slug: string,
   product_description: string;
   images: string[];
   original_price: number;

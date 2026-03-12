@@ -4,14 +4,19 @@ import { ProductCardUi } from "@/src/types"
 import Image from "next/image"
 import { Button } from "./button"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./card"
+import { useRouter } from "next/navigation"
 
 interface ProductCardProps {
   product: ProductCardUi
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  return (
-  <Card className="cursor-pointer p-4 overflow-hidden">
+  const router = useRouter()
+  return (   
+  <Card className="cursor-pointer p-4 overflow-hidden"
+  onClick={() => router.push(`/products/${product.slug}`)}
+  
+  >
 
   {/* Image wrapper — no padding, flush to card edges */}
   <div className="relative w-full aspect-[3/4]">

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { arrow, sale } from "@/src/assets";
-import ProductListing from "../server/productListing";
 
 export default function OnSale(){
     return(
