@@ -1,3 +1,4 @@
+import Filter from "@/src/components/layout/filters";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -55,7 +56,11 @@ export default function SlugLayout({
           </BreadcrumbList>
         </Breadcrumb>
       </div>
+      <div className="flex container gap-4">
+        <Filter />
       {children}
+
+      </div>
     </div>
   );
 }

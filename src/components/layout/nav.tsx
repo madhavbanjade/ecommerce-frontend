@@ -8,10 +8,10 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 
 const navItems = [
-  { label: "Home", href: "/" },
   { label: "Products", href: "/products" },
-  { label: "Category", href: "/products/category" },
-  { label: "On-sale", href: "/products/on-sale" },
+  { label: "Men", href: "/products/Men" },
+  { label: "Women", href: "/products/Women" },
+  { label: "Sale", href: "/products/on-sale" },
   { label: "New-Arrivals", href: "/products/new-arrivals" },
 ];
  

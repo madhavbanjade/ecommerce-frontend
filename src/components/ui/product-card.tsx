@@ -14,7 +14,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter()
   return (   
   <Card className="cursor-pointer p-4 overflow-hidden"
-  onClick={() => router.push(`/products/${product.slug}`)}
+  onClick={() => router.push(`/product/${product.slug}`)}
   
   >
 

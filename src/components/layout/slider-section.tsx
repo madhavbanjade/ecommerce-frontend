@@ -73,8 +73,16 @@ export default function SliderSection() {
         </div>
       </div>
         <div className="container ">
-          <Link href="/category/shoes">
-          <Button variant={"filter"} >Shoes
+          <Link href="products/category/Men">
+          <Button variant={"filter"} >Men
+          </Button>
+          </Link>
+          <Link href="products/category/Women">
+          <Button variant={"filter"} >Women
+          </Button>
+          </Link>
+          <Link href="products/category/Unisex">
+          <Button variant={"filter"} >Unisex
           </Button>
           </Link>
         </div>
