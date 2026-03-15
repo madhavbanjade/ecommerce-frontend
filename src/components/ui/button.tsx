@@ -27,7 +27,7 @@ const buttonVariants = cva(
   link:
     "text-primary underline-offset-4 hover:underline transition-all duration-300",
     filter: 
-    "cursor-pointer flex items-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3 md:px-7 md:py-3.5 text-sm sm:text-base bg-gray-100 hover:bg-gray-200 border border-gray-300  text-gray-800 font-medium transition-all duration-200"
+    "cursor-pointer mt-4 flex items-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3 md:px-7 md:py-3.5 text-sm sm:text-base  hover:bg-black hover:text-white border border-gray-300  font-medium transition-all duration-200"
 },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

@@ -8,6 +8,8 @@ const pageMap: Record<
   products: { endpoint: "products", Component: null },
   "products/new-arrivals": { endpoint: "products?tag=new", Component: null },
   "products/on-sale": { endpoint: "products?tag=on-sale", Component: null },
+  "products/men": { endpoint: "products?category=Men", Component: null },
+  "products/women": { endpoint: "products?category=Women", Component: null },
 };
 
 interface PageProps {

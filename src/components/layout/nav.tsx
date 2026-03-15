@@ -9,8 +9,8 @@ import { Button } from "../ui/button";
 
 const navItems = [
   { label: "Products", href: "/products" },
-  { label: "Men", href: "/products/Men" },
-  { label: "Women", href: "/products/Women" },
+  { label: "Men", href: "/products/men" },
+  { label: "Women", href: "/products/women" },
   { label: "Sale", href: "/products/on-sale" },
   { label: "New-Arrivals", href: "/products/new-arrivals" },
 ];
@@ -20,10 +20,10 @@ export function NavPage() {
   const pathname = usePathname();
 
   return (
-    <>
+    <div className="">
       {/* ── Announcement Bar ── */}
-      <div className="bg-div text-white tracking-wide uppercase text-xs py-2">
-       <div className="container   flex justify-between">
+      <div className="bg-div text-white tracking-wide uppercase text-xs py-2 w-screen">
+       <div className="container flex justify-between">
           <div className="lg:block hidden">+977-9749344926</div>
           <div className="flex gap-2 mx-auto lg:mx-0">
             Get up to 20% off{" "}|{" "}
@@ -37,7 +37,7 @@ export function NavPage() {
 
       {/* ── Nav ── */}
       <nav className="shadow-md">
-        <div className="container flex justify-between items-center py-3">
+        <div className="container flex justify-between items-center py-3 ">
 
           {/* LEFT — Logo + Hamburger */}
           <div className="flex items-center gap-3 shrink-0">
@@ -192,6 +192,6 @@ export function NavPage() {
         </div>
       </ul>
 
-    </>
+    </div >
   );
 }
