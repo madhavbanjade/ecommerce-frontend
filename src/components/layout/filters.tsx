@@ -3,9 +3,9 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
-const Gender = ["Man", "Women", "Unisex"]
-const Categories = ["Shirts", "Pants", "Kintwear", "Jackets", "Accessories"]
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const Gender = ["Male", "Female", "Unisex"]
+const Categories = ["Hoodie & Sweet-shirts","Shirts", "Pants", "Kintwear", "Jackets", "Accessories"]
+const SIZES = ["sm", "S", "M", "L", "XL", "XXL"];
 
 
 
@@ -32,7 +32,7 @@ export default function Filter() {
       params.delete(key);
       current.filter((v) => v !== value).forEach((v) => params.append(key,v))
     }
-    params.set("page", "1");
+    // params.set("page", "1");
     router.push(`${pathname}?${params.toString()}`)
   }, [searchParams, pathname, router])
 
@@ -40,7 +40,7 @@ export default function Filter() {
   const clearAll = () => {
     const parmas = new URLSearchParams(searchParams.toString());
     ["gender","category", "size" ].forEach((k) => parmas.delete(k));
-    parmas.set("page", "1");
+    // parmas.set("page", "1");
     router.push(`${pathname}?${parmas.toString()}`)
   }
   

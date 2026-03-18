@@ -17,13 +17,13 @@ export interface ProductSize {
 }
 export interface ProductCardUi{
   id: number;
-  product_name: string;
+  name: string;
   slug: string,
-  product_description: string;
+  description: string;
   images: string[];
-  original_price: number;
-  discounted_percentage?: number | null;
-  discounted_price?:  number | null;
+  originalPrice: number;
+  discountPercent: number | null;
+  dicountPrice:  number | null;
   tag?: string | null;
 }
 export interface Product {
@@ -31,7 +31,7 @@ export interface Product {
   product_name: string;
   product_description: string;
   original_price: number;
-  discount_percentage?: number | null;
+  discountPercent?: number | null;
   discounted_price?: number | null;
   images: string[];
   quantity: number;

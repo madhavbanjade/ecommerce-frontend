@@ -22,7 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   <div className="relative w-full aspect-[3/4]">
     <Image
       src={product.images[0]}
-      alt={product.product_name}
+      alt={product.name}
       fill
       unoptimized
       className="object-cover object-top"
@@ -31,17 +31,23 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   <CardHeader className="w-full">
     <CardTitle>
-      <h5>{product.product_name}</h5>
+      <h5>{product.name}</h5>
     </CardTitle>
-    <CardAction className="flex gap-3">
-      <p className="text-lg">Rs.{product.discounted_price}</p>
-      <p className="line-through text-sm text-sale">Rs.{product.original_price}</p>
-    </CardAction>
+   <CardAction className="flex gap-3 items-center">
+  {product.dicountPrice ? (
+    <>
+      <p className="text-lg font-medium">Rs.{product.dicountPrice}</p>
+      <p className="text-sm text-gray-400 line-through">Rs.{product.originalPrice}</p>
+    </>
+  ) : (
+    <p className="text-lg font-medium">Rs.{product.originalPrice}</p>
+  )}
+</CardAction>
   </CardHeader>
 
   <CardContent>
     <CardDescription className="max-w-none">
-{product.product_description}
+{product.description}
     </CardDescription>
   </CardContent>
 

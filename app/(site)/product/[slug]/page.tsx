@@ -1,10 +1,8 @@
 import { fetchAPI } from "@/src/utils/apiService";
-import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
 import { ShoppingCart, Heart } from "lucide-react";
 import ProductImageGallery from "@/src/components/ui/image-gallary";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/src/components/ui/breadcrumb";
-import ReviewSection from "@/src/components/ui/review-section";
 import Reviews from "@/src/components/ui/review-section";
 
 
@@ -21,10 +19,11 @@ export default async function ProductDetails({ params }: any) {
     );
   }
 
-  const hasDiscount = product.discounted_price && product.discount_percentage;
+  
+
   const tagStyles: Record<string, string> = {
-  new: "bg-green-400 text-black",
-  sale: "bg-red-500 text-white",
+  New: "bg-green-400 text-black",
+  Sale: "bg-red-500 text-white",
 }
 
 const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700"
@@ -42,7 +41,7 @@ const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700"
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage>{product.product_name}</BreadcrumbPage>
+        <BreadcrumbPage>{product.name}</BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>
@@ -56,7 +55,7 @@ const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700"
   {product.images?.[0] && (
     <ProductImageGallery
       images={product.images}
-      name={product.product_name}
+      name={product.name}
       tag={product.tag}
       tagClass={tagClass}
     />
@@ -69,37 +68,37 @@ const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700"
           {/* Name + Category */}
           <div>
             <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
-              {product.category}
+              {product.gender}
             </p>
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-              {product.product_name}
+              {product.name}
             </h1>
           </div>
 
           {/* Price */}
-          <div className="flex items-center gap-3">
-            {hasDiscount ? (
-              <>
-                <span className="text-2xl font-bold text-gray-900">
-                  Rs. {product.original_price}
-                </span>
-                <span className="text-lg text-gray-400 line-through">
-                  Rs. {product.discounted_price}
-                </span>
-                <span className="bg-red-100 text-red-500 text-xs font-semibold px-2 py-0.5 rounded-full">
-                  -{product.discount_percentage}%
-                </span>
-              </>
-            ) : (
-              <span className="text-2xl font-bold text-gray-900">
-                Rs. {product.original_price}
-              </span>
-            )}
-          </div>
+         <div className="flex items-center gap-3">
+  {product.discountPercent ? (
+    <>
+      <span className="text-2xl font-bold text-gray-900">
+        Rs. {product.dicountPrice}
+      </span>
+      <span className="text-lg text-gray-400 line-through">
+        Rs. {product.originalPrice}
+      </span>
+      <span className="bg-red-100 text-red-500 text-xs font-semibold px-2 py-0.5 rounded-full">
+        -{product.discountPercent}%
+      </span>
+    </>
+  ) : (
+    <span className="text-2xl font-bold text-gray-900">
+      Rs. {product.originalPrice}
+    </span>
+  )}
+</div>
 
           {/* Description */}
           <p className="text-gray-500 text-sm leading-relaxed">
-            {product.product_description}
+            {product.description}
           </p>
 
           {/* Sizes */}
@@ -116,7 +115,7 @@ const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700"
                   >
                     {s.size}
                     <span className="ml-1 text-[10px] text-gray-400">
-                      ({s.stock_quantity})
+                      ({s.stockQuantity})
                     </span>
                   </button>
                 ))}
@@ -128,11 +127,11 @@ const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700"
           <div className="flex items-center gap-2 text-sm">
             <span
               className={`w-2 h-2 rounded-full ${
-                product.is_avilable ? "bg-green-400" : "bg-red-400"
+                product.isAvilable ? "bg-green-400" : "bg-red-400"
               }`}
             />
             <span className="text-gray-500">
-              {product.is_avilable ? "In Stock" : "Out of Stock"}
+              {product.isAvilable ? "In Stock" : "Out of Stock"}
             </span>
           </div>
 

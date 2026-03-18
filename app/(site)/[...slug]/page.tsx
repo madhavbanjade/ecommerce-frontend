@@ -9,10 +9,10 @@ const pageMap: Record<
   { endpoint: string; Component: React.ComponentType<any> | null; title:string }
 > = {
   products: { endpoint: "products", Component: null, title:"All Products"},
-  "products/new-arrivals": { endpoint: "products?tag=new", Component: null, title:"New Arrivals"},
-  "products/on-sale": { endpoint: "products?tag=on-sale", Component: null, title:"On Sale" },
-  "products/men": { endpoint: "products?category=Men", Component: null, title:"Men's Apparel" },
-  "products/women": { endpoint: "products?category=Women", Component: null, title:"Women's Apparel" },
+  "products/new-arrivals": { endpoint: "products?tag=New", Component: null, title:"New Arrivals"},
+  "products/on-sale": { endpoint: "products?tag=Sale", Component: null, title:"On Sale" },
+  "products/men": { endpoint: "products?gender=Male", Component: null, title:"Men's Apparel" },
+  "products/women": { endpoint: "products?gender=Female", Component: null, title:"Women's Apparel" },
 };
 
 // helper function to convert search param values to arrays1
@@ -44,12 +44,18 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   const sizes      = toArr(search.size);
 
 
-  // build the API endpoint with filters and sorting
-  let endpoint = page.endpoint;
-  if (genders.length)    endpoint += `&gender=${genders.join(",")}`;
-  if (categories.length) endpoint += `&category=${categories.join(",")}`;
-  if (sizes.length)      endpoint += `&size=${sizes.join(",")}`;
-  if (search.sort)       endpoint += `&sort=${search.sort}`;
+ // safely split base endpoint into path + existing query
+  const [basePath, baseQuery] = page.endpoint.split("?");
+  const queryParams = new URLSearchParams(baseQuery ?? "");
+
+  if (genders.length)    queryParams.set("gender",   genders.join(","));
+  if (categories.length) queryParams.set("category", categories.join(","));
+  if (sizes.length)      queryParams.set("size",     sizes.join(","));
+  if (search.sort)       queryParams.set("sort",     search.sort as string);
+
+  const endpoint = queryParams.toString()
+    ? `${basePath}?${queryParams.toString()}`
+    : basePath;
 
 
   // construct active filters for the FilterChips component
