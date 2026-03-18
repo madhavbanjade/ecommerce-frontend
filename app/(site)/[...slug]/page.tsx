@@ -2,6 +2,8 @@ import { fetchAPI } from "@/src/utils/apiService";
 import ProductCard from "@/src/components/ui/product-card";
 import FilterChips from "@/src/components/ui/filter-chips";
 
+
+// mapping of slug paths to their corresponding API endpoints and components
 const pageMap: Record<
   string,
   { endpoint: string; Component: React.ComponentType<any> | null; title:string }
@@ -13,19 +15,22 @@ const pageMap: Record<
   "products/women": { endpoint: "products?category=Women", Component: null, title:"Women's Apparel" },
 };
 
+// helper function to convert search param values to arrays1
 type SearchParams = { [key: string]: string | string[] | undefined };
 const toArr = (v: string | string[] | undefined) =>
   v ? (Array.isArray(v) ? v : [v]) : [];
 
+// type definition for page props
 interface PageProps {
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+//
 export default async function SlugPage({ params, searchParams }: PageProps) {
   const [resolvedParams, search] = await Promise.all([params, searchParams]);
   const slug = resolvedParams.slug ?? [];
-
+// construct the page key from the slug and look up the corresponding page config
   const pageKey = slug.join("/");
   const page = pageMap[pageKey];
   if (!page)
@@ -33,17 +38,21 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
       <p className="container text-gray-500 text-center">Page not found!</p>
     );
 
-
+// extract filter values from search params and build the API endpoint
       const genders    = toArr(search.gender);
   const categories = toArr(search.category);
   const sizes      = toArr(search.size);
 
+
+  // build the API endpoint with filters and sorting
   let endpoint = page.endpoint;
   if (genders.length)    endpoint += `&gender=${genders.join(",")}`;
   if (categories.length) endpoint += `&category=${categories.join(",")}`;
   if (sizes.length)      endpoint += `&size=${sizes.join(",")}`;
   if (search.sort)       endpoint += `&sort=${search.sort}`;
 
+
+  // construct active filters for the FilterChips component
   const activeFilters = [
     ...genders.map((v)    => ({ key: "gender",   value: v, label: v })),
     ...categories.map((v) => ({ key: "category", value: v, label: v })),
@@ -51,8 +60,8 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   ];
 
 
-
-  const res = await fetchAPI({ endPoint: page.endpoint });
+// fetch products from the API
+  const res = await fetchAPI({ endPoint: endpoint });
   const products = res.data?.data ?? [];
 
  

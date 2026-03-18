@@ -14,9 +14,13 @@ export default function FilterChips({ activeFilters, currentSort }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+
+  //update the url with search-params
   const push = (params: URLSearchParams) =>
     router.push(`${pathname}?${params.toString()}`);
 
+
+  // remove a specific filter and update the url
   const removeFilter = (filter: Filter) => {
     const params = new URLSearchParams(searchParams.toString());
     const remaining = params.getAll(filter.key).filter((v) => v !== filter.value);
@@ -26,6 +30,8 @@ export default function FilterChips({ activeFilters, currentSort }: Props) {
     push(params);
   };
 
+
+  // reset all filters and update the url
   const resetAll = () => {
     const params = new URLSearchParams(searchParams.toString());
     ["gender", "category", "size"].forEach((k) => params.delete(k));
@@ -33,6 +39,8 @@ export default function FilterChips({ activeFilters, currentSort }: Props) {
     push(params);
   };
 
+
+  // handle sort change and update the url
   const setSort = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sort", e.target.value);
