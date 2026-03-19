@@ -46,7 +46,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   </CardHeader>
 
   <CardContent>
-    <CardDescription className="max-w-none">
+    <CardDescription className="max-w-none line-clamp-2">
 {product.description}
     </CardDescription>
   </CardContent>

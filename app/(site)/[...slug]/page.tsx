@@ -1,6 +1,7 @@
 import { fetchAPI } from "@/src/utils/apiService";
 import ProductCard from "@/src/components/ui/product-card";
 import FilterChips from "@/src/components/ui/filter-chips";
+import Pagination from "@/src/components/ui/pagination";
 
 // mapping of slug paths to their corresponding API endpoints and components
 const pageMap: Record<
@@ -71,6 +72,9 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   if (sizes.length) queryParams.set("size", sizes.join(","));
   if (search.sort) queryParams.set("sort", search.sort as string);
   if (search.search) queryParams.set("search", search.search as string);
+  const currentPage = parseInt((search.page as string) ?? "1")
+queryParams.set("limit", "6")
+queryParams.set("page", String(currentPage))
 
   const endpoint = queryParams.toString()
     ? `${basePath}?${queryParams.toString()}`
@@ -86,8 +90,8 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   // fetch products from the API
   const res = await fetchAPI({ endPoint: endpoint });
   const products = res.data.data ?? [];
-  const pagination = res.data.meta ?? null;
-  console.log("page", pagination)
+  const meta = res.data.meta ?? null;
+  console.log("page", meta)
 
   return (
     <div className="container space-y-4">
@@ -109,11 +113,19 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
       </div>
 
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
           {products.map((product: any) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+         <Pagination
+      total={meta?.total ?? 0}
+      limit={6}
+      currentPage={meta?.page ?? 1}
+    />
+        </>
+
       ) : (
         <p className="text-gray-500">No products found</p>
       )}
