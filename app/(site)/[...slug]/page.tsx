@@ -15,6 +15,8 @@ const pageMap: Record<
   "products/women": { endpoint: "products?gender=Female", Component: null, title:"Women's Apparel" },
 };
 
+
+
 // helper function to convert search param values to arrays1
 type SearchParams = { [key: string]: string | string[] | undefined };
 const toArr = (v: string | string[] | undefined) =>
@@ -25,6 +27,8 @@ interface PageProps {
   params: Promise<{ slug: string[] }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
+
+
 
 //
 export default async function SlugPage({ params, searchParams }: PageProps) {
@@ -48,10 +52,12 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   const [basePath, baseQuery] = page.endpoint.split("?");
   const queryParams = new URLSearchParams(baseQuery ?? "");
 
+
   if (genders.length)    queryParams.set("gender",   genders.join(","));
   if (categories.length) queryParams.set("category", categories.join(","));
   if (sizes.length)      queryParams.set("size",     sizes.join(","));
   if (search.sort)       queryParams.set("sort",     search.sort as string);
+  if (search.search)     queryParams.set("search",   search.search as string);
 
   const endpoint = queryParams.toString()
     ? `${basePath}?${queryParams.toString()}`

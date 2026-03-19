@@ -25,6 +25,11 @@ export default function SlugLayout({
 }) {
     const resolvedParams =  use(params)
   const slugArray = resolvedParams.slug ?? [];
+    const pageKey = slugArray.join("/")
+
+  const initialGenders =
+    pageKey === "products/men" ? ["Male"] :
+    pageKey === "products/women" ? ["Female"] : []
 
   return (
     <div className="text-dark ">
@@ -57,7 +62,7 @@ export default function SlugLayout({
         </Breadcrumb>
       </div>
       <div className="flex container gap-4">
-        <Filter />
+        <Filter initialGenders={initialGenders}  />
       {children}
 
       </div>
