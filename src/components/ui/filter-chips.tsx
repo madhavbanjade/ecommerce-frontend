@@ -59,10 +59,10 @@ export default function FilterChips({ activeFilters, currentSort }: Props) {
           onChange={setSort}
           className="appearance-none border border-gray-200 rounded-lg pl-4 pr-10 py-2 text-sm bg-white cursor-pointer focus:outline-none"
         >
-          <option value="featured">Featured</option>
-          <option value="newest">Newest</option>
           <option value="price-asc">Price: Low to High</option>
           <option value="price-desc">Price: High to Low</option>
+          <option value="discount">Discount</option>
+            
         </select>
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">▼</span>
       </div>
