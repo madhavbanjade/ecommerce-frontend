@@ -2,20 +2,37 @@ import { fetchAPI } from "@/src/utils/apiService";
 import ProductCard from "@/src/components/ui/product-card";
 import FilterChips from "@/src/components/ui/filter-chips";
 
-
 // mapping of slug paths to their corresponding API endpoints and components
 const pageMap: Record<
   string,
-  { endpoint: string; Component: React.ComponentType<any> | null; title:string }
+  {
+    endpoint: string;
+    Component: React.ComponentType<any> | null;
+    title: string;
+  }
 > = {
-  products: { endpoint: "products", Component: null, title:"All Products"},
-  "products/new-arrivals": { endpoint: "products?tag=New", Component: null, title:"New Arrivals"},
-  "products/on-sale": { endpoint: "products?tag=Sale", Component: null, title:"On Sale" },
-  "products/men": { endpoint: "products?gender=Male", Component: null, title:"Men's Apparel" },
-  "products/women": { endpoint: "products?gender=Female", Component: null, title:"Women's Apparel" },
+  products: { endpoint: "products", Component: null, title: "All Products" },
+  "products/new-arrivals": {
+    endpoint: "products?tag=New",
+    Component: null,
+    title: "New Arrivals",
+  },
+  "products/on-sale": {
+    endpoint: "products?tag=Sale",
+    Component: null,
+    title: "On Sale",
+  },
+  "products/men": {
+    endpoint: "products?gender=Male",
+    Component: null,
+    title: "Men's Apparel",
+  },
+  "products/women": {
+    endpoint: "products?gender=Female",
+    Component: null,
+    title: "Women's Apparel",
+  },
 };
-
-
 
 // helper function to convert search param values to arrays1
 type SearchParams = { [key: string]: string | string[] | undefined };
@@ -28,13 +45,11 @@ interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-
-
 //
 export default async function SlugPage({ params, searchParams }: PageProps) {
   const [resolvedParams, search] = await Promise.all([params, searchParams]);
   const slug = resolvedParams.slug ?? [];
-// construct the page key from the slug and look up the corresponding page config
+  // construct the page key from the slug and look up the corresponding page config
   const pageKey = slug.join("/");
   const page = pageMap[pageKey];
   if (!page)
@@ -42,44 +57,40 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
       <p className="container text-gray-500 text-center">Page not found!</p>
     );
 
-// extract filter values from search params and build the API endpoint
-      const genders    = toArr(search.gender);
+  // extract filter values from search params and build the API endpoint
+  const genders = toArr(search.gender);
   const categories = toArr(search.category);
-  const sizes      = toArr(search.size);
+  const sizes = toArr(search.size);
 
-
- // safely split base endpoint into path + existing query
+  // safely split base endpoint into path + existing query
   const [basePath, baseQuery] = page.endpoint.split("?");
   const queryParams = new URLSearchParams(baseQuery ?? "");
 
-
-  if (genders.length)    queryParams.set("gender",   genders.join(","));
+  if (genders.length) queryParams.set("gender", genders.join(","));
   if (categories.length) queryParams.set("category", categories.join(","));
-  if (sizes.length)      queryParams.set("size",     sizes.join(","));
-  if (search.sort)       queryParams.set("sort",     search.sort as string);
-  if (search.search)     queryParams.set("search",   search.search as string);
+  if (sizes.length) queryParams.set("size", sizes.join(","));
+  if (search.sort) queryParams.set("sort", search.sort as string);
+  if (search.search) queryParams.set("search", search.search as string);
 
   const endpoint = queryParams.toString()
     ? `${basePath}?${queryParams.toString()}`
     : basePath;
 
-
   // construct active filters for the FilterChips component
   const activeFilters = [
-    ...genders.map((v)    => ({ key: "gender",   value: v, label: v })),
+    ...genders.map((v) => ({ key: "gender", value: v, label: v })),
     ...categories.map((v) => ({ key: "category", value: v, label: v })),
-    ...sizes.map((v)      => ({ key: "size",      value: v, label: `Size: ${v}` })),
+    ...sizes.map((v) => ({ key: "size", value: v, label: `Size: ${v}` })),
   ];
 
-
-// fetch products from the API
+  // fetch products from the API
   const res = await fetchAPI({ endPoint: endpoint });
-  const products = res.data?.data ?? [];
-
- 
+  const products = res.data.data ?? [];
+  const pagination = res.data.meta ?? null;
+  console.log("page", pagination)
 
   return (
-      <div className="container space-y-4">
+    <div className="container space-y-4">
       {page.Component && <page.Component />}
 
       {/* header row */}
@@ -91,14 +102,17 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
           </p>
         </div>
 
-        <FilterChips activeFilters={activeFilters} currentSort={search.sort as string ?? "featured"} />
+        <FilterChips
+          activeFilters={activeFilters}
+          currentSort={(search.sort as string) ?? "featured"}
+        />
       </div>
 
       {products.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product: any) => (
             <ProductCard key={product.id} product={product} />
-          ))}                     
+          ))}
         </div>
       ) : (
         <p className="text-gray-500">No products found</p>

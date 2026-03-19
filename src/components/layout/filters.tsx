@@ -66,7 +66,7 @@ export default function Filter({
   const clearAll = () => {
     const parmas = new URLSearchParams(searchParams.toString());
     ["gender", "category", "size"].forEach((k) => parmas.delete(k));
-    // parmas.set("page", "1");
+    parmas.set("page", "1");
     router.push(`${pathname}?${parmas.toString()}`);
   };
 
