@@ -54,6 +54,7 @@ export default function FilterChips({ activeFilters, currentSort }: Props) {
     
       {/* sort */}
       <div className="relative">
+        <label htmlFor="">Sort By:{" "}</label>
         <select
           defaultValue={currentSort}
           onChange={setSort}

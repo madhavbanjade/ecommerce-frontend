@@ -1,10 +1,10 @@
 "use client";
-import { useState, useRef } from "react";
-import { arrow, cart, logo, search, user } from "../../assets";
+import { useState, useRef, useEffect } from "react";
+import { cart, logo, user } from "../../assets";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 
@@ -46,30 +46,46 @@ function SearchBox({ className }: { className?: string }) {
 
 export function NavPage() {
   const [toggleMenu, setToggleMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="">
-      {/* ── Announcement Bar ── */}
-      <div className="bg-div text-white tracking-wide uppercase text-xs py-2 w-screen">
-        <div className="container flex justify-between">
-          <div className="lg:block hidden">+977-9749344926</div>
-          <div className="flex gap-2 mx-auto lg:mx-0">
-            Get up to 20% off |{" "}
-            <Link
-              href="/auth"
-              className="underline hover:text-sale transition-colors duration-200"
-            >
-              Sign up
-            </Link>
-          </div>
-          <div className="lg:block hidden">Koteshwor, Kathmandu</div>
-        </div>
-      </div>
+    <div className="fixed top-0 left-0 right-0 z-50">
+
+      {/* ── Announcement Bar — slides up and fades out on scroll ── */}
+      <AnimatePresence>
+        {!scrolled && (
+          <motion.div
+            initial={{ height: "auto", opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="bg-div text-white tracking-wide uppercase text-xs overflow-hidden"
+          >
+            <div className="container flex justify-between py-2">
+              <div className="lg:block hidden">+977-9749344926</div>
+              <div className="flex gap-2 mx-auto lg:mx-0">
+                Get up to 20% off |{" "}
+                <Link href="/auth" className="underline hover:text-sale transition-colors duration-200">
+                  Sign up
+                </Link>
+              </div>
+              <div className="lg:block hidden">Koteshwor, Kathmandu</div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Nav ── */}
-      <nav className="shadow-md">
+      <nav className="shadow-md bg-white">
         <div className="container flex justify-between items-center py-3">
+
           {/* LEFT — Logo + Hamburger */}
           <div className="flex items-center gap-3 shrink-0">
             <button
@@ -77,25 +93,13 @@ export function NavPage() {
               onClick={() => setToggleMenu(!toggleMenu)}
               aria-label="Toggle menu"
             >
-              <span
-                className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "rotate-45 translate-y-[8px]" : ""}`}
-              />
-              <span
-                className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "opacity-0 scale-x-0" : ""}`}
-              />
-              <span
-                className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "-rotate-45 -translate-y-[8px]" : ""}`}
-              />
+              <span className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "rotate-45 translate-y-[8px]" : ""}`} />
+              <span className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "opacity-0 scale-x-0" : ""}`} />
+              <span className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "-rotate-45 -translate-y-[8px]" : ""}`} />
             </button>
 
             <Link href="/" className="shrink-0">
-              <Image
-                src={logo}
-                alt="logo"
-                width={80}
-                height={80}
-                className="object-contain"
-              />
+              <Image src={logo} alt="logo" width={80} height={80} className="object-contain" />
             </Link>
           </div>
 
@@ -104,31 +108,26 @@ export function NavPage() {
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <li
-                  key={item.label}
-                  className="group relative flex flex-col items-center gap-1 whitespace-nowrap"
-                >
+                <li key={item.label} className="group relative flex flex-col items-center gap-1 whitespace-nowrap">
                   <Link
                     href={item.href}
                     className={`text-xs font-semibold tracking-wider uppercase transition-colors duration-200 flex flex-col items-center gap-1
                       ${isActive ? "text-dark" : "text-secondary hover:text-dark"}`}
                   >
-                    <span
-                      className={`transition-transform duration-200 ${isActive ? "-translate-y-0.5" : "group-hover:-translate-y-0.5"}`}
-                    >
+                    <span className={`transition-transform duration-200 ${isActive ? "-translate-y-0.5" : "group-hover:-translate-y-0.5"}`}>
                       {item.label}
                     </span>
+
+                    {/* Active — shared layoutId slides the underline between nav items */}
                     {isActive && (
                       <motion.span
                         layoutId="nav-underline"
                         className="block h-0.5 w-full bg-sale rounded-full"
-                        transition={{
-                          type: "spring",
-                          stiffness: 900,
-                          damping: 30,
-                        }}
+                        transition={{ type: "spring", stiffness: 900, damping: 30 }}
                       />
                     )}
+
+                    {/* Inactive — expands on hover */}
                     {!isActive && (
                       <span className="block h-0.5 w-0 bg-sale rounded-full transition-all duration-300 group-hover:w-full" />
                     )}
@@ -155,39 +154,34 @@ export function NavPage() {
       </nav>
 
       {/* ── Mobile Overlay ── */}
-      <div
-        className={`xl:hidden fixed inset-0 bg-black/40 z-40 transition-opacity duration-300
-          ${toggleMenu ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        onClick={() => setToggleMenu(false)}
-      />
+      <AnimatePresence>
+        {toggleMenu && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="xl:hidden fixed inset-0 bg-black/40 z-40"
+            onClick={() => setToggleMenu(false)}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* ── Mobile Drawer ── */}
-      <ul
-        className={`xl:hidden fixed top-0 left-0 h-full w-72 z-50 bg-white shadow-2xl
-          flex flex-col transition-transform duration-300 ease-in-out
-          ${toggleMenu ? "translate-x-0" : "-translate-x-full"}`}
+      {/* ── Mobile Drawer — springs in from left ── */}
+      <motion.ul
+        initial={false}
+        animate={{ x: toggleMenu ? 0 : "-100%" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="xl:hidden fixed top-0 left-0 h-full w-72 z-50 bg-white shadow-2xl flex flex-col"
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200">
           <Link href="/" onClick={() => setToggleMenu(false)}>
             <Image src={logo} alt="logo" width={50} height={50} />
           </Link>
-          <button
-            onClick={() => setToggleMenu(false)}
-            className="text-secondary hover:text-dark transition-colors"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+          <button onClick={() => setToggleMenu(false)} className="text-secondary hover:text-dark transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -197,29 +191,30 @@ export function NavPage() {
           <SearchBox className="w-full" />
         </div>
 
-        {/* Nav Links */}
+        {/* Nav Links — staggered fade in */}
         {navItems.map((item, index) => {
           const isActive = pathname === item.href;
           return (
-            <li key={item.href} className="list-none">
+            <motion.li
+              key={item.href}
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: toggleMenu ? 1 : 0, x: toggleMenu ? 0 : -16 }}
+              transition={{ delay: toggleMenu ? index * 0.06 : 0, duration: 0.2 }}
+              className="list-none"
+            >
               <Link
                 href={item.href}
                 onClick={() => setToggleMenu(false)}
-                style={{
-                  transitionDelay: toggleMenu ? `${index * 60}ms` : "0ms",
-                }}
                 className={`flex items-center px-6 py-4 border-b border-zinc-100
                   text-xs font-semibold tracking-widest uppercase transition-all duration-200
-                  ${
-                    isActive
-                      ? "text-dark bg-zinc-50 border-l-2 border-l-dark"
-                      : "text-secondary hover:bg-zinc-900 hover:text-white"
-                  }
-                  ${toggleMenu ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"}`}
+                  ${isActive
+                    ? "text-dark bg-zinc-50 border-l-2 border-l-dark"
+                    : "text-secondary hover:bg-zinc-900 hover:text-white"
+                  }`}
               >
                 {item.label}
               </Link>
-            </li>
+            </motion.li>
           );
         })}
 
@@ -232,7 +227,8 @@ export function NavPage() {
             <Image src={user} alt="user" width={22} height={22} />
           </Link>
         </div>
-      </ul>
+      </motion.ul>
+
     </div>
   );
 }
