@@ -3,10 +3,17 @@ import { Button } from "@/src/components/ui/button";
 import { ShoppingCart, Heart, Package, Tag } from "lucide-react";
 import ProductImageGallery from "@/src/components/ui/image-gallary";
 import {
-  Breadcrumb, BreadcrumbItem, BreadcrumbLink,
-  BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb";
 import Reviews from "@/src/components/ui/review-section";
+
+
+
 
 export default async function ProductDetails({ params }: any) {
   const { slug } = await params;
@@ -28,9 +35,42 @@ export default async function ProductDetails({ params }: any) {
   const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700";
   const hasDiscount = !!product.discountPercent;
 
+  //reviews
+  const reviews =
+    product.reviews?.map((r: any) => ({
+      id: r.id,
+      name: r.user?.username ?? "Anonymous",
+      rating: r.rating,
+      title: r.title,
+      comment: r.comment,
+      date: new Date(r.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+    })) ?? [];
+
+  //reviews summary
+  const total = reviews.length;
+  const avg = total
+    ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / total
+    : 0;
+  const summary = {
+    avg,
+    total,
+    counts: [5, 4, 3, 2, 1].map((star) => {
+      const count = reviews.filter((r: any) => r.rating == star).length;
+      return {
+        star,
+        count,
+        percentage: total ? Math.round((count / total) * 100) : 0,
+      };
+    }),
+  };
+
+
   return (
     <div className="container py-6 flex flex-col gap-12">
-
       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
@@ -50,7 +90,6 @@ export default async function ProductDetails({ params }: any) {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-
         {/* Images */}
         <div className="w-full rounded-2xl">
           {product.images?.[0] && (
@@ -65,14 +104,12 @@ export default async function ProductDetails({ params }: any) {
 
         {/* Info */}
         <div className="flex flex-col gap-6 py-2">
-
           {/* Gender + Name */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold tracking-widest uppercase text-zinc-400">
                 {product.gender}
               </span>
-             
             </div>
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
               {product.name}
@@ -130,7 +167,9 @@ export default async function ProductDetails({ params }: any) {
           {/* Meta info */}
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${product.isAvilable ? "bg-green-400" : "bg-red-400"}`} />
+              <span
+                className={`w-2 h-2 rounded-full ${product.isAvilable ? "bg-green-400" : "bg-red-400"}`}
+              />
               <span className="text-gray-500">
                 {product.isAvilable ? "In Stock" : "Out of Stock"}
               </span>
@@ -161,13 +200,11 @@ export default async function ProductDetails({ params }: any) {
               <Heart className="w-4 h-4" />
             </Button>
           </div>
-
         </div>
       </div>
 
       {/* Reviews */}
-        {/* <Reviews productId={product} /> */}
-
+      <Reviews reviews={reviews} summary={summary} />
     </div>
   );
 }
