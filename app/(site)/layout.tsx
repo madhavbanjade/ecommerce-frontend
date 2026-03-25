@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { NavPage } from "@/src/components/layout/nav";
 import Footer from "@/src/components/layout/footer";
+import { WishlistProvider } from "@/src/context/wishlist-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="mt-24">
+
+          <WishlistProvider>
         {children}
+
+          </WishlistProvider>
+
 
 
         </div>

@@ -16,7 +16,7 @@ export interface ProductSize {
   stock_quantity: number;
 }
 export interface ProductCardUi{
-  id: number;
+  id: string;
   name: string;
   slug: string,
   description: string;
