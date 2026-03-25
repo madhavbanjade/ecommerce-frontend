@@ -196,6 +196,7 @@ export default async function ProductDetails({ params }: any) {
             <Button
               variant="outline"
               className="w-12 h-12 rounded-xl p-0 flex items-center justify-center border-gray-200 hover:border-red-300 hover:text-red-500 transition-colors"
+              
             >
               <Heart className="w-4 h-4" />
             </Button>

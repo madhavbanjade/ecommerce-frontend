@@ -73,8 +73,8 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   if (search.sort) queryParams.set("sort", search.sort as string);
   if (search.search) queryParams.set("search", search.search as string);
   const currentPage = parseInt((search.page as string) ?? "1")
-queryParams.set("limit", "6")
-queryParams.set("page", String(currentPage))
+  queryParams.set("limit", "6")
+  queryParams.set("page", String(currentPage))
 
   const endpoint = queryParams.toString()
     ? `${basePath}?${queryParams.toString()}`
