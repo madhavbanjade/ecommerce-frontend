@@ -147,7 +147,7 @@ h5, .heading-h5 {
 
 @layer components {
   .container{
-    @apply max-w-7xl mx-auto p-2;
+    @apply max-w-7xl mx-auto p-2 top-4;
   }
 }
 

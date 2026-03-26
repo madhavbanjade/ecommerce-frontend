@@ -1,4 +1,5 @@
 // app/wishlist/page.tsx
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/src/components/ui/breadcrumb"
 import ProductCard from "@/src/components/ui/product-card"
 import { cookies } from "next/headers"
 
@@ -18,7 +19,23 @@ export default async function Wishlist() {
   const products = data?.data ?? []
 
   return (
-      <div className="container space-y-4">
+      <div className="container py-6 flex flex-col space-y-6">
+            {/* Breadcrumb */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/products">Products</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Wishlist</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
         <h2 className="text-3xl font-bold text-zinc-900">My Wishlist</h2>
         {products.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">

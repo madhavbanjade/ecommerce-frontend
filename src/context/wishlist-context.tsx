@@ -70,7 +70,6 @@ export function WishlistProvider({
       if (!res.ok) throw new Error()
     } catch (error) {
       console.error(error)
-
       // 🔥 CORRECT revert
       setWishlistIds((prev) =>
         isAlreadyWishlisted
@@ -78,7 +77,7 @@ export function WishlistProvider({
           : prev.filter((id) => id !== productId)
       )
 
-      alert("Something went wrong")
+      alert("You need to logged in first!")
     }
   }
 
