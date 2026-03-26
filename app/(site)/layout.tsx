@@ -26,26 +26,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-<html>
-      <NavPage /> 
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <NavPage />
 
-
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="mt-24">
+        <main className="mt-24 min-h-screen overflow-x-hidden">
           <WishlistProvider>
-        {children}
-
+            {children}
           </WishlistProvider>
-
-
-
-        </div>
+        </main>
+        <Footer />
       </body>
-      <Footer />
-</html>
-
-
+    </html>
   );
 }
