@@ -1,33 +1,45 @@
 "use client";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useId } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface SliderSectionProps {
-  children: React.ReactNode[];
+  children?: React.ReactNode[];
   autoplay?: boolean;
   autoplayDelay?: number;
   slideSize?: string;
+  slideSizes?: {
+    base?: string;
+    sm?: string;
+    md?: string;
+    lg?: string;
+    xl?: string;
+  };
   showDots?: boolean;
   showArrows?: boolean;
 }
 
 export default function SliderSection({
-  children,
+  children = [],
   autoplay: enableAutoplay = true,
   autoplayDelay = 3000,
   slideSize = "50%",
+  slideSizes,
   showDots = true,
   showArrows = true,
 }: SliderSectionProps) {
+  // Unique class per instance — avoids global CSS conflicts
+  const uid = useId().replace(/:/g, "");
+  const slideClass = `embla-slide-${uid}`;
+
   const autoplayPlugin = useRef(
     Autoplay({ delay: autoplayDelay, stopOnInteraction: false })
   );
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: "start", containScroll: "trimSnaps" },
+    { loop: true, align: "start", containScroll: "trimSnaps", dragFree: false, watchDrag: true },
     enableAutoplay ? [autoplayPlugin.current] : []
   );
 
@@ -35,8 +47,6 @@ export default function SliderSection({
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
 
-  // Embla requires useEffect to subscribe — unavoidable
-  // But all visual reactions are handled by Framer Motion below
   useEffect(() => {
     if (!emblaApi) return;
     const onSelect = () => {
@@ -64,10 +74,20 @@ export default function SliderSection({
     autoplayPlugin.current?.reset();
   }, [emblaApi]);
 
-  return (
-    <div className="relative">
+  // Responsive slide sizes via injected <style>
+  const responsiveStyles = slideSizes ? `
+    .${slideClass} { flex: 0 0 ${slideSizes.base ?? slideSize}; }
+    @media (min-width: 640px)  { .${slideClass} { flex: 0 0 ${slideSizes.sm  ?? slideSizes.base ?? slideSize}; } }
+    @media (min-width: 768px)  { .${slideClass} { flex: 0 0 ${slideSizes.md  ?? slideSizes.sm  ?? slideSize}; } }
+    @media (min-width: 1024px) { .${slideClass} { flex: 0 0 ${slideSizes.lg  ?? slideSizes.md  ?? slideSize}; } }
+    @media (min-width: 1280px) { .${slideClass} { flex: 0 0 ${slideSizes.xl  ?? slideSizes.lg  ?? slideSize}; } }
+  ` : null;
 
-      {/* ── Arrows — fade + scale with Framer Motion ── */}
+  return (
+    <div className="relative w-full">
+      {responsiveStyles && <style>{responsiveStyles}</style>}
+
+      {/* Arrows — hidden on mobile, visible sm+ */}
       <AnimatePresence>
         {showArrows && canScrollPrev && (
           <motion.button
@@ -79,11 +99,11 @@ export default function SliderSection({
             whileTap={{ scale: 0.9 }}
             transition={{ duration: 0.15 }}
             onClick={scrollPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-10
-              w-10 h-14 flex items-center justify-center rounded-full bg-[#4285F4] border border-zinc-200
-              shadow-sm hover:border-zinc-900"
+            className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-10
+              w-8 h-10 sm:w-9 sm:h-12 items-center justify-center rounded-full bg-[#4285F4]
+              border border-zinc-200 shadow-sm hover:border-zinc-900"
           >
-            <ChevronLeft className="w-6 h-6 text-white" />
+            <ChevronLeft className="w-5 h-5 text-white" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -99,23 +119,23 @@ export default function SliderSection({
             whileTap={{ scale: 0.9 }}
             transition={{ duration: 0.15 }}
             onClick={scrollNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-10
-                w-10 h-14 flex items-center justify-center rounded-full bg-[#4285F4] border border-zinc-200
-              shadow-sm hover:border-zinc-900"
+            className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-10
+              w-8 h-10 sm:w-9 sm:h-12 items-center justify-center rounded-full bg-[#4285F4]
+              border border-zinc-200 shadow-sm hover:border-zinc-900"
           >
-            <ChevronRight className="w-6 h-6 text-white" />
+            <ChevronRight className="w-5 h-5 text-white" />
           </motion.button>
         )}
       </AnimatePresence>
 
-    {/* ── Track ── */}
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-4">
+      {/* Track */}
+      <div className="overflow-hidden w-full touch-pan-x" ref={emblaRef}>
+        <div className="flex gap-3 sm:gap-4">
           {children.map((child, index) => (
             <div
               key={index}
-              style={{ flex: `0 0 ${slideSize}` }}
-              className="min-w-0"
+              style={!slideSizes ? { flex: `0 0 ${slideSize}` } : undefined}
+              className={`min-w-0 ${slideSizes ? slideClass : ""}`}
             >
               {child}
             </div>
@@ -123,7 +143,7 @@ export default function SliderSection({
         </div>
       </div>
 
-      {/* ── Dots — active dot expands with layout animation ── */}
+      {/* Dots */}
       {showDots && (
         <div className="flex gap-1.5 items-center justify-center mt-4">
           {children.map((_, index) => (
@@ -141,7 +161,6 @@ export default function SliderSection({
           ))}
         </div>
       )}
-
     </div>
   );
 }

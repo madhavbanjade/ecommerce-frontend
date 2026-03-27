@@ -15,7 +15,6 @@ export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter()
   const { toggle, isWishlisted } = useWishlist()
 
-  // ✅ Safe check (prevents undefined issues)
   const wishlisted = product?.id ? isWishlisted(product.id) : false
 
   const discountPercent =
@@ -41,30 +40,30 @@ export default function ProductCard({ product }: ProductCardProps) {
           transition={{ duration: 0.4 }}
         >
           <Image
-            src={product.images?.[0] || "/fallback.png"} // ✅ safe fallback
+            src={product.images?.[0] || "/fallback.png"}
             alt={product.name}
             fill
             unoptimized
-            className="object-cover p-4"
+            className="object-cover p-2 sm:p-4"  
           />
         </motion.div>
 
         {discountPercent && (
-          <div className="absolute top-3 left-0 bg-[#4285F4] text-white text-xs font-semibold px-3 py-1 rounded-r-full shadow">
+          <div className="absolute top-2 sm:top-3 left-0 bg-[#4285F4] text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-r-full shadow">
             {discountPercent}% OFF
           </div>
         )}
 
-        {/* ❤️ Wishlist */}
+        {/* Wishlist */}
         <button
           onClick={(e) => {
             e.stopPropagation()
             toggle(product.id)
           }}
-          className="absolute cursor-pointer top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-rose-50 transition"
+          className="absolute cursor-pointer top-2 sm:top-3 right-2 sm:right-3 w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-rose-50 transition"
         >
           <Heart
-            className={`w-4 h-4 transition-all duration-200 ${
+            className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-200 ${
               wishlisted
                 ? "fill-rose-500 text-rose-500 scale-110"
                 : "text-rose-400"
@@ -74,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Quick View */}
         <motion.div
-          className="absolute bottom-3 left-1/2 -translate-x-1/2"
+          className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2"
           variants={{ hover: { opacity: 1, y: 0 } }}
           initial={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.25 }}
@@ -84,19 +83,19 @@ export default function ProductCard({ product }: ProductCardProps) {
               e.stopPropagation()
               router.push(`/product/${product.slug}`)
             }}
-            className="flex items-center gap-2 bg-div text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg hover:bg-zinc-800 transition"
+            className="flex items-center gap-1.5 sm:gap-2 bg-div text-white text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:bg-zinc-800 transition whitespace-nowrap"
           >
-            <ShoppingBag className="w-4 h-4" />
+            <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4" />
             Quick View
           </button>
         </motion.div>
       </div>
 
       {/* Info */}
-      <div className="p-4 flex flex-col gap-2">
+      <div className="p-2.5 sm:p-4 flex flex-col gap-1.5 sm:gap-2">
         {product.tag && (
           <span
-            className={`text-xs font-semibold uppercase tracking-wide ${
+            className={`text-[10px] sm:text-xs font-semibold uppercase tracking-wide ${
               product.tag.toLowerCase() === "new"
                 ? "text-emerald-600"
                 : product.tag.toLowerCase() === "sale"
@@ -108,23 +107,23 @@ export default function ProductCard({ product }: ProductCardProps) {
           </span>
         )}
 
-        <h5 className="text-sm font-semibold text-zinc-800 leading-snug line-clamp-2">
+        <h5 className="text-xs sm:text-sm font-semibold text-zinc-800 leading-snug line-clamp-2">
           {product.name}
         </h5>
 
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between mt-1 sm:mt-2">
           <div className="flex flex-col">
             {product.dicountPrice ? (
               <>
-                <span className="text-xs text-sale line-through">
+                <span className="text-[10px] sm:text-xs text-sale line-through">
                   Rs. {product.originalPrice.toLocaleString()}
                 </span>
-                <span className="text-base font-bold text-zinc-900">
+                <span className="text-sm sm:text-base font-bold text-zinc-900">
                   Rs. {product.dicountPrice.toLocaleString()}
                 </span>
               </>
             ) : (
-              <span className="text-base font-bold text-zinc-900">
+              <span className="text-sm sm:text-base font-bold text-zinc-900">
                 Rs. {product.originalPrice.toLocaleString()}
               </span>
             )}
@@ -135,9 +134,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               e.stopPropagation()
               router.push(`/product/${product.slug}`)
             }}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-div text-white shadow-md hover:bg-black transition"
-          >
-            <ShoppingBag className="w-4 h-4" />
+            className="w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-div text-white shadow-md hover:bg-black transition"
+            >
+            <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>

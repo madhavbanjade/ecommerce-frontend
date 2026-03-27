@@ -84,7 +84,7 @@ export function NavPage() {
 
       {/* ── Nav ── */}
       <nav className="shadow-md bg-white">
-        <div className="container flex justify-between items-center py-3">
+        <div className="container flex justify-between items-center">
 
           {/* LEFT — Logo + Hamburger */}
           <div className="flex items-center gap-3 shrink-0">
@@ -98,7 +98,7 @@ export function NavPage() {
               <span className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "-rotate-45 -translate-y-[8px]" : ""}`} />
             </button>
 
-            <Link href="/" className="shrink-0">
+            <Link href="/" className="shrink-0 hidden md:block ">
               <Image src={logo} alt="logo" width={80} height={80} className="object-contain" />
             </Link>
           </div>

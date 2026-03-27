@@ -70,8 +70,9 @@ export default async function ProductDetails({ params }: any) {
 
 
   return (
-    <div className="container py-6 flex flex-col gap-12">
-      {/* Breadcrumb */}
+    <>
+
+       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -87,6 +88,8 @@ export default async function ProductDetails({ params }: any) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+    <div className="container flex flex-col space-y-4">
+   
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -207,5 +210,7 @@ export default async function ProductDetails({ params }: any) {
       {/* Reviews */}
       <Reviews reviews={reviews} summary={summary} />
     </div>
+    </>
+
   );
 }

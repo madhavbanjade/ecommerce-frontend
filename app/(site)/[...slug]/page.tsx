@@ -62,6 +62,7 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   const genders = toArr(search.gender);
   const categories = toArr(search.category);
   const sizes = toArr(search.size);
+  const currentSort = (search.sort as string) ?? "featured"; 
 
   // safely split base endpoint into path + existing query
   const [basePath, baseQuery] = page.endpoint.split("?");
@@ -89,43 +90,45 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
 
   // fetch products from the API
   const res = await fetchAPI({ endPoint: endpoint });
-  const products = res.data.data ?? [];
+  const products = res.data?.data ?? [];
   const meta = res.data.meta ?? null;
   console.log("page", meta)
 
   return (
-    <div className="container space-y-4">
+    <div className="space-y-4">
       {page.Component && <page.Component />}
 
-      {/* header row */}
-      <div className="flex items-start justify-between p-3">
-        <div>
-          <h2 className="text-5xl font-bold">{page.title}</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Showing 1–{products.length} of {products.length} products
-          </p>
-        </div>
-
-        <FilterChips
+      {/* ── Row 1: Active filter chips  +  Sort by (right-aligned) ── */}
+      <div className="w-full">
+        <FilterChips 
           activeFilters={activeFilters}
-          currentSort={(search.sort as string) ?? "featured"}
+          currentSort={currentSort}
         />
       </div>
 
+      {/* ── Row 2: Page title + product count ── */}
+      <div className="px-1">
+        <h2 className="text-5xl font-bold">{page.title}</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Showing {products.length > 0 ? 1 : 0}–{products.length} of{" "}
+          {meta?.total ?? products.length} products
+        </p>
+      </div>
+
+      {/* ── Row 3: Product grid + pagination ── */}
       {products.length > 0 ? (
         <>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
-          {products.map((product: any) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-         <Pagination
-      total={meta?.total ?? 0}
-      limit={6}
-      currentPage={meta?.page ?? 1}
-    />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {products.map((product: any) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <Pagination
+            total={meta?.total ?? 0}
+            limit={6}
+            currentPage={meta?.page ?? 1}
+          />
         </>
-
       ) : (
         <p className="text-gray-500">No products found</p>
       )}

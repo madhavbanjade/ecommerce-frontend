@@ -14,6 +14,8 @@ import menImg from "../../public/image/menImg.jpg"
 import womenImg from "../../public/image/womenImg.jpg"
 import sale from "../../public/image/sale.jpg"
 import arrow from "../../public/icons/arrow.png"
+import filter from "../../public/icons/filter.png"
+import sort from "../../public/icons/sort.png"
 
 export {
   logo,
@@ -31,5 +33,8 @@ export {
   menImg,
   womenImg,
   sale,
-  arrow
+  arrow,
+  filter,
+  sort
+  
 };

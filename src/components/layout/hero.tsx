@@ -30,13 +30,12 @@ const slideIn = (delay = 0, direction: "left" | "right" = "left") => ({
 
 export default function Hero() {
   return (
-    <section className="relative w-screen p-4 bg-div grid overflow-hidden mb-8">
+    <section className="relative w-screen py-4 bg-div grid overflow-hidden mb-8">
 
       {/* Background texture */}
       <div
       
       />
-
       {/* Animated ambient glow */}
       <motion.div
          className="absolute inset-0 opacity-[0.02] pointer-events-none"

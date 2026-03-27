@@ -4,7 +4,7 @@ import { CountUp } from "./count-up";
 
 export default function Banner() {
   return (
-      <section className="w-full bg-div p-4 overflow-hidden">
+      <section className="w-full bg-div py-4 overflow-hidden">
       <div className="container grid xl:grid-cols-[1fr_2fr] gap-12 items-center">
 
         <div className="grid gap-6">
