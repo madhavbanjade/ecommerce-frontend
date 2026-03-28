@@ -1,26 +1,36 @@
 // app/wishlist/page.tsx
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/src/components/ui/breadcrumb"
-import ProductCard from "@/src/components/ui/product-card"
-import { cookies } from "next/headers"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/src/components/ui/breadcrumb";
+import ProductCard from "@/src/components/ui/product-card";
+import { fetchAPI } from "@/src/utils/apiService";
+import { cookies } from "next/headers";
 
 export default async function Wishlist() {
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get("access_token")?.value
-  const refreshToken = cookieStore.get("refresh_token")?.value
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join(";");
 
-  const res = await fetch("http://localhost:3333/api/v1/users/wishlist", {
+  const res = await fetchAPI({
+    endPoint: "users/wishlist",
     headers: {
-      Cookie: `access_token=${accessToken}; refresh_token=${refreshToken}`,
+      Cookie: cookieHeader,
     },
-    cache: "no-store",
-  })
+    revalidateSeconds: 0,
+  });
 
-  const data = await res.json()
-  const products = data?.data ?? []
-
+  const wishlist = res?.data?.data ?? [];
+console.log("wishlist", wishlist)
   return (
-      <div className="container py-6 flex flex-col space-y-6">
-            {/* Breadcrumb */}
+    <>
+      {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -36,16 +46,21 @@ export default async function Wishlist() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+      <div className="container space-y-4">
         <h2 className="text-3xl font-bold text-zinc-900">My Wishlist</h2>
-        {products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
-            {products.map((product: any) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center py-20">No products in wishlist</p>
-        )}
+     {wishlist.length > 0 ? (
+  <>
+    <p className="text-sm text-gray-400">Found {wishlist.length} items</p>
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
+      {wishlist.map((item: any) => (
+        <ProductCard key={item.id} product={item.product ?? item} />
+      ))}
+    </div>
+  </>
+) : (
+  <p>No products in wishlist</p>
+)}
       </div>
-  )
+    </>
+  );
 }

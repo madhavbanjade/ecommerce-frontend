@@ -156,7 +156,7 @@ export default function Filter({
     <>
       {/* Mobile burger button */}
       <button
-         className="lg:hidden relative z-50 flex items-center gap-2 border border-zinc-400 rounded-lg px-3 py-2 text-xs font-semibold  tracking-wider text-zinc-600 hover:border-zinc-900 transition mb-2"
+         className="lg:hidden relative  flex items-center gap-2 border border-zinc-400 rounded-lg px-3 py-2 text-xs font-semibold  tracking-wider text-zinc-600 hover:border-zinc-900 transition mb-2"
         onClick={() => setOpen(true)}
       >
         <Image src={filter} alt="filter" width={16} height={16} />
@@ -179,7 +179,7 @@ export default function Filter({
       {/* Mobile drawer */}
       <div className={`lg:hidden fixed top-0 left-0 h-full w-72 z-50 bg-white shadow-2xl transition-transform duration-300 ease-in-out overflow-y-auto ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex items-center justify-between px-4 py-4 border-b border-zinc-100">
-          <p className="font-bold text-sm uppercase tracking-widest">Filters</p>
+          <div> </div>
           <button onClick={() => setOpen(false)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-zinc-100 transition">
             <X className="w-4 h-4 text-zinc-500" />
           </button>

@@ -58,11 +58,11 @@ export default function FilterChips({ activeFilters, currentSort }: Props) {
      <div className="flex items-center gap-2 ml-auto">
           <Image src={sort} alt="sort" width={16} height={16} className="shrink-0" />
           <span className="text-sm text-gray-500 shrink-0">Sort By:</span>
-          <div className="relative">
+          <div className="relative ">
             <select
               defaultValue={currentSort}
               onChange={setSort}
-              className="appearance-none border border-gray-200 rounded-lg pl-3 pr-8 py-2 text-sm bg-white cursor-pointer focus:outline-none"
+              className="appearance-none border border-zinc-400 rounded-lg pl-3 pr-8 py-2 text-sm bg-white cursor-pointer focus:outline-none"
             >
               <option value="featured">Featured</option>
               <option value="price-asc">Price: Low to High</option>

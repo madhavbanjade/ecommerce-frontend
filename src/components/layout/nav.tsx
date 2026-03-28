@@ -44,10 +44,11 @@ function SearchBox({ className }: { className?: string }) {
   );
 }
 
-export function NavPage() {
+export function NavPage({ profile }: { profile: any }) {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const isLoggedIn = !!profile;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -57,7 +58,6 @@ export function NavPage() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-
       {/* ── Announcement Bar — slides up and fades out on scroll ── */}
       <AnimatePresence>
         {!scrolled && (
@@ -72,7 +72,10 @@ export function NavPage() {
               <div className="lg:block hidden">+977-9749344926</div>
               <div className="flex gap-2 mx-auto lg:mx-0">
                 Get up to 20% off |{" "}
-                <Link href="/auth" className="underline hover:text-sale transition-colors duration-200">
+                <Link
+                  href="/auth"
+                  className="underline hover:text-sale transition-colors duration-200"
+                >
                   Sign up
                 </Link>
               </div>
@@ -85,7 +88,6 @@ export function NavPage() {
       {/* ── Nav ── */}
       <nav className="shadow-md bg-white">
         <div className="container flex justify-between items-center">
-
           {/* LEFT — Logo + Hamburger */}
           <div className="flex items-center gap-3 shrink-0">
             <button
@@ -93,13 +95,25 @@ export function NavPage() {
               onClick={() => setToggleMenu(!toggleMenu)}
               aria-label="Toggle menu"
             >
-              <span className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "rotate-45 translate-y-[8px]" : ""}`} />
-              <span className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "opacity-0 scale-x-0" : ""}`} />
-              <span className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "-rotate-45 -translate-y-[8px]" : ""}`} />
+              <span
+                className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "rotate-45 translate-y-[8px]" : ""}`}
+              />
+              <span
+                className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "opacity-0 scale-x-0" : ""}`}
+              />
+              <span
+                className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "-rotate-45 -translate-y-[8px]" : ""}`}
+              />
             </button>
 
             <Link href="/" className="shrink-0 hidden md:block ">
-              <Image src={logo} alt="logo" width={80} height={80} className="object-contain" />
+              <Image
+                src={logo}
+                alt="logo"
+                width={80}
+                height={80}
+                className="object-contain"
+              />
             </Link>
           </div>
 
@@ -108,13 +122,18 @@ export function NavPage() {
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <li key={item.label} className="group relative flex flex-col items-center gap-1 whitespace-nowrap">
+                <li
+                  key={item.label}
+                  className="group relative flex flex-col items-center gap-1 whitespace-nowrap"
+                >
                   <Link
                     href={item.href}
                     className={`text-xs font-semibold tracking-wider uppercase transition-colors duration-200 flex flex-col items-center gap-1
                       ${isActive ? "text-dark" : "text-secondary hover:text-dark"}`}
                   >
-                    <span className={`transition-transform duration-200 ${isActive ? "-translate-y-0.5" : "group-hover:-translate-y-0.5"}`}>
+                    <span
+                      className={`transition-transform duration-200 ${isActive ? "-translate-y-0.5" : "group-hover:-translate-y-0.5"}`}
+                    >
                       {item.label}
                     </span>
 
@@ -123,7 +142,11 @@ export function NavPage() {
                       <motion.span
                         layoutId="nav-underline"
                         className="block h-0.5 w-full bg-sale rounded-full"
-                        transition={{ type: "spring", stiffness: 900, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 900,
+                          damping: 30,
+                        }}
                       />
                     )}
 
@@ -146,7 +169,7 @@ export function NavPage() {
             <Link href="/cart">
               <Image src={cart} alt="cart" width={22} height={22} />
             </Link>
-            <Link href="/auth">
+            <Link href={isLoggedIn ? "/profile" : "/auth"}>
               <Image src={user} alt="user" width={22} height={22} />
             </Link>
           </div>
@@ -179,9 +202,22 @@ export function NavPage() {
           <Link href="/" onClick={() => setToggleMenu(false)}>
             <Image src={logo} alt="logo" width={50} height={50} />
           </Link>
-          <button onClick={() => setToggleMenu(false)} className="text-secondary hover:text-dark transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <button
+            onClick={() => setToggleMenu(false)}
+            className="text-secondary hover:text-dark transition-colors"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -199,7 +235,10 @@ export function NavPage() {
               key={item.href}
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: toggleMenu ? 1 : 0, x: toggleMenu ? 0 : -16 }}
-              transition={{ delay: toggleMenu ? index * 0.06 : 0, duration: 0.2 }}
+              transition={{
+                delay: toggleMenu ? index * 0.06 : 0,
+                duration: 0.2,
+              }}
               className="list-none"
             >
               <Link
@@ -207,9 +246,10 @@ export function NavPage() {
                 onClick={() => setToggleMenu(false)}
                 className={`flex items-center px-6 py-4 border-b border-zinc-100
                   text-xs font-semibold tracking-widest uppercase transition-all duration-200
-                  ${isActive
-                    ? "text-dark bg-zinc-50 border-l-2 border-l-dark"
-                    : "text-secondary hover:bg-zinc-900 hover:text-white"
+                  ${
+                    isActive
+                      ? "text-dark bg-zinc-50 border-l-2 border-l-dark"
+                      : "text-secondary hover:bg-zinc-900 hover:text-white"
                   }`}
               >
                 {item.label}
@@ -228,7 +268,6 @@ export function NavPage() {
           </Link>
         </div>
       </motion.ul>
-
     </div>
   );
 }

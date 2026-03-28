@@ -56,7 +56,7 @@ export default async function SlugPage({ params, searchParams }: PageProps) {
   if (!page)
     return (
       <p className="container text-gray-500 text-center">Page not found!</p>
-    );
+    );  
 
   // extract filter values from search params and build the API endpoint
   const genders = toArr(search.gender);
