@@ -41,3 +41,17 @@ export interface Product {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
+export interface CartItem {
+  id: string
+  name: string
+  slug: string
+  image: string
+  size: string
+  stockQuantity: number
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+  totalItems: number
+}
