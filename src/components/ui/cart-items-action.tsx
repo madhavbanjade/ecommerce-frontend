@@ -1,14 +1,16 @@
 "use client"
 
 import { Minus, Plus, Trash2, Tag } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { userCartStore } from "@/src/features/cart/cartStore"
+import { deleteCartItem, updateCartItem } from "@/src/features/cart/cartService"
+import { useRouter } from "next/navigation"
 
 interface CartItemActionsProps {
   itemId: string
   initialQuantity: number
   size: string
-  maxQuantity: number // ✅ ADD THIS
+  maxQuantity: number
 }
 
 export default function CartItemActions({
@@ -19,54 +21,55 @@ export default function CartItemActions({
 }: CartItemActionsProps) {
   const [quantity, setQuantity] = useState(initialQuantity)
   const [quantityLoading, setQuantityLoading] = useState(false)
-const [removeLoading, setRemoveLoading] = useState(false)
-const router = useRouter()
+  const [removeLoading, setRemoveLoading] = useState(false)
+const router  = useRouter()
+  // ── Zustand actions ──────────────────────────────────────────────────────────
+  const zustandUpdate = userCartStore((s) => s.updateQuantity)
+  const zustandRemove = userCartStore((s) => s.removeItem)
 
+  // ── Update Quantity ──────────────────────────────────────────────────────────
   const update = async (newQty: number) => {
-    if (newQty < 1 || newQty > maxQuantity) return
+    if (newQty < 1 || newQty > maxQuantity || quantityLoading) return
 
-    const prevQty = quantity // ✅ store previous safely
+    const prevQty = quantity
 
+    // Optimistic update — local state + Zustand header badge
+    setQuantity(newQty)
+    zustandUpdate(itemId, newQty)
     setQuantityLoading(true)
-    setQuantity(newQty) // optimistic update
 
-    try {
-      const res = await fetch(`http://localhost:3333/api/v1/cart/${itemId}`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity: newQty }),
-      })
+    const success = await updateCartItem(itemId, { quantity: newQty })
 
-      const data = await res.json()
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "Update failed")
-      }
-      router.refresh()
-
-    } catch (err) {
-      setQuantity(prevQty) // ✅ revert correctly
-    } finally {
-      setQuantityLoading(false)
+    if (!success) {
+      // Rollback both local state and Zustand on failure
+      setQuantity(prevQty)
+      zustandUpdate(itemId, prevQty)
     }
+
+    setQuantityLoading(false)
   }
 
-const remove = async () => {
-  setRemoveLoading(true)
+  // ── Remove Item ──────────────────────────────────────────────────────────────
+  const remove = async () => {
+    if (removeLoading) return
 
-  try {
-    await fetch(`http://localhost:3333/api/v1/cart/${itemId}`, {
-      method: "DELETE",
-      credentials: "include",
-    })
-  } catch {
-    // optionally show an error toast here
-  } finally {
-    setRemoveLoading(false)  // ← always runs
+    // Optimistic remove — Zustand header badge drops instantly
+    zustandRemove(itemId)
+    setRemoveLoading(true)
+
+    const success = await deleteCartItem(itemId)
+
+  if (success) {
+    zustandRemove(itemId)  // update header badge
+    router.refresh()       // re-fetch server component → item disappears from list
+  } else {
+    window.location.reload()
   }
-}
 
+    setRemoveLoading(false)
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className="flex items-center gap-3">
 
@@ -76,24 +79,25 @@ const remove = async () => {
           Qty
         </span>
 
-        {/* Minus */}
         <button
           onClick={() => update(quantity - 1)}
           disabled={quantityLoading || quantity <= 1}
           className="w-5 h-5 flex items-center justify-center rounded-md hover:bg-zinc-100 transition disabled:opacity-30"
         >
-          <Minus className=" cursor-pointer w-5 h-5 text-zinc-600" />
+          <Minus className="cursor-pointer w-5 h-5 text-zinc-600" />
         </button>
 
-        {/* Value */}
         <span className="text-lg font-semibold w-5 text-center">
-          {quantity}
+          {quantityLoading ? (
+            <span className="inline-block w-3 h-3 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+          ) : (
+            quantity
+          )}
         </span>
 
-        {/* Plus */}
         <button
           onClick={() => update(quantity + 1)}
-          disabled={quantityLoading || quantity >= maxQuantity} // ✅ IMPORTANT
+          disabled={quantityLoading || quantity >= maxQuantity}
           className="w-5 h-5 flex items-center justify-center rounded-md hover:bg-zinc-100 transition disabled:opacity-30"
         >
           <Plus className="cursor-pointer w-5 h-5 text-zinc-600" />
@@ -108,12 +112,12 @@ const remove = async () => {
         </span>
       </div>
 
-     {/* Stock warning - always reserve space, just toggle visibility */}
-<span className={`text-[10px] text-red-500 transition-opacity ${
-  quantity >= maxQuantity ? "opacity-100" : "opacity-0"
-}`}>
-  Max stock reached
-</span>
+      {/* Max stock warning — always reserves space, just toggles opacity */}
+      <span className={`text-[10px] text-red-500 transition-opacity ${
+        quantity >= maxQuantity ? "opacity-100" : "opacity-0"
+      }`}>
+        Max stock reached
+      </span>
 
       {/* Delete */}
       <button
@@ -121,7 +125,7 @@ const remove = async () => {
         disabled={removeLoading}
         className="ml-auto w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 group disabled:opacity-30"
       >
-        <Trash2 className=" cursor-pointer w-5 h-5 text-red-500 group-hover:text-red-900 transition-colors" />
+        <Trash2 className="cursor-pointer w-5 h-5 text-red-500 group-hover:text-red-900 transition-colors" />
       </button>
 
     </div>

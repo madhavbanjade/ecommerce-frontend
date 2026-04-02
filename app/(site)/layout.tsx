@@ -6,6 +6,7 @@ import Footer from "@/src/components/layout/footer";
 import { WishlistProvider } from "@/src/context/wishlist-context";
 import { cookies } from "next/headers";
 import { fetchAPI } from "@/src/utils/apiService";
+import CartSync from "@/src/features/cart/cartSync";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +50,9 @@ export default async function RootLayout({
 
         <main className="mt-24 min-h-screen overflow-x-hidden">
           <WishlistProvider>
+            <CartSync isLoggedIn={!!profile}>
+
+            </CartSync>
             {children}
           </WishlistProvider>
         </main>

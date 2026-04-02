@@ -1,0 +1,203 @@
+
+"use client"
+
+import { useState } from "react";
+import { ShoppingCart, Heart, Minus, Plus } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
+import { userCartStore } from "@/src/features/cart/cartStore";
+import { addToCart } from "@/src/features/cart/cartService";
+
+
+interface Size {
+    size: string;
+    stockQuantity: number;
+}
+
+interface AddToCartIslandProps {
+    productId: string;
+    name: string;
+    image: string;
+    price: number;
+    sizes: Size[];
+}
+
+
+
+
+export default function AddToCartIsland({
+    productId,
+    name,
+    image,
+    price,
+    sizes,
+}: AddToCartIslandProps) {
+
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
+    const [quantity, setQuantity] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false)
+
+    const addItem = userCartStore((s) => s.addItem)
+
+
+    //quantity
+    const selectedSizeData  = sizes.find((s) => s.size  === selectedSize)
+    const maxStock = selectedSizeData?.stockQuantity ?? 99;
+    
+
+    const increment = () => 
+        setQuantity((q) => Math.min(q + 1, maxStock))
+
+    const decrement = () => 
+        setQuantity((q) => Math.min(q + 1, maxStock))
+
+
+    //add to cart 
+    const handleAddToCart = async () => {
+
+        //validate size
+        if(!selectedSize){
+            setError("Please select a size before adding to cart.")
+            return;
+        }
+
+        setError(null)
+        setIsLoading(true)
+
+        //call backend
+        const cartItem = await  addToCart({
+            productId,
+            size: selectedSize,
+            quantity
+        })
+
+        if(!cartItem){
+            setError("Faild to add item in cart. Please try again")
+            setIsLoading(false);
+            return;
+        }
+
+        //backend confirm => update zustand
+        addItem(cartItem)
+        setSuccess(true)
+        setIsLoading(false);
+
+        //reset
+        setTimeout(() => setSuccess(false), 2000)
+    }
+
+    return (
+   <div className="flex flex-col gap-6">
+ 
+      {/* Size Selection */}
+      {sizes.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+            Select Size
+          </p>
+          <div className="flex gap-2 flex-wrap">
+            {sizes.map((s) => {
+              const outOfStock = s.stockQuantity === 0;
+              const isSelected = selectedSize === s.size;
+ 
+              return (
+                <button
+                  key={s.size}
+                  disabled={outOfStock}
+                  onClick={() => {
+                    setSelectedSize(s.size);
+                    setError(null);
+                    // Reset quantity if new size has less stock
+                    setQuantity(1);
+                  }}
+                  className={`
+                    border rounded-xl px-4 py-2 text-sm font-medium uppercase transition-all duration-200
+                    ${outOfStock
+                      ? "border-gray-100 text-gray-300 cursor-not-allowed line-through"
+                      : isSelected
+                      ? "border-gray-900 bg-gray-900 text-white"
+                      : "border-gray-200 hover:border-gray-900 hover:bg-gray-900 hover:text-white"
+                    }
+                  `}
+                >
+                  {s.size}
+                  <span className={`ml-1 text-[10px] ${isSelected ? "text-gray-300" : "text-gray-400"}`}>
+                    ({s.stockQuantity})
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+ 
+          {/* Size error */}
+          {error && (
+            <p className="text-xs text-red-500 mt-1">{error}</p>
+          )}
+        </div>
+      )}
+ 
+      {/* Quantity Selector */}
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+          Quantity
+        </p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={decrement}
+            disabled={quantity <= 1}
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:border-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Minus className="w-3 h-3" />
+          </button>
+ 
+          <span className="w-8 text-center text-sm font-semibold">
+            {quantity}
+          </span>
+ 
+          <button
+            onClick={increment}
+            disabled={quantity >= maxStock}
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:border-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Plus className="w-3 h-3" />
+          </button>
+ 
+          {selectedSizeData && (
+            <span className="text-xs text-gray-400">
+              {maxStock} left in stock
+            </span>
+          )}
+        </div>
+      </div>
+ 
+      {/* Divider */}
+      <div className="h-px bg-gray-100" />
+ 
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <Button
+          onClick={handleAddToCart}
+          disabled={isLoading || success}
+          className={`
+            flex-1 rounded-xl py-6 text-sm tracking-widest uppercase flex items-center justify-center gap-2 transition-all duration-300
+            ${success
+              ? "bg-green-600 hover:bg-green-600 text-white"
+              : "bg-gray-900 hover:bg-black text-white"
+            }
+          `}
+        >
+          <ShoppingCart className="w-4 h-4" />
+          {isLoading ? "Adding..." : success ? "Added ✓" : "Add to Cart"}
+        </Button>
+ 
+        <Button
+          variant="outline"
+          className="w-12 h-12 rounded-xl p-0 flex items-center justify-center border-gray-200 hover:border-red-300 hover:text-red-500 transition-colors"
+        >
+          <Heart className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+    )
+}

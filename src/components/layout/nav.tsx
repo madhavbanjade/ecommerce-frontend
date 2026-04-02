@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
+import { userCartStore } from "@/src/features/cart/cartStore";
 
 const navItems = [
   { label: "Products", href: "/products" },
@@ -26,6 +27,7 @@ function SearchBox({ className }: { className?: string }) {
       if (value) router.push(`/products?search=${value}`);
     }
   };
+
 
   return (
     <div
@@ -49,6 +51,8 @@ export function NavPage({ profile }: { profile: any }) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const isLoggedIn = !!profile;
+  const totalCount = userCartStore((s) => s.totalCount())
+
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -166,9 +170,18 @@ export function NavPage({ profile }: { profile: any }) {
             <Link href="/products">
               <Button variant={"outline"}>Shop now</Button>
             </Link>
-            <Link href="/cart">
-              <Image src={cart} alt="cart" width={22} height={22} />
-            </Link>
+            {/* cart */}
+             <Link href="/cart" className="relative inline-flex items-center">
+      <Image src={cart} alt="cart" width={22} height={22} />
+ 
+      {/* Badge — only shown when cart has items */}
+      {totalCount > 0 && (
+        <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-gray-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none">
+          {totalCount > 99 ? "99+" : totalCount}
+        </span>
+      )}
+    </Link>
+    {/* user */}
             <Link href={isLoggedIn ? "/profile" : "/auth"}>
               <Image src={user} alt="user" width={22} height={22} />
             </Link>
@@ -260,9 +273,16 @@ export function NavPage({ profile }: { profile: any }) {
 
         {/* Drawer Footer */}
         <div className="mt-auto px-6 py-6 border-t border-zinc-200 flex gap-5">
-          <Link href="/cart" onClick={() => setToggleMenu(false)}>
-            <Image src={cart} alt="cart" width={22} height={22} />
-          </Link>
+         <Link href="/cart" className="relative inline-flex items-center">
+      <Image src={cart} alt="cart" width={22} height={22} />
+ 
+      {/* Badge — only shown when cart has items */}
+      {totalCount > 0 && (
+        <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-gray-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none">
+          {totalCount > 99 ? "99+" : totalCount}
+        </span>
+      )}
+    </Link>
           <Link href="/account" onClick={() => setToggleMenu(false)}>
             <Image src={user} alt="user" width={22} height={22} />
           </Link>
