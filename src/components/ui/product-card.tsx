@@ -25,12 +25,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             100
         )
       : null
+      
 
   return (
     <motion.div
       whileHover="hover"
-      onClick={() => router.push(`/product/${product.slug}`)}
-      className="group cursor-pointer flex flex-col rounded-2xl overflow-hidden border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 w-full"
+      className="group  flex flex-col rounded-2xl overflow-hidden border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 w-full "
     >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-200">
@@ -83,7 +83,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               e.stopPropagation()
               router.push(`/product/${product.slug}`)
             }}
-            className="flex items-center gap-1.5 sm:gap-2 bg-div text-white text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:bg-zinc-800 transition whitespace-nowrap"
+            className="flex items-center gap-1.5 sm:gap-2 bg-div text-white text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg hover:bg-zinc-800 transition whitespace-nowrap cursor-pointer"
           >
             <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4" />
             Quick View
@@ -129,15 +129,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              router.push(`/product/${product.slug}`)
-            }}
+          {/* <button
             className="w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-div text-white shadow-md hover:bg-black transition"
             >
-            <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4" />
-          </button>
+            <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 cursor-pointer" />
+          </button> */}
         </div>
       </div>
     </motion.div>

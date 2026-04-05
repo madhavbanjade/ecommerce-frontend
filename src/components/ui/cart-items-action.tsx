@@ -26,48 +26,43 @@ const router  = useRouter()
   // ── Zustand actions ──────────────────────────────────────────────────────────
   const zustandUpdate = userCartStore((s) => s.updateQuantity)
   const zustandRemove = userCartStore((s) => s.removeItem)
+const update = async (newQty: number) => {
+  if (newQty < 1 || newQty > maxQuantity || quantityLoading) return
 
-  // ── Update Quantity ──────────────────────────────────────────────────────────
-  const update = async (newQty: number) => {
-    if (newQty < 1 || newQty > maxQuantity || quantityLoading) return
+  const prevQty = quantity
 
-    const prevQty = quantity
+  setQuantity(newQty)
+  zustandUpdate(itemId, newQty)
+  setQuantityLoading(true)
 
-    // Optimistic update — local state + Zustand header badge
-    setQuantity(newQty)
-    zustandUpdate(itemId, newQty)
-    setQuantityLoading(true)
-
-    const success = await updateCartItem(itemId, { quantity: newQty })
-
-    if (!success) {
-      // Rollback both local state and Zustand on failure
-      setQuantity(prevQty)
-      zustandUpdate(itemId, prevQty)
-    }
-
-    setQuantityLoading(false)
-  }
-
-  // ── Remove Item ──────────────────────────────────────────────────────────────
-  const remove = async () => {
-    if (removeLoading) return
-
-    // Optimistic remove — Zustand header badge drops instantly
-    zustandRemove(itemId)
-    setRemoveLoading(true)
-
-    const success = await deleteCartItem(itemId)
+  const success = await updateCartItem(itemId, { quantity: newQty })
 
   if (success) {
-    zustandRemove(itemId)  // update header badge
-    router.refresh()       // re-fetch server component → item disappears from list
+    router.refresh() // ✅ re-fetches page so totalItems updates
+  } else {
+    setQuantity(prevQty)
+    zustandUpdate(itemId, prevQty)
+  }
+
+  setQuantityLoading(false)
+}
+
+const remove = async () => {
+  if (removeLoading) return
+
+  setRemoveLoading(true)
+
+  const success = await deleteCartItem(itemId)
+
+  if (success) {
+    zustandRemove(itemId) // ✅ only once, after confirmed
+    router.refresh()
   } else {
     window.location.reload()
   }
 
-    setRemoveLoading(false)
-  }
+  setRemoveLoading(false)
+}
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (

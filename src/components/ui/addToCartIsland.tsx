@@ -6,6 +6,8 @@ import { ShoppingCart, Heart, Minus, Plus } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { userCartStore } from "@/src/features/cart/cartStore";
 import { addToCart } from "@/src/features/cart/cartService";
+import { useWishlist } from "@/src/context/wishlist-context";
+import { ProductCardUi } from "@/src/types";
 
 
 interface Size {
@@ -24,6 +26,8 @@ interface AddToCartIslandProps {
 
 
 
+
+
 export default function AddToCartIsland({
     productId,
     name,
@@ -37,7 +41,10 @@ export default function AddToCartIsland({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false)
+    const {toggle, isWishlisted} = useWishlist() 
 
+    const wishlisted = productId ? isWishlisted(productId) : false
+ 
     const addItem = userCartStore((s) => s.addItem)
 
 
@@ -192,10 +199,20 @@ export default function AddToCartIsland({
         </Button>
  
         <Button
+           onClick={(e) => {
+            e.stopPropagation()
+            toggle(productId)
+          }}
           variant="outline"
           className="w-12 h-12 rounded-xl p-0 flex items-center justify-center border-gray-200 hover:border-red-300 hover:text-red-500 transition-colors"
         >
-          <Heart className="w-4 h-4" />
+            <Heart
+            className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-200 ${
+              wishlisted
+                ? "fill-rose-500 text-rose-500 scale-110"
+                : "text-rose-400"
+            }`}
+          />  
         </Button>
       </div>
     </div>
