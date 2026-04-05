@@ -14,6 +14,7 @@ import { fetchAPI } from "@/src/utils/apiService";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 import { cookies } from "next/headers";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function Cart() {
   // ✅ Cookies
@@ -192,9 +193,12 @@ export default async function Cart() {
                 </button>
 
                 {/* Continue */}
-                <button className="w-full border text-zinc-500 rounded-xl py-3 text-xs font-semibold hover:border-zinc-900 hover:text-zinc-900 transition">
+                <Link href="/products">
+                    <button className="w-full border text-zinc-500 rounded-xl py-3 text-xs font-semibold hover:border-zinc-900 hover:text-zinc-900 transition">
                   Continue Shopping
                 </button>
+                </Link>
+            
               </div>
             </div>
           </div>
