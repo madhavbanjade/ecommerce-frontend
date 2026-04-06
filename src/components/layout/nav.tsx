@@ -184,7 +184,7 @@ export function NavPage({ profile }: { profile: any }) {
     {/* user */}
            <Link href={isLoggedIn ? "/profile" : "/auth"}>
   {isLoggedIn ? (
-    <div className="w-8x   h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-semibold">
+    <div className="w-8   h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-semibold">
       {profile?.name?.charAt(0)?.toUpperCase() || "U"}
     </div>
   ) : (

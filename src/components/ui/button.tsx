@@ -1,34 +1,33 @@
+"use client"
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
+import { Loader2 } from "lucide-react"
 import { cn } from "@/src/lib/utils"
-
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-  default:
-    "bg-transparent cursor-pointer border border-white/40 hover:border-[#3f4042] hover:bg-black tracking-[0.3em] uppercase transition-all duration-300",
-
-  destructive:
-    "bg-transparent cursor-pointer border border-white/40 hover:border-[#3f4042] hover:bg-black text-white uppercase transition-all duration-300 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-
-  outline:
-    "border cursor-pointer border-white/20 bg-[#1c2328] text-white shadow-xs hover:bg-[#252d34] hover:border-white/100 transition-all duration-300 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-
-  secondary:
-    "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300",
-
-  ghost:
-    "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 transition-all duration-300",
-
-  link:
-    "text-primary underline-offset-4 hover:underline transition-all duration-300",
-    filter: 
-    "cursor-pointer mt-4 flex items-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3 md:px-7 md:py-3.5 text-sm sm:text-base  hover:bg-black hover:text-white border border-gray-300  font-medium transition-all duration-200"
-},
+        default:
+          "bg-transparent cursor-pointer border border-white/40 hover:border-[#3f4042] hover:bg-black tracking-[0.3em] uppercase transition-all duration-300",
+        destructive:
+          "bg-transparent cursor-pointer border border-white/40 hover:border-[#3f4042] hover:bg-black text-white uppercase transition-all duration-300 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+        outline:
+          "border cursor-pointer border-white/20 bg-[#1c2328] text-white shadow-xs hover:bg-[#252d34] hover:border-white/100 transition-all duration-300 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-300",
+        ghost:
+          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 transition-all duration-300",
+        link:
+          "text-primary underline-offset-4 hover:underline transition-all duration-300",
+        filter:
+          "cursor-pointer mt-4 flex items-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3 md:px-7 md:py-3.5 text-sm sm:text-base hover:bg-black hover:text-white border border-gray-300 font-medium transition-all duration-200",
+        success:
+          "bg-emerald-600 cursor-pointer text-white hover:bg-emerald-700 border-transparent transition-all duration-300",
+      },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
@@ -47,26 +46,81 @@ const buttonVariants = cva(
   }
 )
 
+interface ButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+  // ── Async props ─────────────────────────────────────────────
+  asyncAction?: () => Promise<void>   // if provided, button manages its own loading/error
+  successMessage?: string             // shown briefly after asyncAction resolves
+  errorMessage?: string               // override error text
+}
+
 function Button({
   className = "mt-2",
   variant = "default",
   size = "default",
   asChild = false,
+  asyncAction,
+  successMessage,
+  errorMessage,
+  children,
+  onClick,
+  disabled,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
+}: ButtonProps) {
+  const [loading, setLoading] = React.useState(false)
+  const [success, setSuccess] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // If no asyncAction, fall back to normal onClick
+    if (!asyncAction) {
+      onClick?.(e)
+      return
+    }
+
+    if (loading || disabled) return
+    setLoading(true)
+    setError(null)
+    setSuccess(false)
+
+    try {
+      await asyncAction()
+      if (successMessage) {
+        setSuccess(true)
+        setTimeout(() => setSuccess(false), 2000)
+      }
+    } catch (err: any) {
+      setError(errorMessage ?? err?.message ?? "Something went wrong.")
+      setTimeout(() => setError(null), 3000)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const Comp = asChild ? Slot.Root : "button"
+  const activeVariant = success ? "success" : variant
 
   return (
-    <Comp
-      data-slot="button"
-      data-variant={variant}
-      data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
+    <div className="flex flex-col gap-1">
+      <Comp
+        data-slot="button"
+        data-variant={activeVariant}
+        data-size={size}
+        disabled={loading || disabled}
+        onClick={handleClick}
+        className={cn(buttonVariants({ variant: activeVariant, size, className }))}
+        {...props}
+      >
+        {loading && <Loader2 className="animate-spin" />}
+        {loading ? "Please wait..." : success && successMessage ? successMessage : children}
+      </Comp>
+
+      {error && (
+        <p className="text-xs text-red-500 text-center">{error}</p>
+      )}
+    </div>
   )
 }
 

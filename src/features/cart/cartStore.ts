@@ -1,15 +1,16 @@
+import { CartItem } from "@/src/types";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-export interface CartItem {
-  cartItemId: string;
-  productId: string;
-  name: string;
-  image: string;
-  size: string;
-  price: number;
-  quantity: number;
-}
+// export interface CartItem {
+//   cartItemId: string;
+//   productId: string;
+//   name: string;
+//   image: string;
+//   size: string;
+//   price: number;
+//   quantity: number;
+// }
 
 interface CartStore {
   items: CartItem[];
@@ -96,7 +97,7 @@ export const userCartStore = create<CartStore>()(
 
       //totalPrice
       totalPrice: () =>
-        get().items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+        get().items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
     }),
     { name: "CartStore" },
   ),

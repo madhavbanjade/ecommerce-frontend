@@ -1,5 +1,5 @@
+import { CartItem } from "@/src/types";
 import { fetchAPI } from "@/src/utils/apiService";
-import { CartItem } from "./cartStore";
 
 interface AddToCartPayload {
   productId: string;
@@ -15,12 +15,15 @@ interface UpdateCartPayload {
 
 const mapToCartItem = (raw: any): CartItem => ({
   cartItemId: raw.id,
-  productId: raw.slug,
+  productId: raw.productId ?? raw.id,
   name: raw.name,
+  slug: raw.slug ?? "",
   image: raw.image,
+  unitPrice: raw.price ?? raw.unitPrice, // ✅ handle both cases
   size: raw.size,
-  price: raw.unitPrice,
   quantity: raw.quantity,
+  stockQuantity: raw.stockQuantity ?? 0,
+
 });
 
 //service functions

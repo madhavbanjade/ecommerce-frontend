@@ -7,6 +7,9 @@ export default function Profile(){
             <Link href="/wishlist">
             <p>My Wishlits</p>
             </Link>
+            <Link href="/orders">
+            <p>My Orders</p>
+            </Link>
         </div>
     )
 }

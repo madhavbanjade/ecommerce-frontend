@@ -43,15 +43,22 @@ export interface Product {
 }
 
 
+export interface ApiCartItem {
+  id: string;
+  name: string;
+  price: number;   // backend uses "price"
+  quantity: number;
+  size: string;
+  image: string;
+}
 export interface CartItem {
-  id: string
-  name: string
-  slug: string
-  image: string
-  size: string
-  stockQuantity: number
-  quantity: number
-  unitPrice: number
-  totalPrice: number
-  totalItems: number
+  cartItemId: string;
+  productId: string;
+  name: string;
+  slug: string;
+  image: string;
+  unitPrice: number;     // ✅ keep this ONLY
+  size: string;
+  quantity: number;
+  stockQuantity: number;
 }

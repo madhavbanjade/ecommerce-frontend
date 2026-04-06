@@ -50,9 +50,9 @@ export default async function RootLayout({
 
         <main className="mt-24 min-h-screen overflow-x-hidden">
           <WishlistProvider>
-            <CartSync isLoggedIn={!!profile}>
+            {/* <CartSync isLoggedIn={!!profile}>
 
-            </CartSync>
+            </CartSync> */}
             {children}
           </WishlistProvider>
         </main>
