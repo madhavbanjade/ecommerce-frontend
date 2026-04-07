@@ -52,7 +52,6 @@ const safeProducts = products ?? []
   return (
     <div className="container py-4 flex flex-col gap-6">
 
-      {/* Heading */}
       <div className="flex items-center gap-3">
         <ShoppingBag className="w-6 h-6 text-zinc-800" />
         <h3 className="text-4xl font-semibold">
@@ -85,15 +84,15 @@ const safeProducts = products ?? []
                   className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   {/* Image */}
-                  <div className="relative w-28 h-32 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100 shrink-0">
-                    <Image
-                      src={item.image || "/fallback.png"}
-                      alt={item.name}
-                      fill
-                      unoptimized
-                      className="object-cover p-2 sm:p-4"
-                    />
-                  </div>
+                <div className="relative w-32 h-32 rounded  overflow-hidden border border-zinc-200 bg-zinc-200 shrink-0">
+  <Image
+    src={item.image}
+    alt={item.name}
+    fill
+    unoptimized
+    className="object-contain"
+  />
+</div>
 
                   {/* Info */}
                   <div className="flex flex-1 flex-col justify-between gap-4">

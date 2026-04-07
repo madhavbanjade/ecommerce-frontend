@@ -1,5 +1,4 @@
-
-"use client"
+"use client";
 
 import { useState } from "react";
 import { ShoppingCart, Heart, Minus, Plus } from "lucide-react";
@@ -9,88 +8,73 @@ import { addToCart } from "@/src/features/cart/cartService";
 import { useWishlist } from "@/src/context/wishlist-context";
 import { ProductCardUi } from "@/src/types";
 
-
 interface Size {
-    size: string;
-    stockQuantity: number;
+  size: string;
+  stockQuantity: number;
 }
 
 interface AddToCartIslandProps {
-    productId: string;
-    name: string;
-    image: string;
-    price: number;
-    sizes: Size[];
+  productId: string;
+  name: string;
+  image: string;
+  price: number;
+  sizes: Size[];
 }
 
-
-
-
-
-
 export default function AddToCartIsland({
-    productId,
-    name,
-    image,
-    price,
-    sizes,
+  productId,
+  name,
+  image,
+  price,
+  sizes,
 }: AddToCartIslandProps) {
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
-    const [selectedSize, setSelectedSize] = useState<string | null>(null);
-    const [quantity, setQuantity] = useState(1);
-   
-    const [error, setError] = useState<string | null>(null);
-    const {toggle, isWishlisted} = useWishlist() 
+  const [error, setError] = useState<string | null>(null);
+  const { toggle, isWishlisted } = useWishlist();
 
-    const wishlisted = productId ? isWishlisted(productId) : false
- 
-    const addItem = userCartStore((s) => s.addItem)
+  const wishlisted = productId ? isWishlisted(productId) : false;
 
+  const addItem = userCartStore((s) => s.addItem);
 
-    //quantity
-    const selectedSizeData  = sizes.find((s) => s.size  === selectedSize)
-    const maxStock = selectedSizeData?.stockQuantity ?? 99;
-    
+  //quantity
+  const selectedSizeData = sizes.find((s) => s.size === selectedSize);
+  const maxStock = selectedSizeData?.stockQuantity ?? 99;
 
-    const increment = () => 
-        setQuantity((q) => Math.min(q + 1, maxStock))
+  const increment = () => setQuantity((q) => Math.min(q + 1, maxStock));
 
-    const decrement = () => 
-        setQuantity((q) => Math.min(q - 1, maxStock))
+  const decrement = () => setQuantity((q) => Math.min(q - 1, maxStock));
 
+  //add to cart
+  const handleAddToCart = async () => {
 
-    //add to cart 
-    const handleAddToCart = async () => {
-
-        //validate size
-        if(!selectedSize){
-            setError("Please select a size before adding to cart.")
-            return;
-        }
-
-        setError(null)
-
-        //call backend
-        const cartItem = await  addToCart({
-            productId,
-            size: selectedSize,
-            quantity
-        })
-
-        if(!cartItem){
-            setError("Faild to add item in cart. Please try again")
-            return;
-        }
-
-        //backend confirm => update zustand
-        addItem(cartItem)
-     ;
-
+    //validate size
+    if (!selectedSize) {
+      setError("Please select a size before adding to cart.");
+      return;
     }
 
-    return (
-   <div className="flex flex-col gap-6">
- 
+    setError(null);
+
+    //call backend
+    const cartItem = await addToCart({
+      productId,
+      size: selectedSize,
+      quantity,
+    });
+
+    if (!cartItem) {
+      setError("Faild to add item in cart. Please try again");
+      return;
+    }
+
+    //backend confirm => update zustand
+    addItem(cartItem);
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
       {/* Size Selection */}
       {sizes.length > 0 && (
         <div className="flex flex-col gap-2">
@@ -101,7 +85,7 @@ export default function AddToCartIsland({
             {sizes.map((s) => {
               const outOfStock = s.stockQuantity === 0;
               const isSelected = selectedSize === s.size;
- 
+
               return (
                 <button
                   key={s.size}
@@ -114,30 +98,31 @@ export default function AddToCartIsland({
                   }}
                   className={`
                     border rounded-xl px-4 py-2 text-sm font-medium uppercase transition-all duration-200
-                    ${outOfStock
-                      ? "border-gray-100 text-gray-300 cursor-not-allowed line-through"
-                      : isSelected
-                      ? "border-gray-900 bg-gray-900 text-white"
-                      : "border-gray-200 hover:border-gray-900 hover:bg-gray-900 hover:text-white"
+                    ${
+                      outOfStock
+                        ? "border-gray-100 text-gray-300 cursor-not-allowed line-through"
+                        : isSelected
+                          ? "border-gray-900 bg-gray-900 text-white"
+                          : "border-gray-200 hover:border-gray-900 hover:bg-gray-900 hover:text-white"
                     }
                   `}
                 >
                   {s.size}
-                  <span className={`ml-1 text-[10px] ${isSelected ? "text-gray-300" : "text-gray-400"}`}>
+                  <span
+                    className={`ml-1 text-[10px] ${isSelected ? "text-gray-300" : "text-gray-400"}`}
+                  >
                     ({s.stockQuantity})
                   </span>
                 </button>
               );
             })}
           </div>
- 
+
           {/* Size error */}
-          {error && (
-            <p className="text-xs text-red-500 mt-1">{error}</p>
-          )}
+          {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
         </div>
       )}
- 
+
       {/* Quantity Selector */}
       <div className="flex flex-col gap-2">
         <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
@@ -151,11 +136,11 @@ export default function AddToCartIsland({
           >
             <Minus className="w-3 h-3" />
           </button>
- 
+
           <span className="w-8 text-center text-sm font-semibold">
             {quantity}
           </span>
- 
+
           <button
             onClick={increment}
             disabled={quantity >= maxStock}
@@ -163,7 +148,7 @@ export default function AddToCartIsland({
           >
             <Plus className="w-3 h-3" />
           </button>
- 
+
           {selectedSizeData && (
             <span className="text-xs text-gray-400">
               {maxStock} left in stock
@@ -171,42 +156,43 @@ export default function AddToCartIsland({
           )}
         </div>
       </div>
- 
+
       {/* Divider */}
       <div className="h-px bg-gray-100" />
- 
-     {/* Action Buttons */}
-{/* Action Buttons */}
-<div className="flex w-full items-center gap-2">
-  <Button
-    asyncAction={handleAddToCart}
-    successMessage="Added ✓"
-    className="flex w-160 rounded-xl py-6 text-sm tracking-widest uppercase bg-gray-900 text-white hover:bg-black border-transparent"
-  >
-    <ShoppingCart className="w-4 h-4" />
-    Add to Cart
-  </Button>
 
-  <Button
-    variant="outline"
-    onClick={(e) => {
-      e.stopPropagation()
-      toggle(productId)
-    }}
-    className={`flex-1 h-[52px] w-16 rounded-xl p-4 flex items-center justify-center transition-colors
-      ${wishlisted
-        ? "border-rose-400 bg-rose-50 hover:bg-rose-100"
-        : "border-gray-200 hover:border-red-300"
+      {/* Action Buttons */}
+      <div className="flex w-full items-center gap-2">
+        <Button
+          asyncAction={handleAddToCart}
+          className="flex w-160 rounded-xl py-6 text-sm tracking-widest uppercase bg-gray-900 text-white hover:bg-black border-transparent"
+        >
+          <ShoppingCart className="w-4 h-4" />
+          Add to Cart
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggle(productId);
+          }}
+          className={`flex-1 h-[52px] w-16 rounded-xl p-4 flex items-center justify-center transition-colors
+      ${
+        wishlisted
+          ? "border-rose-400 bg-rose-50 hover:bg-rose-100"
+          : "border-gray-200 hover:border-red-300"
       }
     `}
-  >
-    <Heart className={`w-4 h-4 transition-all duration-200 ${
-      wishlisted ? "fill-rose-500 text-rose-500 scale-110" : "text-rose-400"
-    }`} />
-  </Button>
-</div>
-
- 
+        >
+          <Heart
+            className={`w-4 h-4 transition-all duration-200 ${
+              wishlisted
+                ? "fill-rose-500 text-rose-500 scale-110"
+                : "text-rose-400"
+            }`}
+          />
+        </Button>
+      </div>
     </div>
-    )
+  );
 }

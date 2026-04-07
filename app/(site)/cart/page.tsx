@@ -1,4 +1,3 @@
-import SliderSection from "@/src/components/layout/slider-section";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,16 +6,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb";
-import { Button } from "@/src/components/ui/button";
-import CartItemActions from "@/src/components/ui/cart-items-action";
-import ProductCard from "@/src/components/ui/product-card";
+
 import CartSync from "@/src/features/cart/cartSync";
 import { CartItem } from "@/src/types";
 import { fetchAPI } from "@/src/utils/apiService";
-import { ShoppingBag, ArrowRight } from "lucide-react";
+
 import { cookies } from "next/headers";
-import Image from "next/image";
-import Link from "next/link";
 
 export default async function Cart() {
   // ✅ Cookies
@@ -43,37 +38,38 @@ export default async function Cart() {
   const cartData = res?.data?.data ?? {};
   const items: CartItem[] = cartData.items ?? [];
   const totalItems: number = cartData.totalItems ?? 0;
-  console.log("totalItems", totalItems)
+  console.log("totalItems", totalItems);
   const totalPrice: number = cartData.totalPrice ?? 0;
-  console.log("totalPrice", totalPrice)
-
+  console.log("totalPrice", totalPrice);
 
   // try common response shapes
   const products = productsRes?.data?.data ?? [];
   return (
     <>
       {/* ───── Breadcrumb ───── */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/products">Products</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Cart</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/products">Products</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Cart</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <CartSync
         items={items}
         totalItems={totalItems}
         totalPrice={totalPrice}
-        products={products} isLoggedIn={false}      />
+        products={products}
+        isLoggedIn={false}
+      />
     </>
   );
 }

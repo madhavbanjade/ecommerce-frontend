@@ -129,11 +129,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             )}
           </div>
 
-          {/* <button
-            className="w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-div text-white shadow-md hover:bg-black transition"
-            >
-            <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 cursor-pointer" />
-          </button> */}
         </div>
       </div>
     </motion.div>
