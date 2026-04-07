@@ -38,9 +38,8 @@ export default function AddToCartIsland({
 
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
+   
     const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false)
     const {toggle, isWishlisted} = useWishlist() 
 
     const wishlisted = productId ? isWishlisted(productId) : false
@@ -57,7 +56,7 @@ export default function AddToCartIsland({
         setQuantity((q) => Math.min(q + 1, maxStock))
 
     const decrement = () => 
-        setQuantity((q) => Math.min(q + 1, maxStock))
+        setQuantity((q) => Math.min(q - 1, maxStock))
 
 
     //add to cart 
@@ -70,7 +69,6 @@ export default function AddToCartIsland({
         }
 
         setError(null)
-        setIsLoading(true)
 
         //call backend
         const cartItem = await  addToCart({
@@ -81,17 +79,13 @@ export default function AddToCartIsland({
 
         if(!cartItem){
             setError("Faild to add item in cart. Please try again")
-            setIsLoading(false);
             return;
         }
 
         //backend confirm => update zustand
         addItem(cartItem)
-        setSuccess(true)
-        setIsLoading(false);
+     ;
 
-        //reset
-        setTimeout(() => setSuccess(false), 2000)
     }
 
     return (
@@ -181,40 +175,38 @@ export default function AddToCartIsland({
       {/* Divider */}
       <div className="h-px bg-gray-100" />
  
-      {/* Action Buttons */}
-      <div className="flex gap-3">
-        <Button
-          onClick={handleAddToCart}
-          disabled={isLoading || success}
-          className={`
-            flex-1 rounded-xl py-6 text-sm tracking-widest uppercase flex items-center justify-center gap-2 transition-all duration-300
-            ${success
-              ? "bg-green-600 hover:bg-green-600 text-white"
-              : "bg-gray-900 hover:bg-black text-white"
-            }
-          `}
-        >
-          <ShoppingCart className="w-4 h-4" />
-          {isLoading ? "Adding..." : success ? "Added ✓" : "Add to Cart"}
-        </Button>
+     {/* Action Buttons */}
+{/* Action Buttons */}
+<div className="flex w-full items-center gap-2">
+  <Button
+    asyncAction={handleAddToCart}
+    successMessage="Added ✓"
+    className="flex w-160 rounded-xl py-6 text-sm tracking-widest uppercase bg-gray-900 text-white hover:bg-black border-transparent"
+  >
+    <ShoppingCart className="w-4 h-4" />
+    Add to Cart
+  </Button>
+
+  <Button
+    variant="outline"
+    onClick={(e) => {
+      e.stopPropagation()
+      toggle(productId)
+    }}
+    className={`flex-1 h-[52px] w-16 rounded-xl p-4 flex items-center justify-center transition-colors
+      ${wishlisted
+        ? "border-rose-400 bg-rose-50 hover:bg-rose-100"
+        : "border-gray-200 hover:border-red-300"
+      }
+    `}
+  >
+    <Heart className={`w-4 h-4 transition-all duration-200 ${
+      wishlisted ? "fill-rose-500 text-rose-500 scale-110" : "text-rose-400"
+    }`} />
+  </Button>
+</div>
+
  
-        <Button
-           onClick={(e) => {
-            e.stopPropagation()
-            toggle(productId)
-          }}
-          variant="outline"
-          className="w-12 h-12 rounded-xl p-0 flex items-center justify-center border-gray-200 hover:border-red-300 hover:text-red-500 transition-colors"
-        >
-            <Heart
-            className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-200 ${
-              wishlisted
-                ? "fill-rose-500 text-rose-500 scale-110"
-                : "text-rose-400"
-            }`}
-          />  
-        </Button>
-      </div>
     </div>
     )
 }

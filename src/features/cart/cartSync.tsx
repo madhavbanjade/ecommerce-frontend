@@ -169,14 +169,17 @@ const safeProducts = products ?? []
                   placeholder="Enter promo code"
                   className="flex-1 border px-4 py-2.5 rounded-xl text-sm outline-none"
                 />
-                <button className="bg-zinc-900 text-white px-4 rounded-xl text-xs font-bold">
+                <Button className="bg-zinc-900 text-white px-4 rounded-xl text-xs font-bold"
+                variant={"outline"}
+                >
                   Apply
-                </button>
+                </Button>
               </div>
 
               {/* Checkout */}
               <Button
                 className="w-full"
+                variant={"outline"}
                 asyncAction={async () => {
                   const res = await fetchAPI({
                     endPoint: "orders",

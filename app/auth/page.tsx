@@ -88,40 +88,34 @@ const handleGoogle = () => {
   return (
     <AuthLayout leftText="From Coffee Runs to Night Outs. We've Got You.">
       <FormContainer>
-        {/* Tabs */}
-      <div className="relative flex gap-4 w-full mb-6">
+ 
+ <div className="relative flex w-full mb-6 p-1 bg-gray-100 rounded-2xl overflow-hidden gap-2">
+
   {/* Sliding Background */}
-  <motion.div
-    layout
-    className="absolute top-0 h-11 w-1/2 rounded-2xl bg-gradient-to-r from-black via-gray-200 to-black"
-    animate={{ x: isRegister ? "0%" : "100%" }}
-    transition={{ duration: 0.3 }}
-  />
+{/* Sliding Background */}
+<motion.div layout className="absolute top-0 h-11 w-1/2 rounded-2xl bg-gradient-to-r from-black via-gray-200 to-black" animate={{ x: isRegister ? "0%" : "100%" }} transition={{ duration: 0.3 }} />
 
-  <Button
-    type="button"
-    onClick={() => router.push("?auth=register")}
-    className={`relative flex-1 h-11 rounded-2xl transition-all duration-300 ${
-      isRegister
-        ? "btn-primary"
-        : "bg-white text-black border border-gray-300"
-    }`}
-  >
-    Register
-  </Button>
+<button
+  type="button"
+  onClick={() => router.push("?auth=register")}
+  className={`relative z-10 w-1/2 h-11 rounded-xl text-sm font-medium transition-colors duration-200 
+    ${isRegister ? "text-gray-900" : "text-gray-400"}
+  `}
+>
+  Register
+</button>
 
-  <Button
-    type="button"
-    onClick={() => router.push("?auth=login")}
-    className={`relative flex-1 h-11 rounded-2xl transition-all duration-300 ${
-      !isRegister
-        ? "btn-primary"
-        : "bg-white text-black border border-gray-300"
-    }`}
-  >
-    Login
-  </Button>
+<button
+  type="button"
+  onClick={() => router.push("?auth=login")}
+  className={`relative z-10 w-1/2 h-11 rounded-xl text-sm font-medium transition-colors duration-200 
+    ${!isRegister ? "text-gray-900" : "text-gray-400"}
+  `}
+>
+  Login
+</button>
 </div>
+
 
         {error && (
           <p className="text-red-500 text-sm text-center mb-4">{error}</p>
@@ -195,7 +189,8 @@ const handleGoogle = () => {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full h-11 btn-primary"
+              variant={"outline"}
+              className="w-full h-11"
               disabled={loading}
             >
               {loading
