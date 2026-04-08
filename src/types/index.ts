@@ -62,3 +62,26 @@ export interface CartItem {
   quantity: number;
   stockQuantity: number;
 }
+
+export type OrderStatus =
+  | "Pending"
+  | "Shipped"
+  | "Confirmed"
+  | "Delivered"
+  | "Cancelled";
+
+export interface OrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+  size: string;
+  image: string;
+}
+
+ export interface Order {
+  id: string;
+  status: OrderStatus;
+  totalPrice: number;
+  createdAt: string;
+  items: OrderItem[];
+}

@@ -16,7 +16,13 @@ import sale from "../../public/image/sale.jpg"
 import arrow from "../../public/icons/arrow.png"
 import filter from "../../public/icons/filter.png"
 import sort from "../../public/icons/sort.png"
+import order from "../../public/icons/order.png"
+import saved  from "../../public/icons/saved.png"
+import payment from "../../public/icons/payment.png"
+import security from "../../public/icons/security.png"
+import logout from "../../public/icons/logout.png"
 
+ 
 export {
   logo,
   eye,
@@ -35,6 +41,11 @@ export {
   sale,
   arrow,
   filter,
-  sort
+  sort,
+  order,
+  saved,
+  payment,
+  security,
+  logout
   
 };
