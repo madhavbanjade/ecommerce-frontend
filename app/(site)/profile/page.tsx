@@ -84,15 +84,7 @@ console.log("profile", profile)
                 className="h-10 px-3 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-zinc-600">
-               Last Name
-              </label>
-              <input
-                  defaultValue={profile.username || ""}
-                className="h-10 px-3 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
-            </div>
+           
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-zinc-600">
                 Email

@@ -20,6 +20,8 @@ export default function AuthPage() {
     email?: string;
     username?: string;
     password?: string;
+    gender?: string;
+
   }>({});
   const [loading, setLoading] = useState(false);
 
@@ -130,7 +132,7 @@ const handleGoogle = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
             transition={{ duration: 0.3 }}
-            className="space-y-6"
+            className="space-y-4"
           >
             {/* Username */}
             <div>
@@ -154,7 +156,25 @@ const handleGoogle = () => {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
+                className="space-y-4"
               >
+                {/* //fullname */}
+                 <label className="text-dark text-sm">Full Name</label>
+                <Input
+                  name="email"
+                  type="email"
+                  placeholder="example@gmail.com"
+                  className="w-full px-4 py-3 rounded-xl border"
+                />
+                {fieldErrors.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {fieldErrors.email}
+                  </p>
+                )}
+
+
+
+                {/* email */}
                 <label className="text-dark text-sm">Email</label>
                 <Input
                   name="email"
@@ -167,7 +187,58 @@ const handleGoogle = () => {
                     {fieldErrors.email}
                   </p>
                 )}
+
+                
+
+                {/* //contact */}
+                 <label className="text-dark text-sm">Contact Number</label>
+                <Input
+                  name="email"
+                  type="email"
+                  placeholder="example@gmail.com"
+                  className="w-full px-4 py-3 rounded-xl border"
+                />
+                {fieldErrors.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {fieldErrors.email}
+                  </p>
+                )}
+                {/* //gender */}
+                <label className="text-dark text-sm font-medium">Gender</label>
+      <select
+        name="gender"
+        className="w-full px-4 py-3 rounded-xl border mt-1 text-sm bg-white"
+      >
+        <option value="">Select gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+        <option value="prefer_not">Prefer not to say</option>
+      </select>
+      {fieldErrors.gender && (
+        <p className="text-red-500 text-sm mt-1">{fieldErrors.gender}</p>
+      )}
+                {/* //gender */}
+                 <label className="text-dark text-sm">Date of Birth</label>
+                <Input
+                  name="Dob"
+                  type="date"
+                  placeholder="example@gmail.com"
+                  className="w-full px-4 py-3 rounded-xl border"
+                />
+                {fieldErrors.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {fieldErrors.email}
+                  </p>
+                )}
+                
+                
               </motion.div>
+
+
+
+
+
             )}
 
             {/* Password */}
