@@ -4,47 +4,43 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
-
-
-
 // ---------------- STATUS UI ----------------
 const statusStyles: Record<OrderStatus, string> = {
-  "Confirmed": "bg-blue-50 text-blue-700",
-  Shipped: "bg-zinc-100 text-zinc-600",
-  Delivered: "bg-green-50 text-green-700",
-  Cancelled: "bg-red-50 text-red-600",
-  Pending: "bg-yellow-50 text-yellow-700",
+  Pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  Confirmed: "bg-blue-50 text-blue-700 border-blue-200",
+  Shipped: "bg-purple-50 text-purple-700 border-purple-200",
+  Delivered: "bg-green-50 text-green-700 border-green-200",
+  Cancelled: "bg-red-50 text-red-700 border-red-200",
 };
 
 const statusDot: Record<OrderStatus, string> = {
-  "Confirmed": "bg-blue-500",
-  Shipped: "bg-yellow-400",
+  Pending: "bg-yellow-500",
+  Confirmed: "bg-blue-500",
+  Shipped: "bg-purple-500",
   Delivered: "bg-green-500",
   Cancelled: "bg-red-500",
-  Pending: "bg-yellow-500",
 };
 
 // ---------------- FETCH ----------------
 
 async function getOrders(tab: string): Promise<Order[]> {
-
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore
-      .getAll()
-      .map((cookie) => `${cookie.name}=${cookie.value}`)
-      .join(";");
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join(";");
   try {
     const res = await fetchAPI({
       endPoint: `orders?tab=${tab}`,
-      headers:{
+      headers: {
         Cookie: cookieHeader,
       },
-      revalidateSeconds:0,
+      revalidateSeconds: 0,
     });
 
-    console.log("res", res)
+    console.log("res", res);
     const orders = res.data?.data;
-    console.log("order", orders)
+    console.log("order", orders);
 
     if (!orders) {
       return [];
@@ -62,9 +58,10 @@ async function getOrders(tab: string): Promise<Order[]> {
 export default async function MyOrders({
   searchParams,
 }: {
-  searchParams: { tab?: string };
+  searchParams: Promise<{ tab?: string }>;
 }) {
-  const activeTab = searchParams.tab ?? "active";
+  const { tab } = await searchParams;
+  const activeTab = tab ?? "active";
   const orders = await getOrders(activeTab);
 
   return (
@@ -79,7 +76,7 @@ export default async function MyOrders({
             const firstItem = order.items[0];
             const totalUnits = order.items.reduce(
               (acc, item) => acc + item.quantity,
-              0
+              0,
             );
 
             return (
@@ -95,7 +92,7 @@ export default async function MyOrders({
                     width={0}
                     height={0}
                     className="w-full h-full object-cover"
-                    unoptimized 
+                    unoptimized
                   />
                 </div>
 
@@ -124,13 +121,11 @@ export default async function MyOrders({
                   {/* TITLE */}
                   <h3 className="text-lg font-semibold text-zinc-900">
                     {firstItem?.name}
-                   
                   </h3>
 
                   {/* DATE */}
                   <p className="text-sm text-zinc-400 mb-4">
-                    Placed on{" "}
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    Placed on {new Date(order.createdAt).toLocaleDateString()}
                   </p>
 
                   {/* META */}
@@ -140,8 +135,7 @@ export default async function MyOrders({
                         Items
                       </p>
                       <p className="text-sm font-medium text-zinc-900">
-                        {totalUnits}{" "}
-                        {totalUnits === 1 ? "Unit" : "Units"}
+                        {totalUnits} {totalUnits === 1 ? "Unit" : "Units"}
                       </p>
                     </div>
 
@@ -161,7 +155,6 @@ export default async function MyOrders({
                         {firstItem.size}
                       </p>
                     </div>
-                   
                   </div>
 
                   {/* ACTIONS */}

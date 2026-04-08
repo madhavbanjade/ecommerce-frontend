@@ -7,16 +7,18 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb";
+import { cookies } from "next/headers";
+import { fetchAPI } from "@/src/utils/apiService";
 
 
 
 const navItems = [
- { label: "Active orders",  href: "/orders",     count: 2  },
-  { label: "Past orders",    href: "/orders?tab=past",        count: 14 },
-  { label: "Returns",        href: "/orders?tab=returns",     count: 1  },
+ { label: "Active orders", tab: "active",  href: "/orders" },
+  { label: "Past orders", tab: "past",    href: "/orders?tab=past" },
+  { label: "Returns",      tab: "returns",   href: "/orders?tab=returns" },
 ]
 
-export default function OrdersLayout({
+export default async function OrdersLayout({
  searchParams, children, 
 }: {
       searchParams: { tab?: string };
@@ -24,6 +26,21 @@ export default function OrdersLayout({
 }) {
       const activeTab = searchParams?.tab ?? "active";
       console.log("search", searchParams)
+
+        const cookieStore = await cookies()
+  const cookieHeader = cookieStore.getAll().map((c) => `${c.name}=${c.value}`).join(";")
+
+  const [activeRes, pastRes, returnsRes] = await Promise.all([
+    fetchAPI({ endPoint: "orders?tab=active", headers: { Cookie: cookieHeader }, revalidateSeconds: 0 }),
+    fetchAPI({ endPoint: "orders?tab=past", headers: { Cookie: cookieHeader }, revalidateSeconds: 0 }),
+    fetchAPI({ endPoint: "orders?tab=returns", headers: { Cookie: cookieHeader }, revalidateSeconds: 0 }),
+  ])
+
+   const counts = {
+    active: activeRes.data?.data?.length ?? 0,
+    past: pastRes.data?.data?.length ?? 0,
+    returns: returnsRes.data?.data?.length ?? 0,
+  }
   return (
 
     <>
@@ -51,7 +68,7 @@ export default function OrdersLayout({
     
               <nav className="flex flex-col gap-1">
                {navItems.map((item) => {
-                const isActive = activeTab === item.href.split("=")[1];
+               const isActive = activeTab === item.tab;
                 return (
                   <Link
                     key={item.label}
@@ -64,7 +81,7 @@ export default function OrdersLayout({
                   >
                     <span>{item.label}</span>
                     <span className="text-zinc-400 text-xs">
-                      {String(item.count).padStart(2, "0")}
+                         {String(counts[item.tab as keyof typeof counts] ?? 0).padStart(2, "0")}
                     </span>
                   </Link>
                 );
