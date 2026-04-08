@@ -21,6 +21,9 @@ export default function AuthPage() {
     username?: string;
     password?: string;
     gender?: string;
+    fullname?: string;
+    contact?: string;
+    dob?: any
 
   }>({});
   const [loading, setLoading] = useState(false);
@@ -37,14 +40,25 @@ export default function AuthPage() {
     const email = formData.get("email") as string;
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
+    const fullname = formData.get("fullname") as string;
+    const gender = formData.get("gender") as string;
+    const contact = formData.get("contact") as string;
+    const dob = formData.get("dob") as string;
 
     const newErrors: typeof fieldErrors = {};
 
-    if (!username) newErrors.username = "Username is required";
-    if (isRegister && !email) newErrors.email = "Email is required";
-    if (!password) newErrors.password = "Password is required";
+if (!username) newErrors.username = "Username is required";
+if (!password) newErrors.password = "Password is required";
 
-    if (Object.keys(newErrors).length > 0) {
+if (isRegister) {
+  if (!email) newErrors.email = "Email is required";
+  if (!fullname) newErrors.fullname = "Fullname is required";
+  if (!gender) newErrors.gender = "Gender is required";
+  if (!contact) newErrors.contact = "Contact is required";
+  if (!dob) newErrors.dob = "DOB is required";
+}
+
+    if (Object.keys(newErrors).length) {
       setFieldErrors(newErrors);
       setLoading(false);
       return;
@@ -52,7 +66,7 @@ export default function AuthPage() {
 
     const endPoint = isRegister ? "users/register" : "users/login";
     const payload = isRegister
-      ? { username, email, password }
+      ?  { username, email, password, fullname, gender, contact, dob }
       : { username, password };
     const res = await fetchAPI({
       endPoint,
@@ -151,89 +165,85 @@ const handleGoogle = () => {
 
             {/* Email (Only Register) */}
             {isRegister && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-4"
-              >
-                {/* //fullname */}
-                 <label className="text-dark text-sm">Full Name</label>
-                <Input
-                  name="email"
-                  type="email"
-                  placeholder="example@gmail.com"
-                  className="w-full px-4 py-3 rounded-xl border"
-                />
-                {fieldErrors.email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {fieldErrors.email}
-                  </p>
-                )}
+             <motion.div
+  initial={{ opacity: 0, height: 0 }}
+  animate={{ opacity: 1, height: "auto" }}
+  exit={{ opacity: 0, height: 0 }}
+  transition={{ duration: 0.3 }}
+  className="space-y-4"
+>
+  {/* Full Name */}
+  <div>
+    <label className="text-dark text-sm font-medium">Full Name</label>
+    <Input
+      name="fullname"
+      type="text"
+      placeholder="John Doe"
+      className="w-full px-4 py-3 rounded-xl border mt-1"
+    />
+    {fieldErrors.fullname && (
+      <p className="text-red-500 text-sm mt-1">{fieldErrors.fullname}</p>
+    )}
+  </div>
 
+  {/* Email */}
+  <div>
+    <label className="text-dark text-sm font-medium">Email</label>
+    <Input
+      name="email"
+      type="email"
+      placeholder="example@gmail.com"
+      className="w-full px-4 py-3 rounded-xl border mt-1"
+    />
+    {fieldErrors.email && (
+      <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+    )}
+  </div>
 
+  {/* Contact */}
+  <div>
+    <label className="text-dark text-sm font-medium">Contact Number</label>
+    <Input
+      name="contact"
+      type="text"
+      placeholder="9749344926"
+      className="w-full px-4 py-3 rounded-xl border mt-1"
+    />
+    {fieldErrors.contact && (
+      <p className="text-red-500 text-sm mt-1">{fieldErrors.contact}</p>
+    )}
+  </div>
 
-                {/* email */}
-                <label className="text-dark text-sm">Email</label>
-                <Input
-                  name="email"
-                  type="email"
-                  placeholder="example@gmail.com"
-                  className="w-full px-4 py-3 rounded-xl border"
-                />
-                {fieldErrors.email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {fieldErrors.email}
-                  </p>
-                )}
+  {/* Gender */}
+  <div>
+    <label className="text-dark text-sm font-medium">Gender</label>
+    <select
+      name="gender"
+      className="w-full px-4 py-3 rounded-xl border mt-1 text-sm bg-white"
+    >
+      <option value="">Select gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+    {fieldErrors.gender && (
+      <p className="text-red-500 text-sm mt-1">{fieldErrors.gender}</p>
+    )}
+  </div>
 
-                
-
-                {/* //contact */}
-                 <label className="text-dark text-sm">Contact Number</label>
-                <Input
-                  name="email"
-                  type="email"
-                  placeholder="example@gmail.com"
-                  className="w-full px-4 py-3 rounded-xl border"
-                />
-                {fieldErrors.email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {fieldErrors.email}
-                  </p>
-                )}
-                {/* //gender */}
-                <label className="text-dark text-sm font-medium">Gender</label>
-      <select
-        name="gender"
-        className="w-full px-4 py-3 rounded-xl border mt-1 text-sm bg-white"
-      >
-        <option value="">Select gender</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
-        <option value="prefer_not">Prefer not to say</option>
-      </select>
-      {fieldErrors.gender && (
-        <p className="text-red-500 text-sm mt-1">{fieldErrors.gender}</p>
-      )}
-                {/* //gender */}
-                 <label className="text-dark text-sm">Date of Birth</label>
-                <Input
-                  name="Dob"
-                  type="date"
-                  placeholder="example@gmail.com"
-                  className="w-full px-4 py-3 rounded-xl border"
-                />
-                {fieldErrors.email && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {fieldErrors.email}
-                  </p>
-                )}
-                
-                
-              </motion.div>
+  {/* Date of Birth */}
+  <div>
+    <label className="text-dark text-sm font-medium">Date of Birth</label>
+    <Input
+      name="dob"       
+      type="date"
+      className="w-full px-4 py-3 rounded-xl border mt-1"
+    />
+    {fieldErrors.dob && (
+      <p className="text-red-500 text-sm mt-1">{fieldErrors.dob}</p>
+    )}
+  </div>
+</motion.div>
 
 
 

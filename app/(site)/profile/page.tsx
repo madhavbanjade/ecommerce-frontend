@@ -63,7 +63,7 @@ console.log("profile", profile)
             >
               <p className="font-medium text-zinc-900">{profile.username}</p>
               <p className="font-medium text-zinc-900">
-               {profile.email} vk
+               {profile.email} 
               </p>
             </div>
 
@@ -80,7 +80,7 @@ console.log("profile", profile)
               Full Name
               </label>
               <input
-                defaultValue={profile.username || ""}
+                defaultValue={profile.fullname || ""}
                 className="h-10 px-3 text-sm border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
