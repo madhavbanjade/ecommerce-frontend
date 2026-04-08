@@ -74,7 +74,7 @@ export default async function MyOrders({
       {orders.length === 0 ? (
         <p className="text-sm text-zinc-400">No orders found.</p>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-4">
           {orders.map((order) => {
             const firstItem = order.items[0];
             const totalUnits = order.items.reduce(
@@ -88,13 +88,14 @@ export default async function MyOrders({
                 className="bg-white border border-zinc-200 rounded-xl p-3 flex gap-5"
               >
                 {/* IMAGE */}
-                <div className="w-28 h-36 rounded-lg overflow-hidden border bg-zinc-50 shrink-0">
+                <div className="w-28 h-32 rounded-lg overflow-hidden border bg-zinc-50 shrink-0">
                   <Image
-                    src={firstItem?.image || "/placeholder.png"}
-                    alt={firstItem?.name || "Product"}
-                    width={112}
-                    height={144}
+                    src={`http://localhost:3333${firstItem.image}`}
+                    alt={firstItem.name}
+                    width={0}
+                    height={0}
                     className="w-full h-full object-cover"
+                    unoptimized 
                   />
                 </div>
 
