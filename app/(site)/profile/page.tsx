@@ -45,8 +45,8 @@ console.log("profile", profile)
            <div className="flex items-center gap-4 p-5 bg-zinc-50 rounded-xl border border-zinc-200 mb-8">
 
             {profile ? (
-                <div className="relative w-16 h-16 rounded-full overflow-hidden border border-zinc-200 shrink-0">
-    <Image src={user} alt="avatar" fill className="object-cover" />
+                <div className="relative w-20 h-20 rounded-full overflow-hidden border border-zinc-300 shrink-0">
+    <Image src={profile.image} alt="avatar" fill className="object-cover" unoptimized />
   </div>
  
 ) : (
