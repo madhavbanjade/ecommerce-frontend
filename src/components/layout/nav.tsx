@@ -183,13 +183,24 @@ export function NavPage({ profile }: { profile: any }) {
     </Link>
     {/* user */}
            <Link href={isLoggedIn ? "/profile" : "/auth"}>
-  {isLoggedIn ? (
-    <div className="w-8   h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-semibold">
-      {profile?.name?.charAt(0)?.toUpperCase() || "U"}
-    </div>
+{isLoggedIn ? (
+  profile?.image ? (
+    <Image
+      src={profile.image}  // ✅ full URL
+      alt="user"
+      width={32}
+      height={32}
+      className="rounded-full object-cover"
+      unoptimized
+    />
   ) : (
-    <Image src={user} alt="user" width={22} height={22} />
-  )}
+    <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-semibold">
+      {profile?.username?.charAt(0)?.toUpperCase()}
+    </div>
+  )
+) : (
+  <Image src={user} alt="user" width={22} height={22} />
+)}
 </Link>
           </div>
         </div>
