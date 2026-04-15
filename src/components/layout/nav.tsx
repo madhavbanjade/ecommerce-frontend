@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 import { userCartStore } from "@/src/features/cart/cartStore";
+import { p } from "framer-motion/client";
 
 const navItems = [
   { label: "Products", href: "/products" },
@@ -199,7 +200,9 @@ export function NavPage({ profile }: { profile: any }) {
     </div>
   )
 ) : (
+  
   <Image src={user} alt="user" width={22} height={22} />
+  
 )}
 </Link>
           </div>

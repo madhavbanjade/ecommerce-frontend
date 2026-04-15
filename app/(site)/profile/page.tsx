@@ -7,14 +7,12 @@ export default async function Profile() {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore
     .getAll()
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .map((c) => `${c.name}=${c.value}`)
     .join("; ");
 
   const res = await fetchAPI({
     endPoint: "users/me",
-    headers: {
-      Cookie: cookieHeader,
-    },
+    headers: { Cookie: cookieHeader },
     revalidateSeconds: 0,
   });
 
@@ -22,14 +20,13 @@ export default async function Profile() {
 
   return (
     <div className="w-full">
-      <div className="bg-white border border-zinc-200 rounded-xl p-4 sm:p-6 md:p-8">
-        {/* Heading */}
-        <h1 className="text-lg sm:text-xl text-zinc-900 mb-1">Profile Details</h1>
-        <p className="text-sm text-zinc-500 mb-6">
-          Manage Your Personal Information
+      <div className="bg-white border border-zinc-200 rounded-xl p-4 sm:p-6 lg:p-8">
+        <h1 className="text-base sm:text-lg lg:text-xl font-medium text-zinc-900 mb-1">
+          Profile Settings
+        </h1>
+        <p className="text-xs sm:text-sm text-zinc-500 mb-6">
+          Manage your personal information
         </p>
-
-        <UpdateProfile profile={profile} />
       </div>
     </div>
   );
