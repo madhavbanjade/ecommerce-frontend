@@ -26,7 +26,7 @@ export default function OrderDetailModal({ order }: OrderDetailModalProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex-1 sm:flex-none text-center px-3 sm:px-5 py-2 border border-zinc-200 text-zinc-600 text-xs sm:text-sm rounded-lg hover:bg-zinc-50 transition-colors cursor-pointer"
+        className="flex-1 sm:flex-none text-center px-3 sm:px-5 py-2 border bg-black text-white  text-xs sm:text-sm rounded-lg  transition-colors cursor-pointer"
       >
         View details
       </button>

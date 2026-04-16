@@ -5,7 +5,7 @@ import Image from "next/image";
 import { logout, order, payment, saved, security, user } from "@/src/assets";
 import { redirect } from "next/navigation";
 import SideTabs from "@/src/components/ui/tab";
-import { User, Package, Star } from "lucide-react";
+import { User, Package, Star, Heart } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -49,7 +49,7 @@ export default async function ProfileLayout({
   return (
     <>
 
-      <Breadcrumb>
+      {/* <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -59,15 +59,15 @@ export default async function ProfileLayout({
               <BreadcrumbPage>Account</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
-        </Breadcrumb>
+        </Breadcrumb> */}
       {/* ── Main Layout ── */}
-      <div className="container flex gap-2">
+      <div className="container flex gap-2 mt-4">
 
         {/* ── Desktop Sidebar ── */}
-        <aside className="hidden lg:flex w-72 shrink-0 flex-col gap-0 bg-white border border-zinc-200 rounded-2xl overflow-hidden sticky top-24 h-fit">
+        <aside className="hidden lg:flex w-72 shrink-0 flex-col gap-0 bg-white border border-zinc-200 rounded-lg overflow-hidden sticky  h-fit">
 
           <div className="flex items-center gap-3 px-5 py-4 border-b border-zinc-100">
-            <h4 className="text-lg font-bold text-zinc-900">Account Dashboard</h4>
+            <h4 className="text-lg font-bold text-zinc-900">Dashboard</h4>
           </div>
 
           {/* ── Profile Info ── */}
@@ -144,16 +144,16 @@ export default async function ProfileLayout({
               My Reviews
             </Link>
             <Link
-              href="/reviews"
+              href="/wishlist"
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-lg font-medium text-zinc-700 hover:bg-zinc-50 transition-colors mt-1"
             >
-              <Star className="w-4 h-4" strokeWidth={2} />
+              <Image src={user} alt="wishlist" width={16} height={16}></Image>
             Wishlist
             </Link>
         
           </div>
 
-          {/* ── Sign Out ── */}
+          {/* ── Sign Out ──
           <div className="px-3 py-3">
             <form action={logoutAction}>
               <button className="flex items-center gap-3 px-3 py-2.5 w-full text-lg text-zinc-500 hover:bg-red-50 rounded-xl transition-colors hover:text-red-500 cursor-pointer">
@@ -161,7 +161,7 @@ export default async function ProfileLayout({
                 Sign out
               </button>
             </form>
-          </div>
+          </div> */}
         </aside>
 
         {/* ── Content ── */}
