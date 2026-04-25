@@ -1,6 +1,6 @@
   "use client";
   import { useState, useRef, useEffect } from "react";
-  import { arrow, cart, logo, user } from "../../assets";
+  import { arrow, cart, login, logo, logout, signup, user } from "../../assets";
   import Image from "next/image";
   import Link from "next/link";
   import { usePathname, useRouter } from "next/navigation";
@@ -93,7 +93,7 @@
         </AnimatePresence>
 
         {/* ── Nav ── */}
-        <nav className="shadow-md bg-white">
+        <nav className="shadow-md bg-white ">
           <div className="container flex justify-between items-center">
             {/* LEFT — Logo + Hamburger */}
             <div className="flex items-center gap-3 shrink-0">
@@ -188,35 +188,69 @@
 
   <p>Cart</p>
 </Link>
-<div className="relative group inline-block">
-  {/* Trigger */}
-  <div className="flex items-center gap-2 cursor-pointer">
-    <Image src={user} alt="user" height={20} width={20} />
 
-    <p className="text-md font-medium text-zinc-700 group-hover:text-zinc-900 transition-colors">
-      My Account
-    </p>
+{isLoggedIn ? (
+  // ✅ Logged-in view (Dropdown)
+  <div className="relative group inline-block">
+    {/* Trigger */}
+    <div className="flex items-center gap-2 cursor-pointer">
+      <Image src={user} alt="user" height={22} width={22} />
 
-    <Image
-      src={arrow}
-      alt="arrow"
-      height={16}
-      width={16}
-      className="transition-transform duration-300 group-hover:rotate-180"
-    />
+      <p className="font-medium group-hover:text-zinc-900 transition-colors">
+        My Account
+      </p>
+
+      <Image
+        src={arrow}
+        alt="arrow"
+        height={16}
+        width={16}
+        className="transition-transform duration-300 group-hover:rotate-180 opacity-70"
+      />
+    </div>
+
+    {/* Dropdown */}
+    <div
+      className="absolute right-0 top-full mt-3 w-48 rounded-xl border border-zinc-200 bg-white shadow-lg shadow-zinc-200/50 
+      opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 
+      transition-all duration-200"
+    >
+      {/* Dashboard */}
+      <Link href="/profile">
+        <div className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 rounded-t-xl transition cursor-pointer">
+          <Image src={user} alt="dashboard" width={18} height={18} className="opacity-70" />
+          <span>My Dashboard</span>
+        </div>
+      </Link>
+
+      {/* Logout */}
+      <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 rounded-b-xl transition">
+        <Image src={logout} alt="logout" width={18} height={18} className="opacity-70" />
+        <span>Logout</span>
+      </button>
+    </div>
   </div>
-
-  {/* Dropdown */}
-  <div className="absolute left-0 top-full mt-2 w-50 bg-white border border-zinc-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-    <Link href="/profile" className="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100">
-      My Dashboard
+) : (
+  // ❌ Not logged in → styled entry options
+  <div className="flex items-center gap-5">
+    {/* Login */}
+    <Link href="/auth">
+      <div className="flex items-center gap-2 font-medium   transition cursor-pointer">
+        <Image src={login} alt="login" width={22} height={22} className="opacity-70" />
+        <p>Login</p>
+      </div>
     </Link>
 
-    <button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-zinc-100">
-      Logout
-    </button>
+    {/* Sign Up */}
+    <Link href="/auth">
+      <div className="flex items-center gap-2  font-medium  hover:text-zinc-900 transition cursor-pointer">
+        <Image src={signup} alt="signup" width={22} height={22} className="opacity-70" />
+        <p>Sign Up</p>
+      </div>
+    </Link>
   </div>
-</div>
+)}
+
             </div>
           </div>
         </nav>

@@ -21,8 +21,12 @@ import saved  from "../../public/icons/saved.png"
 import payment from "../../public/icons/payment.png"
 import security from "../../public/icons/security.png"
 import logout from "../../public/icons/logout.png"
+import login from "../../public/icons/login.png"
+import signup from "../../public/icons/signup.png"
+import shipping from "../../public/icons/shipping.png"
+import cancel from "../../public/icons/cancel.png"
 
- 
+  
 export {
   logo,
   eye,
@@ -46,6 +50,10 @@ export {
   saved,
   payment,
   security,
-  logout
+  logout,
+  login,
+  signup,
+  shipping,
+  cancel
   
 };

@@ -173,7 +173,7 @@ const handleGoogle = () => {
   className="space-y-4"
 >
   {/* Full Name */}
-  <div>
+  {/* <div>
     <label className="text-dark text-sm font-medium">Full Name</label>
     <Input
       name="fullname"
@@ -184,7 +184,7 @@ const handleGoogle = () => {
     {fieldErrors.fullname && (
       <p className="text-red-500 text-sm mt-1">{fieldErrors.fullname}</p>
     )}
-  </div>
+  </div> */}
 
   {/* Email */}
   <div>
@@ -201,7 +201,7 @@ const handleGoogle = () => {
   </div>
 
   {/* Contact */}
-  <div>
+  {/* <div>
     <label className="text-dark text-sm font-medium">Contact Number</label>
     <Input
       name="contact"
@@ -212,10 +212,10 @@ const handleGoogle = () => {
     {fieldErrors.contact && (
       <p className="text-red-500 text-sm mt-1">{fieldErrors.contact}</p>
     )}
-  </div>
+  </div> */}
 
   {/* Gender */}
-  <div>
+  {/* <div>
     <label className="text-dark text-sm font-medium">Gender</label>
     <select
       name="gender"
@@ -229,10 +229,10 @@ const handleGoogle = () => {
     {fieldErrors.gender && (
       <p className="text-red-500 text-sm mt-1">{fieldErrors.gender}</p>
     )}
-  </div>
+  </div> */}
 
   {/* Date of Birth */}
-  <div>
+  {/* <div>
     <label className="text-dark text-sm font-medium">Date of Birth</label>
     <Input
       name="dob"       
@@ -242,7 +242,7 @@ const handleGoogle = () => {
     {fieldErrors.dob && (
       <p className="text-red-500 text-sm mt-1">{fieldErrors.dob}</p>
     )}
-  </div>
+  </div> */}
 </motion.div>
 
 

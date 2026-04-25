@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { userCartStore } from "./cartStore"
 import { fetchCart } from "./cartService"
 import ProductCard from "@/src/components/ui/product-card"
@@ -13,9 +13,10 @@ import CartItemActions from "@/src/components/ui/cart-items-action"
 import Image from "next/image"
 import { CartItem, ProductCardUi } from "@/src/types"
 import { useRouter } from "next/navigation"
+import { cancel, shipping } from "@/src/assets"
 
 interface CartLayoutProps {
-  items?: CartItem[]           // ✅ make optional
+  items?: CartItem[]
   totalItems?: number
   totalPrice?: number
   products?: ProductCardUi[]
@@ -36,22 +37,40 @@ export default function CartSync({
   const syncFromBackend = userCartStore((s) => s.syncFromBackend)
   const clearCart = userCartStore((s) => s.clearCart)
   const hasSynced = useRef(false)
-const safeProducts = products ?? []
 
-  // ✅ Ensure items is always an array
+  const safeProducts = products ?? []
   const safeItems = items ?? []
 
-  // Sync cart on login
+  const [open, setOpen] = useState(false)
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phone: "",
+    location: "",
+  })
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  // Sync cart
   useEffect(() => {
     if (!isLoggedIn || hasSynced.current) return
     hasSynced.current = true
-
     fetchCart().then(syncFromBackend)
   }, [isLoggedIn, syncFromBackend])
+
+  // Prevent background scroll when modal open
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "auto"
+  }, [open])
 
   return (
     <div className="container py-4 flex flex-col gap-6">
 
+      {/* Header */}
       <div className="flex items-center gap-3">
         <ShoppingBag className="w-6 h-6 text-zinc-800" />
         <h3 className="text-4xl font-semibold">
@@ -62,7 +81,7 @@ const safeProducts = products ?? []
         </h3>
       </div>
 
-      {/* Empty State */}
+      {/* Empty */}
       {safeItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <ShoppingBag className="w-16 h-16 text-zinc-200" />
@@ -73,134 +92,81 @@ const safeProducts = products ?? []
       ) : (
         <div className="flex flex-col lg:flex-row gap-8 items-start">
 
-          {/* Cart Items */}
+          {/* Items */}
           <div className="flex-1 flex flex-col gap-4">
-            {safeItems.map((item) => {
-              const itemTotal = item.unitPrice ?? 0
-
-              return (
-                <div
-                  key={item.cartItemId}
-                  className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm hover:shadow-md transition-all duration-200"
-                >
-                  {/* Image */}
-                <div className="relative w-32 h-32 rounded  overflow-hidden border border-zinc-200 bg-zinc-200 shrink-0">
-  <Image
-    src={item.image}
-    alt={item.name}
-    fill
-    unoptimized
-    className="object-contain"
-  />
-</div>
-
-                  {/* Info */}
-                  <div className="flex flex-1 flex-col justify-between gap-4">
-
-                    {/* Top */}
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">
-                          | {item.slug || "product"}
-                        </p>
-                        <h3 className="text-base font-semibold text-zinc-900">
-                          {item.name}
-                        </h3>
-                      </div>
-
-                      <p className="text-base font-bold text-zinc-900">
-                        Rs. {itemTotal.toLocaleString()}
-                      </p>
-                    </div>
-
-                    {/* Actions */}
-                    <CartItemActions
-                      itemId={item.cartItemId}
-                      initialQuantity={item.quantity}
-                      size={item.size}
-                      maxQuantity={item.stockQuantity ?? 0}
-                    />
-                  </div>
+            {safeItems.map((item) => (
+              <div
+                key={item.cartItemId || ""}
+                className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm hover:shadow-md transition"
+              >
+                <div className="relative w-32 h-32 rounded overflow-hidden border bg-zinc-100">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
                 </div>
-              )
-            })}
+
+                <div className="flex flex-1 flex-col justify-between">
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-xs text-zinc-400 uppercase">
+                        {item.slug}
+                      </p>
+                      <h3 className="font-semibold">{item.name}</h3>
+                    </div>
+                    <p className="font-bold">
+                      Rs. {item.unitPrice?.toLocaleString()}
+                    </p>
+                  </div>
+
+                  <CartItemActions
+                    itemId={item.cartItemId}
+                    initialQuantity={item.quantity}
+                    size={item.size}
+                    maxQuantity={item.stockQuantity ?? 0}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Order Summary */}
+          {/* Summary */}
           <div className="w-full lg:w-80">
-            <div className="bg-white rounded-2xl border border-zinc-100 p-5 shadow-sm flex flex-col gap-5 sticky top-6">
+            <div className="bg-white rounded-2xl border p-5 flex flex-col gap-5 sticky top-6">
 
-              <h3 className="font-semibold text-zinc-900">
-                Order Summary
-              </h3>
+              <h3 className="font-semibold">Order Summary</h3>
 
-              <div className="flex flex-col gap-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-zinc-500">
-                    Subtotal ({totalItems} items)
-                  </span>
-                  <span className="font-medium text-zinc-800">
-                    Rs. {totalPrice.toLocaleString()}
-                  </span>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                  <span className="text-zinc-500">Delivery</span>
-                  <span className="text-emerald-600 font-semibold">
-                    Free
-                  </span>
-                </div>
-
-                <div className="h-px bg-zinc-100" />
-
-                <div className="flex justify-between">
-                  <span className="font-bold">Total</span>
-                  <span className="font-bold text-lg">
-                    Rs. {totalPrice.toLocaleString()}
-                  </span>
-                </div>
+              <div className="flex justify-between text-sm">
+                <span>Subtotal ({totalItems})</span>
+                <span>Rs. {totalPrice.toLocaleString()}</span>
               </div>
 
-              {/* Promo */}
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Enter promo code"
-                  className="flex-1 border px-4 py-2.5 rounded-xl text-sm outline-none"
-                />
-                <Button className="bg-zinc-900 text-white px-4 rounded-xl text-xs font-bold"
-                variant={"outline"}
-                >
-                  Apply
-                </Button>
+              <div className="flex justify-between text-sm">
+                <span>Delivery</span>
+                <span className="text-green-600 font-semibold">Free</span>
               </div>
 
-              {/* Checkout */}
+              <div className="border-t pt-3 flex justify-between font-bold">
+                <span>Total</span>
+                <span>Rs. {totalPrice.toLocaleString()}</span>
+              </div>
+
+              {/* Checkout button */}
               <Button
-                className="w-full"
-                variant={"outline"}
-                asyncAction={async () => {
-                  const res = await fetchAPI({
-                    endPoint: "orders",
-                    method: "POST",
-                  })
-
-                  if (!res.success) throw new Error(res.error)
-
-                  clearCart()
-                  router.push("/orders")
-                }}
-                successMessage="Order Placed!"
+              variant="outline"
+                onClick={() => setOpen(true)}
               >
                 Checkout <ArrowRight className="w-4 h-4" />
               </Button>
 
-              {/* Continue Shopping */}
-              <Link href="/products">
-                <button className="w-full border text-zinc-500 rounded-xl py-3 text-xs font-semibold hover:border-zinc-900 hover:text-zinc-900 transition">
-                  Continue Shopping
-                </button>
-              </Link>
+          <Link href="/products">
+  <div className="w-full border border-zinc-200 text-zinc-600 rounded-xl py-3 text-sm font-medium text-center hover:border-zinc-900 hover:text-zinc-900 hover:bg-zinc-50 transition cursor-pointer">
+    Continue Shopping
+  </div>
+</Link>
             </div>
           </div>
         </div>
@@ -230,6 +196,108 @@ const safeProducts = products ?? []
           </SliderSection>
         </div>
       </div>
+
+      {/* ✅ MODAL */}
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+         {/* Close */}
+<button
+  onClick={() => setOpen(false)}
+  aria-label="Close modal"
+  className="absolute top-3 right-3  flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 transition"
+>
+  <Image
+    src={cancel}
+    alt="close"
+    width={24}
+    height={24}
+    className="opacity-70 cursor-pointer"
+  />
+</button>
+
+<div className="flex items-center gap-5 mb-4 " >
+  <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-zinc-100 ">
+    <Image
+      src={shipping}
+      alt="shipping"
+     
+    />
+  </div>
+
+  <h3 className="text-sm font-semibold text-zinc-900">
+    Shipping Details
+  </h3>
+</div>
+
+
+            <div className="flex flex-col gap-3">
+              <label htmlFor="">Full Name</label>
+              <input
+                name="fullName"
+                placeholder="Full Name"
+                value={formData.fullName}
+                onChange={handleChange}
+                className="border px-3 py-2 rounded text-sm"
+              />
+
+              <label htmlFor="">Phone Number</label>
+
+              <input
+                name="phone"
+                placeholder="WhatsApp Number"
+                value={formData.phone}
+                onChange={handleChange}
+                className="border px-3 py-2 rounded text-sm"
+              />
+
+              <label htmlFor="">Full Address</label>
+
+              <textarea
+                name="location"
+                placeholder="Location"
+                value={formData.location}
+                onChange={handleChange}
+                className="border px-3 py-2 rounded text-sm"
+              />
+
+              <Button
+              variant="outline"
+                asyncAction={async () => {
+                  if (
+                    !formData.fullName ||
+                    !formData.phone ||
+                    !formData.location
+                  ) {
+                    throw new Error("Fill all fields")
+                  }
+
+                  const res = await fetchAPI({
+                    endPoint: "orders",
+                    method: "POST",
+                    data: formData,
+                  })
+
+                  if (!res.success) throw new Error(res.error)
+
+                  clearCart()
+                  setOpen(false)
+                  router.push("/orders")
+                }}
+                successMessage="Order Placed!"
+              >
+                Confirm Order
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
