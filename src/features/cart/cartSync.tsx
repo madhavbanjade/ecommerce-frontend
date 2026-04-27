@@ -36,7 +36,6 @@ const PAYMENT_METHODS = [
   { id: "bank",   label: "Bank Transfer",    color: "bg-blue-50   border-blue-200   text-blue-700"   },
 ]
 
-// ── Reusable field ───────────────────────────────────────────────
 function Field({ label, name, value, onChange, as: Tag = "input" }: {
   label: string; name: string; value: string
   onChange: (e: any) => void; as?: "input" | "textarea"
@@ -45,12 +44,11 @@ function Field({ label, name, value, onChange, as: Tag = "input" }: {
     <>
       <label className="text-sm font-medium">{label} *</label>
       <Tag name={name} value={value} onChange={onChange} placeholder={label}
-        className="border px-3 py-2 rounded text-sm" />
+        className="border px-3 py-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400" />
     </>
   )
 }
 
-// ── Step indicator ───────────────────────────────────────────────
 function StepIndicator({ current }: { current: number }) {
   return (
     <div className="flex items-center justify-center mb-6">
@@ -82,7 +80,6 @@ function StepIndicator({ current }: { current: number }) {
   )
 }
 
-// ── Main component ───────────────────────────────────────────────
 export default function CartSync({
   isLoggedIn, items = [], totalItems = 0, totalPrice = 0, products = [],
 }: CartSyncProps) {
@@ -94,6 +91,7 @@ export default function CartSync({
   const [open, setOpen]                       = useState(false)
   const [step, setStep]                       = useState(1)
   const [selectedPayment, setSelectedPayment] = useState("")
+  const [placedOrder, setPlacedOrder]         = useState<any>(null)
   const [form, setForm] = useState({ fullName: "", phone: "", location: "" })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -101,7 +99,7 @@ export default function CartSync({
 
   const closeModal = () => {
     setOpen(false)
-    setTimeout(() => { setStep(1); setSelectedPayment("") }, 300)
+    setTimeout(() => { setStep(1); setSelectedPayment(""); setPlacedOrder(null) }, 300)
   }
 
   useEffect(() => {
@@ -196,7 +194,7 @@ export default function CartSync({
         </div>
       </div>
 
-      {/* ── Modal ───────────────────────────────────────────── */}
+      {/* ── Modal ── */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
           onClick={step < 3 ? closeModal : undefined}>
@@ -204,7 +202,8 @@ export default function CartSync({
             onClick={(e) => e.stopPropagation()}>
 
             {step < 3 && (
-              <button onClick={closeModal} aria-label="Close" className="absolute top-3 right-3 rounded-full bg-zinc-100 hover:bg-zinc-200 transition">
+              <button onClick={closeModal} aria-label="Close"
+                className="absolute top-3 right-3 rounded-full bg-zinc-100 hover:bg-zinc-200 transition">
                 <Image src={cancel} alt="close" width={24} height={24} className="opacity-70" />
               </button>
             )}
@@ -215,7 +214,9 @@ export default function CartSync({
             {step === 1 && (
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-zinc-100"><Image src={shipping} alt="shipping" /></div>
+                  <div className="w-8 h-8 rounded-lg bg-zinc-100">
+                    <Image src={shipping} alt="shipping" />
+                  </div>
                   <div>
                     <h4 className="font-semibold">Shipping Information</h4>
                     <p className="text-sm text-zinc-400">Please enter your delivery details</p>
@@ -248,19 +249,33 @@ export default function CartSync({
                   {PAYMENT_METHODS.map((m) => (
                     <button key={m.id} onClick={() => setSelectedPayment(m.id)}
                       className={`border-2 rounded-xl py-3 px-3 text-sm font-medium text-left transition-all
-                        ${selectedPayment === m.id ? "border-zinc-900 bg-zinc-900 text-white shadow-md scale-[1.02]" : `${m.color} hover:scale-[1.01]`}`}>
+                        ${selectedPayment === m.id
+                          ? "border-zinc-900 bg-zinc-900 text-white shadow-md scale-[1.02]"
+                          : `${m.color} hover:scale-[1.01]`}`}>
                       {selectedPayment === m.id && <CheckCircle2 className="w-3.5 h-3.5 mb-1 inline-block mr-1" />}
                       {m.label}
                     </button>
                   ))}
                 </div>
-                <Button variant="outline" asyncAction={async () => {
-                  if (!selectedPayment) throw new Error("Please select a payment method")
-                  const res = await fetchAPI({ endPoint: "orders", method: "POST", data: { ...form, paymentMethod: selectedPayment } })
-                  if (!res.success) throw new Error(res.error)
-                  clearCart()
-                  setStep(3)
-                }} successMessage="Order Placed!">
+                <Button
+                  variant="outline"
+                  asyncAction={async () => {
+                    if (!selectedPayment) throw new Error("Please select a payment method")
+
+                    const res = await fetchAPI({
+                      endPoint: "orders",
+                      method: "POST",
+                      data: { ...form, paymentMethod: selectedPayment },
+                    })
+
+                    if (!res.success) throw new Error(res.error)
+
+                    setPlacedOrder(res.data)
+                    clearCart()
+                    setStep(3)
+                  }}
+                  successMessage="Order Placed!"
+                >
                   Complete Purchase <ArrowRight className="w-4 h-4" />
                 </Button>
                 <button onClick={() => setStep(1)} className="text-xs text-zinc-400 hover:text-zinc-700 text-center transition">
@@ -277,13 +292,17 @@ export default function CartSync({
                 </div>
                 <div>
                   <h4 className="text-xl font-bold text-zinc-900">Order Confirmed! 🎉</h4>
-                  <p className="text-sm text-zinc-400 mt-1">Thank you, {form.fullName.split(" ")[0]}! Your order is on its way.</p>
+                  <p className="text-sm text-zinc-400 mt-1">
+                    Thank you, {form.fullName.split(" ")[0]}! Your order is on its way.
+                  </p>
                 </div>
                 <div className="w-full bg-zinc-50 rounded-xl border border-zinc-100 p-4 text-sm text-left flex flex-col gap-2">
                   {[
-                    ["Delivering to", form.location],
-                    ["Contact",       form.phone],
+                    ["Order ID",      `#${placedOrder?.id?.slice(0, 8).toUpperCase() ?? "—"}`],
+                    ["Delivering to", placedOrder?.location ?? form.location],
+                    ["Contact",       placedOrder?.phone    ?? form.phone],
                     ["Payment",       PAYMENT_METHODS.find((p) => p.id === selectedPayment)?.label ?? ""],
+                    ["Status",        placedOrder?.isPaid ? "✅ Paid" : "⏳ Pay on Delivery"],
                   ].map(([key, val]) => (
                     <div key={key} className="flex justify-between">
                       <span className="text-zinc-400">{key}</span>
@@ -291,24 +310,18 @@ export default function CartSync({
                     </div>
                   ))}
                   <div className="border-t pt-2 flex justify-between font-bold text-zinc-900">
-                    <span>Total Paid</span>
-                    <span>Rs. {totalPrice.toLocaleString()}</span>
+                    <span>Total</span>
+                    <span>Rs. {(placedOrder?.totalPrice ?? totalPrice).toLocaleString()}</span>
                   </div>
                 </div>
-                <Link href="/orders">
-                  <Button variant="outline" onClick={() => { closeModal(); router.push("/orders") }}>
-                  View My Orders <ArrowRight className="w-4 h-4" />
-                </Button>
-
+                <Link href="/orders" className="w-full">
+                  <Button variant="outline" onClick={closeModal} className="w-full">
+                    View My Orders <ArrowRight className="w-4 h-4" />
+                  </Button>
                 </Link>
-              
-                <Link href="/products">
-                  <button onClick={closeModal} className="text-xs text-zinc-400 hover:text-zinc-700 transition">
+                <button onClick={closeModal} className="text-xs text-zinc-400 hover:text-zinc-700 transition">
                   Continue Shopping
                 </button>
-
-                </Link>
-              
               </div>
             )}
 
