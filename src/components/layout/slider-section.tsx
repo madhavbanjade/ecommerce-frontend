@@ -100,7 +100,7 @@ export default function SliderSection({
             transition={{ duration: 0.15 }}
             onClick={scrollPrev}
             className="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 z-10
-              w-8 h-10 sm:w-9 sm:h-12 items-center justify-center rounded-full bg-[#4285F4]
+              w-8 h-10 sm:w-9 sm:h-12 items-center justify-center rounded-full bg-[#000000]
               border border-zinc-200 shadow-sm hover:border-zinc-900"
           >
             <ChevronLeft className="w-5 h-5 text-white" />
@@ -120,7 +120,7 @@ export default function SliderSection({
             transition={{ duration: 0.15 }}
             onClick={scrollNext}
             className="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 z-10
-              w-8 h-10 sm:w-9 sm:h-12 items-center justify-center rounded-full bg-[#4285F4]
+              w-8 h-10 sm:w-9 sm:h-12 items-center justify-center rounded-full bg-[#000000]
               border border-zinc-200 shadow-sm hover:border-zinc-900"
           >
             <ChevronRight className="w-5 h-5 text-white" />

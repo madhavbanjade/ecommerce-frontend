@@ -5,6 +5,10 @@ import { useState } from "react"
 import { userCartStore } from "@/src/features/cart/cartStore"
 import { deleteCartItem, updateCartItem } from "@/src/features/cart/cartService"
 import { useRouter } from "next/navigation"
+import Swal from "sweetalert2"
+
+// ✅ CHANGED IMPORT
+import { toast } from "react-toastify"
 
 interface CartItemActionsProps {
   itemId: string
@@ -22,49 +26,69 @@ export default function CartItemActions({
   const [quantity, setQuantity] = useState(initialQuantity)
   const [quantityLoading, setQuantityLoading] = useState(false)
   const [removeLoading, setRemoveLoading] = useState(false)
-const router  = useRouter()
-  // ── Zustand actions ──────────────────────────────────────────────────────────
+  const router = useRouter()
+
   const zustandUpdate = userCartStore((s) => s.updateQuantity)
   const zustandRemove = userCartStore((s) => s.removeItem)
-const update = async (newQty: number) => {
-  if (newQty < 1 || newQty > maxQuantity || quantityLoading) return
 
-  const prevQty = quantity
+  const update = async (newQty: number) => {
+    if (newQty < 1 || newQty > maxQuantity || quantityLoading) return
 
-  setQuantity(newQty)
-  zustandUpdate(itemId, newQty)
-  setQuantityLoading(true)
+    const prevQty = quantity
 
-  const success = await updateCartItem(itemId, { quantity: newQty })
+    setQuantity(newQty)
+    zustandUpdate(itemId, newQty)
+    setQuantityLoading(true)
 
-  if (success) {
-    router.refresh() // ✅ re-fetches page so totalItems updates
-  } else {
-    setQuantity(prevQty)
-    zustandUpdate(itemId, prevQty)
+    const success = await updateCartItem(itemId, { quantity: newQty })
+
+    if (success) {
+      router.refresh()
+      toast.success("Cart updated") // ✅ Toastify
+    } else {
+      setQuantity(prevQty)
+      zustandUpdate(itemId, prevQty)
+      toast.error("Failed to update cart") // ✅ Toastify
+    }
+
+    setQuantityLoading(false)
   }
 
-  setQuantityLoading(false)
-}
+  const remove = async () => {
+    if (removeLoading) return
 
-const remove = async () => {
-  if (removeLoading) return
+    const result = await Swal.fire({
+      title: "Remove item?",
+      text: "Are you sure you want to remove this item from your cart?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#18181b",
+      cancelButtonColor: "#e4e4e7",
+      confirmButtonText: "Yes, remove it",
+      cancelButtonText: "Cancel",
+      customClass: {
+        cancelButton: "!text-zinc-900",
+      },
+    })
 
-  setRemoveLoading(true)
+    if (!result.isConfirmed) return
 
-  const success = await deleteCartItem(itemId)
+    setRemoveLoading(true)
 
-  if (success) {
-    zustandRemove(itemId) // ✅ only once, after confirmed
-    router.refresh()
-  } else {
-    window.location.reload()
+    const success = await deleteCartItem(itemId)
+
+    if (success) {
+      zustandRemove(itemId)
+      router.refresh()
+      toast.success("Item removed from cart") // ✅ Toastify
+    } else {
+      window.location.reload()
+      toast.error("Failed to remove item") // ✅ Toastify
+    }
+
+    setRemoveLoading(false)
   }
 
-  setRemoveLoading(false)
-}
-
-  // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className="flex items-center gap-3">
 
@@ -107,10 +131,12 @@ const remove = async () => {
         </span>
       </div>
 
-      {/* Max stock warning — always reserves space, just toggles opacity */}
-      <span className={`text-[10px] text-red-500 transition-opacity ${
-        quantity >= maxQuantity ? "opacity-100" : "opacity-0"
-      }`}>
+      {/* Max stock warning */}
+      <span
+        className={`text-[10px] text-red-500 transition-opacity ${
+          quantity >= maxQuantity ? "opacity-100" : "opacity-0"
+        }`}
+      >
         Max stock reached
       </span>
 
@@ -122,7 +148,6 @@ const remove = async () => {
       >
         <Trash2 className="cursor-pointer w-5 h-5 text-red-500 group-hover:text-red-900 transition-colors" />
       </button>
-
     </div>
   )
 }

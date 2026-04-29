@@ -48,7 +48,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NavPage profile = {profile}  />
 
-        <main className="mt-24 min-h-screen overflow-x-hidden">
+        <main className=" min-h-screen overflow-x-hidden">
           <WishlistProvider>
             {/* <CartSync isLoggedIn={!!profile}>
 

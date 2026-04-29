@@ -94,16 +94,12 @@ export default function Hero() {
           </motion.p>
 
           <motion.div {...fadeUp(0.55)} className="flex gap-4 items-center">
-            <Link href="/products">
-              <Button variant={"default"}>
-                Shop Collection
-              </Button>
-            </Link>
+          
             <Link
-              href="/brands"
+              href="/products"
               className="text-white/40 hover:text-white text-xs tracking-[0.3em] uppercase transition-colors duration-300 flex items-center gap-2 group"
             >
-              View Brands
+              View Products
               <span className="w-4 group-hover:w-8 h-px bg-current inline-block transition-all duration-300" />
             </Link>
           </motion.div>

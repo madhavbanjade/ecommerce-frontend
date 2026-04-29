@@ -17,7 +17,7 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="container w-full text-dark bottom-0 border-t border-black">
+    <footer className="container w-full text-dark">
 
 
 

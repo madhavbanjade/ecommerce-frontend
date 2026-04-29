@@ -1,359 +1,165 @@
-  "use client";
-  import { useState, useRef, useEffect } from "react";
-  import { arrow, cart, login, logo, logout, signup, user } from "../../assets";
-  import Image from "next/image";
-  import Link from "next/link";
-  import { usePathname, useRouter } from "next/navigation";
-  import { motion, AnimatePresence } from "framer-motion";
-  import { Button } from "../ui/button";
-  import { Search } from "lucide-react";
-  import { userCartStore } from "@/src/features/cart/cartStore";
-  import { p } from "framer-motion/client";
-  import { FaArrowUp, FaUser } from "react-icons/fa";
-  import { FaArrowLeftLong } from "react-icons/fa6";
+"use client";
 
-  const navItems = [
-    { label: "Products", href: "/products" },
-    { label: "Men", href: "/products/men" },
-    { label: "Women", href: "/products/women" },
-    { label: "Sale", href: "/products/on-sale" },
-    { label: "New-Arrivals", href: "/products/new-arrivals" },
-  ];
+import { useState, useRef, useEffect } from "react";
+import { arrow, cart, login, logo, logout, signup, user } from "../../assets";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search } from "lucide-react";
+import { userCartStore } from "@/src/features/cart/cartStore";
 
-  function SearchBox({ className }: { className?: string }) {
-    const router = useRouter();
-    const inputRef = useRef<HTMLInputElement>(null);
+const navItems = [
+  { label: "Products", href: "/products" },
+  { label: "Men", href: "/products/men" },
+  { label: "Women", href: "/products/women" },
+  { label: "Sale", href: "/products/on-sale" },
+  { label: "New Arrivals", href: "/products/new-arrivals" },
+];
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === "Enter") {
-        const value = inputRef.current?.value.trim();
-        if (value) router.push(`/products?search=${value}`);
-      }
-    };
+function SearchBox({ className }: { className?: string }) {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const value = inputRef.current?.value.trim();
+      if (value) router.push(`/products?search=${value}`);
+    }
+  };
 
-    return (
-      <div
-        className={`flex items-center gap-3  border border-black rounded-lg px-4 py-2
-        focus-within:border-zinc-800 focus-within:shadow-[0_0_0_3px_rgba(0,0,0,0.06)]
-        transition-all duration-300 group ${className}`}
-      >
-        <Search className="w-3.5 h-3.5 opacity-40 group-focus-within:opacity-70 transition-opacity shrink-0" />
-        <input
-          ref={inputRef}
-          onKeyDown={handleKeyDown}
-          placeholder="Search products..."
-          className="bg-transparent outline-none text-xs tracking-wide text-zinc-800 placeholder:text-zinc-400 w-full"
-        />
-      </div>
-    );
-  }
-
-  export function NavPage({ profile }: { profile: any }) {
-    const [toggleMenu, setToggleMenu] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const pathname = usePathname();
-    const isLoggedIn = !!profile;
-    const totalCount = userCartStore((s) => s.totalCount())
-
-
-    useEffect(() => {
-      const handleScroll = () => setScrolled(window.scrollY > 40);
-      window.addEventListener("scroll", handleScroll, { passive: true });
-      return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    return (
-      <div className="fixed top-0 left-0 right-0 z-50">
-        {/* ── Announcement Bar — slides up and fades out on scroll ── */}
-        <AnimatePresence>
-          {!scrolled && (
-            <motion.div
-              initial={{ height: "auto", opacity: 1 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="bg-div text-white tracking-wide uppercase text-xs overflow-hidden"
-            >
-              <div className="container flex justify-between py-2">
-                <div className="lg:block hidden">+977-9749344926</div>
-                <div className="flex gap-2 mx-auto lg:mx-0">
-                  Get up to 20% off |{" "}
-                  <Link
-                    href="/auth"
-                    className="underline hover:text-sale transition-colors duration-200"
-                  >
-                    Sign up
-                  </Link>
-                </div>
-                <div className="lg:block hidden">Koteshwor, Kathmandu</div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ── Nav ── */}
-        <nav className="shadow-md bg-white ">
-          <div className="container flex justify-between items-center">
-            {/* LEFT — Logo + Hamburger */}
-            <div className="flex items-center gap-3 shrink-0">
-              <button
-                className="flex flex-col gap-[5px] cursor-pointer xl:hidden"
-                onClick={() => setToggleMenu(!toggleMenu)}
-                aria-label="Toggle menu"
-              >
-                <span
-                  className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "rotate-45 translate-y-[8px]" : ""}`}
-                />
-                <span
-                  className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "opacity-0 scale-x-0" : ""}`}
-                />
-                <span
-                  className={`w-6 h-[3px] bg-dark rounded transition-all duration-300 ${toggleMenu ? "-rotate-45 -translate-y-[8px]" : ""}`}
-                />
-              </button>
-
-              <Link href="/" className="shrink-0 hidden md:block ">
-                <Image
-                  src={logo}
-                  alt="logo"
-                  width={80}
-                  height={80}
-                  className="object-contain"
-                />
-              </Link>
-            </div>
-
-            {/* CENTER — Desktop Nav Links */}
-            <ul className="hidden xl:flex items-center gap-6">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <li
-                    key={item.label}
-                    className="group relative flex flex-col items-center gap-1 whitespace-nowrap"
-                  >
-                    <Link
-                      href={item.href}
-                      className={`text-xs font-semibold tracking-wider uppercase transition-colors duration-200 flex flex-col items-center gap-1
-                        ${isActive ? "text-dark" : "text-secondary hover:text-dark"}`}
-                    >
-                      <span
-                        className={`transition-transform duration-200 ${isActive ? "-translate-y-0.5" : "group-hover:-translate-y-0.5"}`}
-                      >
-                        {item.label}
-                      </span>
-
-                      {/* Active — shared layoutId slides the underline between nav items */}
-                      {isActive && (
-                        <motion.span
-                          layoutId="nav-underline"
-                          className="block h-0.5 w-full bg-sale rounded-full"
-                          transition={{
-                            type: "spring",
-                            stiffness: 900,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-
-                      {/* Inactive — expands on hover */}
-                      {!isActive && (
-                        <span className="block h-0.5 w-0 bg-sale rounded-full transition-all duration-300 group-hover:w-full" />
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-
-            {/* RIGHT — Search + Icons */}
-            <div className="flex gap-4 xl:gap-6 items-center shrink-0">
-              <SearchBox className="hidden xl:flex w-56 2xl:w-72" />
-             
-             {/* cart */}
-<Link href="/cart" className="flex items-center gap-3">
-  
-  {/* Icon wrapper */}
-  <div className="relative inline-flex">
-    <Image src={cart} alt="cart" width={22} height={22} />
-
-    {/* Badge */}
-    {totalCount > 0 && (
-      <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-gray-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none">
-        {totalCount > 99 ? "99+" : totalCount}
-      </span>
-    )}
-  </div>
-
-  <p>Cart</p>
-</Link>
-
-{isLoggedIn ? (
-  // ✅ Logged-in view (Dropdown)
-  <div className="relative group inline-block">
-    {/* Trigger */}
-    <div className="flex items-center gap-2 cursor-pointer">
-      <Image src={user} alt="user" height={22} width={22} />
-
-      <p className="font-medium group-hover:text-zinc-900 transition-colors">
-        My Account
-      </p>
-
-      <Image
-        src={arrow}
-        alt="arrow"
-        height={16}
-        width={16}
-        className="transition-transform duration-300 group-hover:rotate-180 opacity-70"
+  return (
+    <div
+      className={`flex items-center gap-3 border border-zinc-300 rounded-xl px-4 py-2
+      focus-within:border-black focus-within:shadow-sm
+      transition-all duration-300 ${className}`}
+    >
+      <Search className="w-4 h-4 opacity-50" />
+      <input
+        ref={inputRef}
+        onKeyDown={handleKeyDown}
+        placeholder="Search products..."
+        className="bg-transparent outline-none text-sm w-full placeholder:text-zinc-400"
       />
     </div>
+  );
+}
 
-    {/* Dropdown */}
-    <div
-      className="absolute right-0 top-full mt-3 w-48 rounded-xl border border-zinc-200 bg-white shadow-lg shadow-zinc-200/50 
-      opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 
-      transition-all duration-200"
-    >
-      {/* Dashboard */}
-      <Link href="/profile">
-        <div className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 rounded-t-xl transition cursor-pointer">
-          <Image src={user} alt="dashboard" width={18} height={18} className="opacity-70" />
-          <span>My Dashboard</span>
-        </div>
-      </Link>
+export function NavPage({ profile }: { profile: any }) {
+  const [toggleMenu, setToggleMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-      {/* Logout */}
-      <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 rounded-b-xl transition">
-        <Image src={logout} alt="logout" width={18} height={18} className="opacity-70" />
-        <span>Logout</span>
-      </button>
-    </div>
-  </div>
-) : (
-  // ❌ Not logged in → styled entry options
-  <div className="flex items-center gap-5">
-    {/* Login */}
-    <Link href="/auth">
-      <div className="flex items-center gap-2 font-medium   transition cursor-pointer">
-        <Image src={login} alt="login" width={22} height={22} className="opacity-70" />
-        <p>Login</p>
-      </div>
-    </Link>
+  const pathname = usePathname();
+  const isLoggedIn = !!profile;
+  const totalCount = userCartStore((s) => s.totalCount());
 
-    {/* Sign Up */}
-    <Link href="/auth">
-      <div className="flex items-center gap-2  font-medium  hover:text-zinc-900 transition cursor-pointer">
-        <Image src={signup} alt="signup" width={22} height={22} className="opacity-70" />
-        <p>Sign Up</p>
-      </div>
-    </Link>
-  </div>
-)}
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-            </div>
-          </div>
-        </nav>
+  return (
+    <div className="fixed top-0 left-0 right-0 z-50">
+      
+      {/* NAVBAR */}
+      <nav
+        className={`transition-all duration-300 
+        ${
+          scrolled
+            ? "bg-blue/90 backdrop-blur-md shadow-lg border-b border-zinc-200"
+            : "bg-white shadow-sm"
+        }`}
+      >
+        <div className="container mx-auto flex justify-between items-center h-16 px-4">
 
-        {/* ── Mobile Overlay ── */}
-        <AnimatePresence>
-          {toggleMenu && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="xl:hidden fixed inset-0 bg-black/40 z-40"
-              onClick={() => setToggleMenu(false)}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* ── Mobile Drawer — springs in from left ── */}
-        <motion.ul
-          initial={false}
-          animate={{ x: toggleMenu ? 0 : "-100%" }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="xl:hidden fixed top-0 left-0 h-full w-72 z-50 bg-white shadow-2xl flex flex-col"
-        >
-          {/* Drawer Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200">
-            <Link href="/" onClick={() => setToggleMenu(false)}>
-              <Image src={logo} alt="logo" width={50} height={50} />
+          {/* LEFT */}
+     
+        
+            <Link href="/">
+              <Image src={logo} alt="logo" width={70} height={70} />
             </Link>
-            <button
-              onClick={() => setToggleMenu(false)}
-              className="text-secondary hover:text-dark transition-colors"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
 
-          {/* Mobile Search */}
-          <div className="px-6 py-4">
-            <SearchBox className="w-full" />
-          </div>
+          {/* CENTER */}
+          <ul className="hidden xl:flex items-center gap-8">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
 
-          {/* Nav Links — staggered fade in */}
-          {navItems.map((item, index) => {
-            const isActive = pathname === item.href;
-            return (
-              <motion.li
-                key={item.href}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: toggleMenu ? 1 : 0, x: toggleMenu ? 0 : -16 }}
-                transition={{
-                  delay: toggleMenu ? index * 0.06 : 0,
-                  duration: 0.2,
-                }}
-                className="list-none"
-              >
-                <Link
-                  href={item.href}
-                  onClick={() => setToggleMenu(false)}
-                  className={`flex items-center px-6 py-4 border-b border-zinc-100
-                    text-xs font-semibold tracking-widest uppercase transition-all duration-200
+              return (
+                <li key={item.href} className="relative group">
+                  <Link
+                    href={item.href}
+                    className={`text-xs font-semibold tracking-wider uppercase px-1
                     ${
                       isActive
-                        ? "text-dark bg-zinc-50 border-l-2 border-l-dark"
-                        : "text-secondary hover:bg-zinc-900 hover:text-white"
+                        ? "text-black"
+                        : "text-zinc-500 hover:text-black"
                     }`}
-                >
-                  {item.label}
-                </Link>
-              </motion.li>
-            );
-          })}
+                  >
+                    {item.label}
+                  </Link>
 
-          {/* Drawer Footer */}
-          <div className="mt-auto px-6 py-6 border-t border-zinc-200 flex gap-5">
-          <Link href="/cart" className="relative inline-flex items-center">
-        <Image src={cart} alt="cart" width={22} height={22} />
-  
-        {/* Badge — only shown when cart has items */}
-        {totalCount > 0 && (
-          <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] bg-gray-900 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none">
-            {totalCount > 99 ? "99+" : totalCount}
-          </span>
-        )}
-      </Link>
-            <Link href="/account" onClick={() => setToggleMenu(false)}>
-              <Image src={user} alt="user" width={22} height={22} />
+                  <span
+                    className={`absolute left-0 -bottom-1 h-[2px] bg-black transition-all duration-300
+                    ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* RIGHT */}
+          <div className="flex items-center gap-6">
+
+            <SearchBox className="hidden xl:flex w-64" />
+
+            {/* CART */}
+            <Link href="/cart" className="flex items-center gap-2 group">
+              <div className="relative">
+                <Image src={cart} alt="cart" width={22} height={22} />
+
+                {totalCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] font-bold rounded-full px-1.5">
+                    {totalCount > 99 ? "99+" : totalCount}
+                  </span>
+                )}  
+              </div>
+
+              <p className="text-sm font-semibold group-hover:translate-x-0.5 transition">
+                Cart
+              </p>
             </Link>
+
+            {/* AUTH */}
+            {isLoggedIn ? (
+              <div className="relative group">
+                <div className="flex items-center gap-2 cursor-pointer">
+
+<Link href="/profile" className="flex items-center gap-2">
+
+                  <Image src={user} alt="user" width={22} height={22} />
+                  <p className="font-medium">Dashboard</p>
+</Link>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Link href="/auth" className="text-sm font-medium">
+                  Login
+                </Link>
+                <Link
+                  href="/auth"
+                  className="text-sm font-semibold bg-black text-white px-3 py-1.5 rounded-lg"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
-        </motion.ul>
-      </div>
-    );
-  }
+        </div>
+      </nav>
+
+    
+    </div>
+  );
+}

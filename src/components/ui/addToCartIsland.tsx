@@ -6,7 +6,9 @@ import { Button } from "@/src/components/ui/button";
 import { userCartStore } from "@/src/features/cart/cartStore";
 import { addToCart } from "@/src/features/cart/cartService";
 import { useWishlist } from "@/src/context/wishlist-context";
-import { ProductCardUi } from "@/src/types";
+
+// ✅ CHANGED IMPORT
+import { toast } from "react-toastify";
 
 interface Size {
   size: string;
@@ -38,26 +40,24 @@ export default function AddToCartIsland({
 
   const addItem = userCartStore((s) => s.addItem);
 
-  //quantity
   const selectedSizeData = sizes.find((s) => s.size === selectedSize);
   const maxStock = selectedSizeData?.stockQuantity ?? 99;
 
   const increment = () => setQuantity((q) => Math.min(q + 1, maxStock));
 
-  const decrement = () => setQuantity((q) => Math.min(q - 1, maxStock));
+  const decrement = () => setQuantity((q) => Math.max(q - 1, 1));
 
   //add to cart
   const handleAddToCart = async () => {
 
-    //validate size
     if (!selectedSize) {
       setError("Please select a size before adding to cart.");
+      toast.error("Please select a size before adding to cart.");
       return;
     }
 
     setError(null);
 
-    //call backend
     const cartItem = await addToCart({
       productId,
       size: selectedSize,
@@ -65,12 +65,15 @@ export default function AddToCartIsland({
     });
 
     if (!cartItem) {
-      setError("Faild to add item in cart. Please try again");
+      setError("Failed to add item to cart. Please try again.");
+      toast.error("Failed to add item to cart. Please try again.");
       return;
     }
 
-    //backend confirm => update zustand
     addItem(cartItem);
+
+    // ✅ SUCCESS TOAST (React Toastify)
+    toast.success(`${name} added to cart`);
   };
 
   return (
@@ -81,6 +84,7 @@ export default function AddToCartIsland({
           <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
             Select Size
           </p>
+
           <div className="flex gap-2 flex-wrap">
             {sizes.map((s) => {
               const outOfStock = s.stockQuantity === 0;
@@ -93,7 +97,6 @@ export default function AddToCartIsland({
                   onClick={() => {
                     setSelectedSize(s.size);
                     setError(null);
-                    // Reset quantity if new size has less stock
                     setQuantity(1);
                   }}
                   className={`
@@ -102,14 +105,16 @@ export default function AddToCartIsland({
                       outOfStock
                         ? "border-gray-100 text-gray-300 cursor-not-allowed line-through"
                         : isSelected
-                          ? "border-gray-900 bg-gray-900 text-white"
-                          : "border-gray-200 hover:border-gray-900 hover:bg-gray-900 hover:text-white"
+                        ? "border-gray-900 bg-gray-900 text-white"
+                        : "border-gray-200 hover:border-gray-900 hover:bg-gray-900 hover:text-white"
                     }
                   `}
                 >
                   {s.size}
                   <span
-                    className={`ml-1 text-[10px] ${isSelected ? "text-gray-300" : "text-gray-400"}`}
+                    className={`ml-1 text-[10px] ${
+                      isSelected ? "text-gray-300" : "text-gray-400"
+                    }`}
                   >
                     ({s.stockQuantity})
                   </span>
@@ -118,16 +123,16 @@ export default function AddToCartIsland({
             })}
           </div>
 
-          {/* Size error */}
           {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
         </div>
       )}
 
-      {/* Quantity Selector */}
+      {/* Quantity */}
       <div className="flex flex-col gap-2">
         <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
           Quantity
         </p>
+
         <div className="flex items-center gap-3">
           <button
             onClick={decrement}
@@ -157,10 +162,9 @@ export default function AddToCartIsland({
         </div>
       </div>
 
-      {/* Divider */}
       <div className="h-px bg-gray-100" />
 
-      {/* Action Buttons */}
+      {/* Actions */}
       <div className="flex w-full items-center gap-2">
         <Button
           asyncAction={handleAddToCart}
@@ -175,14 +179,16 @@ export default function AddToCartIsland({
           onClick={(e) => {
             e.stopPropagation();
             toggle(productId);
+            toast.success(
+              wishlisted ? "Removed from wishlist" : "Added to wishlist"
+            );
           }}
           className={`flex-1 h-[52px] w-16 rounded-xl p-4 flex items-center justify-center transition-colors
-      ${
-        wishlisted
-          ? "border-rose-400 bg-rose-50 hover:bg-rose-100"
-          : "border-gray-200 hover:border-red-300"
-      }
-    `}
+            ${
+              wishlisted
+                ? "border-rose-400 bg-rose-50 hover:bg-rose-100"
+                : "border-gray-200 hover:border-red-300"
+            }`}
         >
           <Heart
             className={`w-4 h-4 transition-all duration-200 ${

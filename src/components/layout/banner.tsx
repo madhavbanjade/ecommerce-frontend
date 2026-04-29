@@ -20,9 +20,9 @@ export default function Banner() {
             Style is not about trends — it is about intention.
             Each piece in our archive is chosen for longevity.
           </p>
-          <Link href="/brands">
+          <Link href="/products">
             <Button variant={"destructive"} >
-              Explore Brands
+              Explore Products
             </Button>
           </Link>
         </div>

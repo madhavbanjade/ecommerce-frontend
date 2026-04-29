@@ -45,7 +45,6 @@ function ProductSection({
     <section className="">
   <div className="flex items-center justify-between mb-6">
 
-
   {/* Title (centered perfectly) */}
   <div className="relative text-center">
     <h4 className="text-xl font-bold tracking-tight text-zinc-900">

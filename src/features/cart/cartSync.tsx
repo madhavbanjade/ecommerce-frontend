@@ -14,6 +14,8 @@ import Image from "next/image"
 import { CartItem, ProductCardUi } from "@/src/types"
 import { useRouter } from "next/navigation"
 import { cancel, shipping } from "@/src/assets"
+import { toast } from "sonner"
+import swal from "sweetalert2"
 
 interface CartSyncProps {
   isLoggedIn: boolean
@@ -136,7 +138,7 @@ export default function CartSync({
           {/* Cart items */}
           <div className="flex-1 flex flex-col gap-4">
             {items.map((item) => (
-              <div key={item.cartItemId} className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm hover:shadow-md transition">
+              <div key={item.id} className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm hover:shadow-md transition">
                 <div className="relative w-32 h-32 rounded overflow-hidden border bg-zinc-100">
                   <Image src={item.image} alt={item.name} fill className="object-contain" unoptimized />
                 </div>
@@ -148,7 +150,7 @@ export default function CartSync({
                     </div>
                     <p className="font-bold">Rs. {item.unitPrice?.toLocaleString()}</p>
                   </div>
-                  <CartItemActions itemId={item.cartItemId} initialQuantity={item.quantity}
+                  <CartItemActions itemId={item.id} initialQuantity={item.quantity}
                     size={item.size} maxQuantity={item.stockQuantity ?? 0} />
                 </div>
               </div>
@@ -226,7 +228,11 @@ export default function CartSync({
                 <Field label="Phone Number" name="phone"    value={form.phone}    onChange={handleChange} />
                 <Field label="Full Address" name="location" value={form.location} onChange={handleChange} as="textarea" />
                 <Button variant="outline" onClick={() => {
-                  if (!form.fullName || !form.phone || !form.location) return alert("Please fill all fields")
+                  if (!form.fullName || !form.phone || !form.location) {
+                    toast.error("Please fill all fields") // ✅ toast
+                    return
+                  }
+                  toast.success("Shipping details saved!")  // ✅ toast
                   setStep(2)
                 }}>
                   Proceed to Payment <ArrowRight className="w-4 h-4" />
@@ -260,7 +266,12 @@ export default function CartSync({
                 <Button
                   variant="outline"
                   asyncAction={async () => {
-                    if (!selectedPayment) throw new Error("Please select a payment method")
+                    if (!selectedPayment) {
+                      toast.error("Please select a payment method") // ✅ toast
+                      throw new Error("Please select a payment method")
+                    }
+
+                    const loadingToast = toast.loading("Placing your order...") // ✅ loading toast
 
                     const res = await fetchAPI({
                       endPoint: "orders",
@@ -268,8 +279,14 @@ export default function CartSync({
                       data: { ...form, paymentMethod: selectedPayment },
                     })
 
-                    if (!res.success) throw new Error(res.error)
+                    toast.dismiss(loadingToast)
 
+                    if (!res.success) {
+                      toast.error(res.error || "Failed to place order") // ✅ toast
+                      throw new Error(res.error)
+                    }
+
+                    toast.success("Order placed successfully! 🎉") // ✅ toast
                     setPlacedOrder(res.data)
                     clearCart()
                     setStep(3)
@@ -314,14 +331,16 @@ export default function CartSync({
                     <span>Rs. {(placedOrder?.totalPrice ?? totalPrice).toLocaleString()}</span>
                   </div>
                 </div>
-                <Link href="/orders" className="w-full">
+                <Link href="/profile/orders" className="w-full">
                   <Button variant="outline" onClick={closeModal} className="w-full">
                     View My Orders <ArrowRight className="w-4 h-4" />
                   </Button>
                 </Link>
-                <button onClick={closeModal} className="text-xs text-zinc-400 hover:text-zinc-700 transition">
-                  Continue Shopping
-                </button>
+                <Link href="/products">
+                  <button onClick={closeModal} className="text-xs text-zinc-400 hover:text-zinc-700 transition">
+                    Continue Shopping
+                  </button>
+                </Link>
               </div>
             )}
 

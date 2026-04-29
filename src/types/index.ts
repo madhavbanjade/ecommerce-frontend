@@ -52,7 +52,7 @@ export interface ApiCartItem {
   image: string;
 }
 export interface CartItem {
-  cartItemId: string;
+  id: string;
   productId: string;
   name: string;
   slug: string;
