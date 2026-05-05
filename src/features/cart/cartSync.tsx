@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 import { cancel, shipping } from "@/src/assets"
 import { toast } from "sonner"
 import swal from "sweetalert2"
+import { Skeleton } from "@/src/components/ui/skeleton"
 
 interface CartSyncProps {
   isLoggedIn: boolean
@@ -89,6 +90,7 @@ export default function CartSync({
   const syncFromBackend = userCartStore((s) => s.syncFromBackend)
   const clearCart       = userCartStore((s) => s.clearCart)
   const hasSynced       = useRef(false)
+  const [loading, setLoading] = useState(true)
 
   const [open, setOpen]                       = useState(false)
   const [step, setStep]                       = useState(1)
@@ -104,11 +106,19 @@ export default function CartSync({
     setTimeout(() => { setStep(1); setSelectedPayment(""); setPlacedOrder(null) }, 300)
   }
 
-  useEffect(() => {
-    if (!isLoggedIn || hasSynced.current) return
-    hasSynced.current = true
-    fetchCart().then(syncFromBackend)
-  }, [isLoggedIn, syncFromBackend])
+useEffect(() => {
+  if (!isLoggedIn || hasSynced.current) return
+
+  hasSynced.current = true
+
+  fetchCart()
+    .then(syncFromBackend)
+    .finally(() => {
+      setTimeout(() => {
+        setLoading(false)
+      }, 800) // 600–800ms is smoother than 1000ms
+    })
+}, [isLoggedIn, syncFromBackend])
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto"
@@ -127,7 +137,7 @@ export default function CartSync({
       </div>
 
       {/* Empty state */}
-      {items.length === 0 ? (
+      {!loading && items.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <ShoppingBag className="w-16 h-16 text-zinc-200" />
           <p className="text-zinc-400 text-sm">Your bag is empty — start shopping 🛒</p>
@@ -136,26 +146,67 @@ export default function CartSync({
         <div className="flex flex-col lg:flex-row gap-8 items-start">
 
           {/* Cart items */}
-          <div className="flex-1 flex flex-col gap-4">
-            {items.map((item) => (
-              <div key={item.id} className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm hover:shadow-md transition">
-                <div className="relative w-32 h-32 rounded overflow-hidden border bg-zinc-100">
-                  <Image src={item.image} alt={item.name} fill className="object-contain" unoptimized />
-                </div>
-                <div className="flex flex-1 flex-col justify-between">
-                  <div className="flex justify-between">
-                    <div>
-                      <p className="text-xs text-zinc-400 uppercase">{item.slug}</p>
-                      <h3 className="font-semibold">{item.name}</h3>
-                    </div>
-                    <p className="font-bold">Rs. {item.unitPrice?.toLocaleString()}</p>
-                  </div>
-                  <CartItemActions itemId={item.id} initialQuantity={item.quantity}
-                    size={item.size} maxQuantity={item.stockQuantity ?? 0} />
-                </div>
+      <div className="flex-1 flex flex-col gap-4">
+
+  {loading
+    ? Array.from({ length: 3 }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm animate-pulse"
+        >
+          {/* Image */}
+          <Skeleton className="w-32 h-32 rounded-xl" />
+
+          {/* Content */}
+          <div className="flex flex-1 flex-col justify-between gap-4">
+
+            {/* Top */}
+            <div className="flex justify-between items-start">
+              <div className="flex flex-col gap-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-5 w-44" />
               </div>
-            ))}
+              <Skeleton className="h-5 w-20" />
+            </div>
+
+            {/* Bottom */}
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-9 w-24 rounded-lg" />
+              <Skeleton className="h-9 w-10 rounded-lg" />
+            </div>
+
           </div>
+        </div>
+      ))
+
+    : items.map((item) => (
+        <div
+          key={item.id}
+          className="bg-white rounded-2xl border border-zinc-100 p-4 flex gap-4 shadow-sm hover:shadow-md transition"
+        >
+          <div className="relative w-32 h-32 rounded overflow-hidden border bg-zinc-100">
+            <Image src={item.image} alt={item.name} fill className="object-contain" unoptimized />
+          </div>
+
+          <div className="flex flex-1 flex-col justify-between">
+            <div className="flex justify-between">
+              <div>
+                <p className="text-xs text-zinc-400 uppercase">{item.slug}</p>
+                <h3 className="font-semibold">{item.name}</h3>
+              </div>
+              <p className="font-bold">Rs. {item.unitPrice?.toLocaleString()}</p>
+            </div>
+
+            <CartItemActions
+              itemId={item.id}
+              initialQuantity={item.quantity}
+              size={item.size}
+              maxQuantity={item.stockQuantity ?? 0}
+            />
+          </div>
+        </div>
+      ))}
+</div>
 
           {/* Order summary */}
           <div className="w-full lg:w-80">

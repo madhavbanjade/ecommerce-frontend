@@ -1,7 +1,11 @@
-import { fetchAPI } from "@/src/utils/apiService";
-import { Button } from "@/src/components/ui/button";
-import { ShoppingCart, Heart, Package, Tag } from "lucide-react";
-import ProductImageGallery from "@/src/components/ui/image-gallary";
+"use client"
+
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+import { motion } from "framer-motion"
+import { fetchAPI } from "@/src/utils/apiService"
+import { Package, Tag } from "lucide-react"
+import ProductImageGallery from "@/src/components/ui/image-gallary"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,33 +13,42 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
-import Reviews from "@/src/components/ui/review-section";
-import AddToCartIsland from "@/src/components/ui/addToCartIsland";
+} from "@/src/components/ui/breadcrumb"
+import Reviews from "@/src/components/ui/review-section"
+import AddToCartIsland from "@/src/components/ui/addToCartIsland"
 
-export default async function ProductDetails({ params }: any) {
-  const { slug } = await params;
-  const res = await fetchAPI({ endPoint: `products/${slug}` });
-  const product = res.data?.data ?? null;
+export default function ProductDetails() {
+  const { slug } = useParams()
+  const [product, setProduct] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      const res = await fetchAPI({ endPoint: `products/${slug}` })
+      setProduct(res.data?.data ?? null)
+      setLoading(false)
+    }
+    load()
+  }, [slug])
+
+  if (loading) return <div className="container py-20 text-center text-gray-400">Loading...</div>
 
   if (!product) {
     return (
       <div className="container py-20 text-center text-red-500">
-        {res.error || "Product not found"}
+        Product not found
       </div>
-    );
+    )
   }
 
   const tagStyles: Record<string, string> = {
     New: "bg-green-400 text-black",
     Sale: "bg-red-500 text-white",
-  };
-  const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700";
-  const hasDiscount = !!product.discountPercent;
+  }
+  const tagClass = tagStyles[product.tag] ?? "bg-gray-200 text-gray-700"
+  const hasDiscount = !!product.discountPercent
+  const displayPrice = product.dicountPrice ?? product.originalPrice
 
-  // Resolve the display price (what the user actually pays)
-  const displayPrice = product.dicountPrice ?? product.originalPrice;
-  //reviews
   const reviews =
     product.reviews?.map((r: any) => ({
       id: r.id,
@@ -48,28 +61,31 @@ export default async function ProductDetails({ params }: any) {
         day: "numeric",
         year: "numeric",
       }),
-    })) ?? [];
+    })) ?? []
 
-  //reviews summary
-  const total = reviews.length;
+  const total = reviews.length
   const avg = total
     ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / total
-    : 0;
+    : 0
   const summary = {
     avg,
     total,
     counts: [5, 4, 3, 2, 1].map((star) => {
-      const count = reviews.filter((r: any) => r.rating == star).length;
+      const count = reviews.filter((r: any) => r.rating == star).length
       return {
         star,
         count,
         percentage: total ? Math.round((count / total) * 100) : 0,
-      };
+      }
     }),
-  };
+  }
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Breadcrumb */}
       <Breadcrumb>
         <BreadcrumbList>
@@ -86,11 +102,17 @@ export default async function ProductDetails({ params }: any) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+
       <div className="container flex flex-col space-y-4">
-        {/* Product Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Images */}
-          <div className="w-full rounded-2xl">
+
+          {/* Images — slides in from left */}
+          <motion.div
+            className="w-full rounded-2xl"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+          >
             {product.images?.[0] && (
               <ProductImageGallery
                 images={product.images}
@@ -99,23 +121,24 @@ export default async function ProductDetails({ params }: any) {
                 tagClass={tagClass}
               />
             )}
-          </div>
+          </motion.div>
 
-          {/* Info */}
-          <div className="flex flex-col gap-6 py-2 ">
-            {/* Gender + Name */}
+          {/* Info — slides in from right */}
+          <motion.div
+            className="flex flex-col gap-6 py-2"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+          >
             <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold tracking-widest uppercase text-zinc-400">
-                  {product.gender}
-                </span>
-              </div>
+              <span className="text-[10px] font-bold tracking-widest uppercase text-zinc-400">
+                {product.gender}
+              </span>
               <h1 className="text-3xl font-bold text-gray-900 leading-tight">
                 {product.name}
               </h1>
             </div>
 
-            {/* Price */}
             <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
               {hasDiscount ? (
                 <>
@@ -136,17 +159,13 @@ export default async function ProductDetails({ params }: any) {
               )}
             </div>
 
-            {/* Description */}
             <p className="text-gray-500 text-sm leading-relaxed border-l-2 border-gray-200 pl-3">
               {product.description}
             </p>
 
-            {/* Meta info */}
             <div className="flex items-center gap-6 text-sm">
               <div className="flex items-center gap-2">
-                <span
-                  className={`w-2 h-2 rounded-full ${product.isAvilable ? "bg-green-400" : "bg-red-400"}`}
-                />
+                <span className={`w-2 h-2 rounded-full ${product.isAvilable ? "bg-green-400" : "bg-red-400"}`} />
                 <span className="text-gray-500">
                   {product.isAvilable ? "In Stock" : "Out of Stock"}
                 </span>
@@ -161,7 +180,6 @@ export default async function ProductDetails({ params }: any) {
               </div>
             </div>
 
-            {/* Divider */}
             <div className="h-px bg-gray-100" />
 
             <AddToCartIsland
@@ -171,12 +189,18 @@ export default async function ProductDetails({ params }: any) {
               price={displayPrice}
               sizes={product.sizes ?? []}
             />
-          </div>
+          </motion.div>
         </div>
 
-        {/* Reviews */}
-        <Reviews reviews={reviews} summary={summary} />
+        {/* Reviews — fades up */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+        >
+          <Reviews reviews={reviews} summary={summary} />
+        </motion.div>
       </div>
-    </>
-  );
+    </motion.div>
+  )
 }

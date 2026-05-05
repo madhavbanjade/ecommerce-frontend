@@ -1,11 +1,13 @@
 "use client"
 
+import { useState } from "react"
 import { ProductCardUi } from "@/src/types"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { ShoppingBag, Heart } from "lucide-react"
 import { useWishlist } from "@/src/context/wishlist-context"
+import { Skeleton } from "@/src/components/ui/skeleton"
 
 interface ProductCardProps {
   product: ProductCardUi
@@ -14,6 +16,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter()
   const { toggle, isWishlisted } = useWishlist()
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   const wishlisted = product?.id ? isWishlisted(product.id) : false
 
@@ -25,15 +28,18 @@ export default function ProductCard({ product }: ProductCardProps) {
             100
         )
       : null
-      
 
   return (
     <motion.div
       whileHover="hover"
-      className="group  flex flex-col rounded-2xl overflow-hidden border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 w-full "
+      className="group flex flex-col rounded-2xl overflow-hidden border border-zinc-200 shadow-sm hover:shadow-xl transition-all duration-300 w-full"
     >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-200">
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 z-10 rounded-none" />
+        )}
+
         <motion.div
           className="absolute inset-0"
           variants={{ hover: { scale: 1.08 } }}
@@ -44,23 +50,25 @@ export default function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             fill
             unoptimized
-            className="object-cover p-2 sm:p-4"  
+       onLoad={() => setTimeout(() => setImageLoaded(true), 1000)}
+            className={`object-cover p-2 sm:p-4 transition-opacity duration-500 ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
           />
         </motion.div>
 
         {discountPercent && (
-          <div className="absolute top-2 sm:top-3 left-0 bg-[#4285F4] text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-r-full shadow">
+          <div className="absolute top-2 sm:top-3 left-0 bg-[#4285F4] text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-r-full shadow z-20">
             {discountPercent}% OFF
           </div>
         )}
 
-        {/* Wishlist */}
         <button
           onClick={(e) => {
             e.stopPropagation()
             toggle(product.id)
           }}
-          className="absolute cursor-pointer top-2 sm:top-3 right-2 sm:right-3 w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-rose-50 transition"
+          className="absolute cursor-pointer top-2 sm:top-3 right-2 sm:right-3 w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-white shadow-md hover:bg-rose-50 transition z-20"
         >
           <Heart
             className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-200 ${
@@ -71,9 +79,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </button>
 
-        {/* Quick View */}
         <motion.div
-          className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2"
+          className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20"
           variants={{ hover: { opacity: 1, y: 0 } }}
           initial={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.25 }}
@@ -91,8 +98,19 @@ export default function ProductCard({ product }: ProductCardProps) {
         </motion.div>
       </div>
 
-      {/* Info */}
-      <div className="p-2.5 sm:p-4 flex flex-col gap-1.5 sm:gap-2">
+      {/* Info — skeleton covers until image ready */}
+      <div className="relative p-2.5 sm:p-4 flex flex-col gap-1.5 sm:gap-2">
+
+        {/* Skeleton overlay on info section too */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 z-10 flex flex-col gap-2 p-2.5 sm:p-4 bg-white">
+            <Skeleton className="h-3 w-10" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-20 mt-1" />
+            <Skeleton className="h-5 w-24" />
+          </div>
+        )}
+
         {product.tag && (
           <span
             className={`text-[10px] sm:text-xs font-semibold uppercase tracking-wide ${
@@ -128,7 +146,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
-
         </div>
       </div>
     </motion.div>

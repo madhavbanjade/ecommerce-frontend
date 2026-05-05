@@ -61,7 +61,7 @@ export default async function ProfileLayout({
           </BreadcrumbList>
         </Breadcrumb> */}
       {/* ── Main Layout ── */}
-      <div className="container flex gap-2 mt-4">
+      <div className="container flex gap-2 mt-24">
 
         {/* ── Desktop Sidebar ── */}
         <aside className="hidden lg:flex w-72 shrink-0 flex-col gap-0 bg-white border border-zinc-200 rounded-lg overflow-hidden sticky  h-fit">
@@ -131,7 +131,7 @@ export default async function ProfileLayout({
           <div className="flex flex-col px-3 py-3 border-b border-zinc-100">
             <Link
               href="/orders"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-lg font-medium text-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-lg font-medium text-div bg-emerald-50 hover:bg-div transition-colors"
             >
               <Package className="w-4 h-4" strokeWidth={2} />
               My Orders

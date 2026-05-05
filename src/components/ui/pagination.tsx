@@ -1,25 +1,33 @@
 "use client"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface PaginationProps {
   total: number
   limit: number
   currentPage: number
+   basePath?: string  //
 }
 
-export default function Pagination({ total, limit, currentPage }: PaginationProps) {
-  const router = useRouter()
+export default function Pagination({ total, limit, currentPage, basePath }: PaginationProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+    const base = basePath ?? pathname 
+
+      const getHref = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", String(page))
+    return `${base}?${params.toString()}`  // ✅ now uses /products
+  }
 
   const totalPages = Math.ceil(total / limit)
 
   const goTo = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", String(page))
-    router.push(`${pathname}?${params.toString()}`)
+  window.location.href = `${pathname}?${params.toString()}` 
   }
 
   if (totalPages <= 1) return null
