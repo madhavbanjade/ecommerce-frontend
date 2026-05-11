@@ -1,6 +1,8 @@
 import OrderDetailModal from "@/src/components/ui/order-detail";
+import Pagination from "@/src/components/ui/pagination";
 import { Order, OrderStatus } from "@/src/types";
 import { fetchAPI } from "@/src/utils/apiService";
+import { unstable_noStore as noStore } from "next/cache";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +21,7 @@ const statusStyles: Record<OrderStatus, string> = {
   Shipped: "bg-purple-50 text-purple-700 border-purple-200",
   Delivered: "bg-green-50 text-green-700 border-green-200",
   Cancelled: "bg-red-50 text-red-700 border-red-200",
+  Returned: "bg-red-100 text-red-600 border-red-300",
 };
 
 const statusDot: Record<OrderStatus, string> = {
@@ -27,71 +30,60 @@ const statusDot: Record<OrderStatus, string> = {
   Shipped: "bg-purple-500",
   Delivered: "bg-green-500",
   Cancelled: "bg-red-500",
+  Returned: "bg-red-600",
 };
 
 // ---------------- FETCH ----------------
-async function getOrders(tab: string): Promise<Order[]> {
+async function getOrders(
+  tab: string,
+  page: string = "1",   // ✅ properly named params
+  limit: string = "6",
+): Promise<{ orders: Order[]; meta: any }> {
   const cookieStore = await cookies();
-
   const cookieHeader = cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
     .join(";");
 
   const res = await fetchAPI({
-    endPoint: `orders?tab=${tab}`,
+    endPoint: `orders?tab=${tab}&page=${page}&limit=${limit}`, // ✅ uses the params
     headers: { Cookie: cookieHeader },
     revalidateSeconds: 0,
   });
 
-  return res.data?.data ?? [];
+  const orders = res.data?.data ?? [];
+  const meta = res.data?.meta ?? null;
+
+  return { orders, meta };
 }
 
 // ---------------- PAGE ----------------
 export default async function MyOrders({
   searchParams,
 }: {
-  searchParams: {
-    tab?: string;
-    search?: string;
-    sort?: string;
-  };
+  searchParams: Promise<{ tab?: string; page?: string }>;
 }) {
-  const activeTab = searchParams?.tab ?? "active";
-  const search = searchParams?.search ?? "";
-  const sort = searchParams?.sort ?? "newest";
+  noStore();
 
-  let orders = await getOrders(activeTab);
+  const params = await searchParams;
+  const activeTab = params.tab ?? "active";
+  const currentPage = params.page ?? "1";
 
-  // ---------------- SEARCH FILTER ----------------
-  if (search) {
-    orders = orders.filter((order) =>
-      order.items.some((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
-      ) || order.id.toString().includes(search)
-    );
-  }
+  // fetch counts for all tabs (limit 1 is enough, we only need meta.total)
+  const [activeResult, pastResult, returnResult] = await Promise.all([
+    getOrders("active", "1", "1"),
+    getOrders("past", "1", "1"),
+    getOrders("returns", "1", "1"),
+  ]);
 
-  // ---------------- SORT ----------------
-  if (sort === "newest") {
-    orders = orders.sort(
-      (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
-    );
-  }
+  const counts: Record<string, number> = {
+    active: activeResult.meta?.total ?? 0,   // ✅ use total from meta, not array length
+    past: pastResult.meta?.total ?? 0,
+    returns: returnResult.meta?.total ?? 0,
+  };
 
-  if (sort === "oldest") {
-    orders = orders.sort(
-      (a, b) => +new Date(a.createdAt) - +new Date(b.createdAt)
-    );
-  }
-
-  if (sort === "price_high") {
-    orders = orders.sort((a, b) => b.totalPrice - a.totalPrice);
-  }
-
-  if (sort === "price_low") {
-    orders = orders.sort((a, b) => a.totalPrice - b.totalPrice);
-  }
+  // fetch only active tab with correct page
+  const { orders, meta } = await getOrders(activeTab, currentPage, "6");
 
   return (
     <>
@@ -103,58 +95,38 @@ export default async function MyOrders({
         </p>
       </div>
 
-      {/* TOP BAR (Tabs + Search + Sort) */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5 border-b border-zinc-200 pb-3">
+      {/* TABS */}
+      <div className="flex gap-3 flex-wrap mb-5 border-b border-zinc-200 pb-3">
+        {tabs.map((t) => {
+          const isActive = activeTab === t.tab;
+          const count = counts[t.tab];
 
-        {/* TABS */}
-        <div className="flex gap-3 flex-wrap">
-          {tabs.map((t) => {
-            const isActive = activeTab === t.tab;
-
-            return (
-              <Link
-                key={t.tab}
-                href={`/orders?tab=${t.tab}&search=${search}&sort=${sort}`}
-                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                  isActive
-                    ? "border-zinc-900 text-zinc-900"
-                    : "border-transparent text-zinc-500 hover:text-zinc-900"
-                }`}
-              >
-                {t.label}
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* SEARCH + SORT */}
-        <div className="flex gap-2 items-center">
-
-          {/* SEARCH */}
-          <form>
-            <input
-              name="search"
-              defaultValue={search}
-              placeholder="Search orders..."
-              className="px-3 py-2 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-900"
-            />
-          </form>
-
-          {/* SORT */}
-          <form>
-            <select
-              name="sort"
-              defaultValue={sort}
-              className="px-3 py-2 text-sm border border-zinc-300 rounded-lg"
+          return (
+            <Link
+              key={t.tab}
+              href={`/profile/orders?tab=${t.tab}`}
+              scroll={false}
+              className={`px-4 py-2 text-lg font-bold border-b-2 transition-colors flex items-center gap-2 ${
+                isActive
+                  ? "border-zinc-900 text-zinc-900"
+                  : "border-transparent text-zinc-500 hover:text-zinc-900"
+              }`}
             >
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-              <option value="price_high">Price High</option>
-              <option value="price_low">Price Low</option>
-            </select>
-          </form>
-
-        </div>
+              {t.label}
+              {count > 0 && (
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                    isActive
+                      ? "bg-zinc-900 text-white"
+                      : "bg-zinc-100 text-zinc-500"
+                  }`}
+                >
+                  {count}
+                </span>
+              )}
+            </Link>
+          );
+        })}
       </div>
 
       {/* EMPTY STATE */}
@@ -166,10 +138,9 @@ export default async function MyOrders({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {orders.map((order) => {
             const firstItem = order.items[0];
-
             const totalUnits = order.items.reduce(
               (acc, item) => acc + item.quantity,
-              0
+              0,
             );
 
             return (
@@ -193,7 +164,6 @@ export default async function MyOrders({
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between mb-1">
                     <p className="text-xs text-zinc-400">#{order.id}</p>
-
                     <span
                       className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs border ${
                         statusStyles[order.status]
@@ -219,19 +189,15 @@ export default async function MyOrders({
                       <p className="text-xs text-zinc-400">Items</p>
                       <p className="text-sm font-medium">{totalUnits}</p>
                     </div>
-
                     <div>
                       <p className="text-xs text-zinc-400">Total</p>
                       <p className="text-sm font-medium">
                         Rs. {order.totalPrice}
                       </p>
                     </div>
-
                     <div>
                       <p className="text-xs text-zinc-400">Size</p>
-                      <p className="text-sm font-medium">
-                        {firstItem.size}
-                      </p>
+                      <p className="text-sm font-medium">{firstItem.size}</p>
                     </div>
                   </div>
 
@@ -242,6 +208,13 @@ export default async function MyOrders({
           })}
         </div>
       )}
+
+      <Pagination
+        total={meta?.total ?? 0}
+        limit={6}
+        currentPage={meta?.page ?? 1}
+        basePath={`/profile/orders?tab=${activeTab}`}// ✅ keeps tab in URL
+      />
     </>
   );
 }

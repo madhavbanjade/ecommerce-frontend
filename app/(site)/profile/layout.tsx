@@ -1,22 +1,16 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { fetchAPI } from "@/src/utils/apiService";
 import Image from "next/image";
 import { logout, order, payment, saved, security, user } from "@/src/assets";
 import { redirect } from "next/navigation";
-import SideTabs from "@/src/components/ui/tab";
-import { User, Package, Star, Heart } from "lucide-react";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/src/components/ui/breadcrumb";
+import { Package, Star, Heart, LogOut } from "lucide-react";
+import ProfileSidebar from "@/src/components/ui/profileSidebar";
 
-const tabs = [
-  { label: "Order History", href: "/orders", icon: order },
+const TABS = [
+  { label: "My Orders",  href: "/profile/orders",   Icon: Package },
+  { label: "My Reviews", href: "/profile/reviews",  Icon: Star    },
+  { label: "Wishlist",   href: "/profile/wishlists", Icon: Heart   },
 ];
 
 export default async function ProfileLayout({
@@ -46,129 +40,155 @@ export default async function ProfileLayout({
     redirect("/auth");
   }
 
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+
+  const displayName =
+    profile?.firstName && profile?.lastName
+      ? `${profile.firstName} ${profile.lastName}`
+      : profile?.username || "User";
+
+  const avatarSeed = profile?.username || profile?.email || "user";
+
   return (
-    <>
+    <div className="mt-24  min-h-screen bg-[#F7F6F3]">
+      <div className="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="flex gap-6 pt-28 pb-16 items-start">
 
-      {/* <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Account</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb> */}
-      {/* ── Main Layout ── */}
-      <div className="container flex gap-2 mt-24">
+          {/* ── Desktop Sidebar ── */}
+          <aside className="hidden lg:flex w-72 shrink-0 flex-col gap-0 bg-white border border-zinc-200/80 rounded-2xl overflow-hidden sticky top-24 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
 
-        {/* ── Desktop Sidebar ── */}
-        <aside className="hidden lg:flex w-72 shrink-0 flex-col gap-0 bg-white border border-zinc-200 rounded-lg overflow-hidden sticky  h-fit">
+            {/* Header strip */}
+            <div className="relative px-5 pt-5 pb-4 border-b border-zinc-100 overflow-hidden">
+              {/* Subtle decorative dot grid */}
+              <div
+                className="absolute inset-0 opacity-[0.035] pointer-events-none"
+               
+              />
+              <div className="relative flex items-center justify-between">
+                <h4 className="text-base font-bold text-zinc-900 tracking-tight">Dashboard</h4>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded-md">
+                  {profile?.role || "Customer"}
+                </span>
+              </div>
+            </div>
 
-          <div className="flex items-center gap-3 px-5 py-4 border-b border-zinc-100">
-            <h4 className="text-lg font-bold text-zinc-900">Dashboard</h4>
-          </div>
+            {/* ── Profile Info ── */}
+            <div className="flex items-center gap-4 px-5 py-5 border-b border-zinc-100">
+              <div className="relative shrink-0">
+                <div className="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200 shadow-sm">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* Online dot */}
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full shadow-sm" />
+              </div>
 
-          {/* ── Profile Info ── */}
-          <div className="flex items-center gap-4 px-5 py-5 border-b border-zinc-100">
-            {/* Avatar */}
-          <div className="w-14 h-14 rounded-full overflow-hidden bg-zinc-100 shrink-0 border border-zinc-200">
-  <img
-    src={
-     
-         `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.username || profile?.email || "user"}`
-    }
-    alt={profile?.username || "User"}
-    className="w-full h-full object-cover"
-  />
-</div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-zinc-900 truncate leading-snug">{displayName}</p>
+                <p className="text-xs text-zinc-400 truncate mt-0.5">{profile?.email}</p>
+              </div>
+            </div>
 
-            {/* Name + email + role */}
-            <div className="min-w-0">
-              <p className="text-lg font-bold text-zinc-900 truncate">
-                {profile?.firstName && profile?.lastName
-                  ? `${profile.firstName} ${profile.lastName}`
-                  : profile?.username || "User"}
-              </p>
-              <p className="text-sm text-zinc-500 truncate mt-0.5">
-                {profile?.email}
-              </p>
-              <span className="inline-block mt-1.5 text-[10px] font-bold uppercase tracking-widest border border-zinc-300 text-zinc-500 rounded-md px-2 py-0.5">
-                {profile?.role || "Customer"}
-              </span>
+            {/* ── Stats ── */}
+            <div className="flex flex-col divide-y divide-zinc-50 px-5 py-1 border-b border-zinc-100 bg-zinc-50/50">
+              {[
+                { label: "Total Orders", value: profile?.totalOrders ?? 0, mono: true },
+                { label: "Total Spent",  value: `₹ ${profile?.totalSpent?.toFixed(2) ?? "0.00"}`, mono: true },
+                {
+                  label: "Last Order",
+                  value: profile?.lastOrder
+                    ? new Date(profile.lastOrder).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                    : "N/A",
+                  mono: false,
+                },
+              ].map(({ label, value, mono }) => (
+                <div key={label} className="flex items-center justify-between py-3">
+                  <span className="text-xs text-zinc-400 font-medium">{label}</span>
+                  <span className={`text-xs font-bold text-zinc-800 ${mono ? "tabular-nums" : ""}`}>
+                    {String(value)}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Nav Links ── */}
+         <ProfileSidebar />
+
+            {/* ── Sign out ── */}
+            <div className="px-3 py-3">
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="group flex items-center gap-3 px-3.5 py-2.5 w-full text-sm font-medium text-zinc-400 hover:bg-red-50 rounded-xl transition-all duration-150 hover:text-red-500 cursor-pointer"
+                >
+                  <LogOut
+                    className="w-4 h-4 shrink-0 transition-colors group-hover:text-red-400"
+                    strokeWidth={2}
+                  />
+                  Sign out
+                </button>
+              </form>
+            </div>
+          </aside>
+
+          {/* ── Mobile Header + Tabs ── */}
+          <div className="lg:hidden w-full space-y-3 mb-4">
+            <div className="bg-white border border-zinc-200/80 rounded-2xl px-4 py-3 flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-zinc-900 leading-tight">{displayName}</p>
+                  <p className="text-xs text-zinc-400 leading-tight">{profile?.email}</p>
+                </div>
+              </div>
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-red-500 transition-colors font-medium"
+                >
+                  <LogOut className="w-3.5 h-3.5" strokeWidth={2} />
+                  Sign out
+                </button>
+              </form>
+            </div>
+
+            <div className="flex gap-2 overflow-x-auto pb-0.5 no-scrollbar">
+              {TABS.map(({ label, href, Icon }) => {
+                const slug = href.split("/").pop()!;
+                const active = pathname.includes(slug);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`flex items-center gap-1.5 shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all border shadow-sm ${
+                      active
+                        ? "bg-zinc-900 text-white border-zinc-900"
+                        : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" strokeWidth={2} />
+                    {label}
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
-          {/* ── Stats ── */}
-          <div className="flex flex-col divide-y divide-zinc-100 px-5 py-2 border-b border-zinc-100">
-            <div className="flex items-center justify-between py-3">
-              <span className="text-md text-zinc-500">Total Orders</span>
-              <span className="text-md font-bold text-zinc-900">
-                {profile?.totalOrders ?? 0}
-              </span>
-            </div>
-            <div className="flex items-center justify-between py-3">
-              <span className="text-md text-zinc-500">Total Spent</span>
-              <span className="text-md font-bold text-zinc-900">
-                ₹ {profile?.totalSpent?.toFixed(2) ?? "0.00"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between py-3">
-              <span className="text-md text-zinc-500">Last Order</span>
-              <span className="text-md font-medium text-zinc-500">
-                {profile?.lastOrder
-                  ? new Date(profile.lastOrder).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
-                  : "N/A"}
-              </span>
-            </div>
-          </div>
+          {/* ── Content ── */}
+          <main className="flex-1 min-w-0 w-full">{children}</main>
 
-          {/* ── Nav Links ── */}
-          <div className="flex flex-col px-3 py-3 border-b border-zinc-100">
-            <Link
-              href="/orders"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-lg font-medium text-div bg-emerald-50 hover:bg-div transition-colors"
-            >
-              <Package className="w-4 h-4" strokeWidth={2} />
-              My Orders
-            </Link>
-            <Link
-              href="/reviews"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-lg font-medium text-zinc-700 hover:bg-zinc-50 transition-colors mt-1"
-            >
-              <Star className="w-4 h-4" strokeWidth={2} />
-              My Reviews
-            </Link>
-            <Link
-              href="/wishlist"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-lg font-medium text-zinc-700 hover:bg-zinc-50 transition-colors mt-1"
-            >
-              <Image src={user} alt="wishlist" width={16} height={16}></Image>
-            Wishlist
-            </Link>
-        
-          </div>
-
-          {/* ── Sign Out ──
-          <div className="px-3 py-3">
-            <form action={logoutAction}>
-              <button className="flex items-center gap-3 px-3 py-2.5 w-full text-lg text-zinc-500 hover:bg-red-50 rounded-xl transition-colors hover:text-red-500 cursor-pointer">
-                <Image src={logout} alt="sign out" width={16} height={16} />
-                Sign out
-              </button>
-            </form>
-          </div> */}
-        </aside>
-
-        {/* ── Content ── */}
-        <main className="flex-1 min-w-0 w-full">{children}</main>
+        </div>
       </div>
-
-   
-    </>
+    </div>
   );
 }

@@ -1,4 +1,5 @@
-import { redirect } from 'next/navigation'
+import { redirect } from "next/navigation";
+
 export default function ProfilePage() {
-  redirect('/profile/orders')
+  redirect("/profile/wishlists");
 }

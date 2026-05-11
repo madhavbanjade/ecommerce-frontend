@@ -68,7 +68,9 @@ export type OrderStatus =
   | "Shipped"
   | "Confirmed"
   | "Delivered"
-  | "Cancelled";
+  | "Cancelled"
+   | "Returned";
+
 
 export interface OrderItem {
   id: string;
@@ -81,6 +83,7 @@ export interface OrderItem {
  export interface Order {
   id: string;
   status: OrderStatus;
+  orders: Order[];
   totalPrice: number;
   createdAt: string;
   items: OrderItem[];
