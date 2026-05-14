@@ -2,42 +2,125 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, Star, Heart } from "lucide-react";
+import { Package, Star, Heart, LogOut } from "lucide-react";
+import Image from "next/image";
+import { naya } from "@/src/assets";
 
 const TABS = [
-  { label: "My Orders", href: "/profile/orders", Icon: Package },
-  { label: "My Reviews", href: "/profile/reviews", Icon: Star },
-  { label: "Wishlist", href: "/profile/wishlists", Icon: Heart },
+  { label: "My orders", href: "/profile/orders", Icon: Package, count: 14 },
+  { label: "My reviews", href: "/profile/reviews", Icon: Star, count: 6 },
+  { label: "Wishlist", href: "/profile/wishlists", Icon: Heart, count: 9 },
 ];
 
 export default function ProfileSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col px-3 py-3 gap-0.5 border-b border-zinc-100">
-      {TABS.map(({ label, href, Icon }) => {
-        const slug = href.split("/").pop()!;
-        const active = pathname.includes(slug);
+    <nav className="w-80  h-fit flex flex-col gap-5 rounded-xl bg-zinc-100">
+      {/* ── Hero ── */}
+      <div className="rounded-lg bg-white p-4 shadow-sm border border-zinc-200">
+        <h4 className="text-xl font-semibold text-zinc-900 mb-3">
+          Dashboard
+        </h4>
 
-        return (
-          <Link
-            key={href}
-            href={href}
-            className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
-              active
-                ? "bg-zinc-900 text-white shadow-sm"
-                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+        <div className="flex items-center gap-4">
+          <div className="relative shrink-0">
+            <Image
+              src={naya}
+              alt="user"
+              className="w-16 h-16 rounded-full object-cover border-2 border-zinc-200"
+            />
+
+         
+          </div>
+
+          <div className="">
+            <p className="font-bold text-xl">
+              Madhav Banjade
+            </p >
+
+            <p className="text-sm text-zinc-500 truncate mt-1">
+              madhavbanjade005@gmail.com
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Stats ── */}
+      <div className="rounded-lg border border-zinc-200 overflow-hidden bg-white shadow-sm">
+        {[
+          { label: "Total orders", value: "10" },
+          { label: "Total spent", value: "₹1,200" },
+          { label: "Last order", value: "May 14" },
+        ].map(({ label, value }, i) => (
+          <div
+            key={label}
+            className={`flex items-center justify-between px-5 py-4 ${
+              i !== 2 ? "border-b border-zinc-100" : ""
             }`}
           >
-            <Icon
-              className={`w-4 h-4 ${
-                active ? "text-white" : "text-zinc-400"
+            <span className="text-md font-medium text-zinc-500">
+              {label}
+            </span>
+
+            <span className="text-md font-semibold text-zinc-900 tabular-nums">
+              {value}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Nav ── */}
+      <div className="rounded-lg border border-zinc-200 bg-white p-2 shadow-sm">
+        {TABS.map(({ label, href, Icon, count }) => {
+          const active = pathname.startsWith(href);
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`group flex items-center gap-4 rounded-2xl px-4 py-3 transition-all duration-200 ${
+                active
+                  ? "bg-black text-white shadow-sm"
+                  : "text-zinc-700 hover:bg-zinc-100"
               }`}
-            />
-            {label}
-          </Link>
-        );
-      })}
-    </div>
+            >
+              <div
+                className={`flex items-center justify-center rounded-xl p-2 ${
+                  active
+                    ? "bg-white/10"
+                    : "bg-zinc-100 group-hover:bg-white"
+                }`}
+              >
+                <Icon
+                  className="w-5 h-5 shrink-0"
+                  strokeWidth={active ? 2.4 : 2}
+                />
+              </div>
+
+              <span className="flex-1 text-base font-medium">
+                {label}
+              </span>
+
+              <span
+                className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  active
+                    ? "bg-white text-black"
+                    : "bg-zinc-100 text-zinc-600"
+                }`}
+              >
+                {count}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* ── Footer button ── */}
+      <button className="flex items-center justify-center gap-1 rounded-2xl bg-red-500 p-4 text-base font-semibold text-white transition-all duration-200 hover:bg-red-600">
+        <LogOut className="w-5 h-5" strokeWidth={2.2} />
+        <p>Logout</p>
+      </button>
+    </nav>
   );
 }

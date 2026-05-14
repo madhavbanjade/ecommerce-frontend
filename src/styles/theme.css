@@ -33,14 +33,7 @@
     --weight-extrabold: 800;
 }
 
-body {
-    font-family: var(--font-body);
-    color: var(--color-dark);
-    background:  var(--color-primaryz);
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-}
+
 
 h1, .heading-h1 {
   font-family: var(--font-heading);
@@ -145,11 +138,7 @@ h5, .heading-h5 {
 
 
 
-@layer components {
-  .container{
-    @apply max-w-7xl mx-auto px-6 py-3 top-4;
-  }
-}
+
 
  @media (max-width: 1024px) {
   h1 { font-size: 52px; }
