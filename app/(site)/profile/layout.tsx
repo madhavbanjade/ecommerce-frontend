@@ -1,12 +1,31 @@
 import ProfileSidebar from "@/src/components/ui/profileSidebar";
+import { fetchAPI } from "@/src/utils/apiService";
+import { cookies } from "next/headers";
 
 export default async function ProfileLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join(";");
+
+  const res = await fetchAPI({
+    endPoint: "users/me",
+    headers:{
+        Cookie: cookieHeader
+    },
+    revalidateSeconds: 0,
+  });
+  const user = res?.data?.data ?? null;
+  console.log("u", user);
+
+  console.log("user", user);
   return (
     <div className="container mt-24">
-      <div className="flex gap-3">
-          <ProfileSidebar />
+      <div className="flex gap-6">
+        <ProfileSidebar user={user} />
         <main className="flex-1 min-w-0">{children}</main>
       </div>
     </div>

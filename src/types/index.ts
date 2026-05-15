@@ -73,6 +73,7 @@ export type OrderStatus =
 
 
 export interface OrderItem {
+  totalPrice: ReactNode;
   id: string;
   name: string;
   quantity: number;
@@ -81,6 +82,10 @@ export interface OrderItem {
 }
 
  export interface Order {
+  paymentMethod: string;
+  phone: ReactNode;
+  location: ReactNode;
+  fullName: ReactNode;
   id: string;
   status: OrderStatus;
   orders: Order[];
