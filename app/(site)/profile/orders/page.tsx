@@ -1,11 +1,13 @@
+import { Suspense } from "react";
 import OrderDetailModal from "@/src/components/ui/order-detail";
-import Pagination from "@/src/components/ui/pagination";
 import { Order, OrderStatus } from "@/src/types";
 import { fetchAPI } from "@/src/utils/apiService";
 import { unstable_noStore as noStore } from "next/cache";
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { OrdersListSkeleton } from "./loading";
+import { OrdersArea, OrdersPagination } from "./orders-client";
 
 // ---------------- TABS ----------------
 const tabs = [
@@ -36,7 +38,7 @@ const statusDot: Record<OrderStatus, string> = {
 // ---------------- FETCH ----------------
 async function getOrders(
   tab: string,
-  page: string = "1",   // ✅ properly named params
+  page: string = "1",
   limit: string = "6",
 ): Promise<{ orders: Order[]; meta: any }> {
   const cookieStore = await cookies();
@@ -46,15 +48,101 @@ async function getOrders(
     .join(";");
 
   const res = await fetchAPI({
-    endPoint: `orders?tab=${tab}&page=${page}&limit=${limit}`, // ✅ uses the params
+    endPoint: `orders?tab=${tab}&page=${page}&limit=${limit}`,
     headers: { Cookie: cookieHeader },
     revalidateSeconds: 0,
   });
 
-  const orders = res.data?.data ?? [];
-  const meta = res.data?.meta ?? null;
+  return {
+    orders: res.data?.data ?? [],
+    meta: res.data?.meta ?? null,
+  };
+}
 
-  return { orders, meta };
+// ---------------- ORDER CARDS (no pagination) ----------------
+async function OrdersListContent({ tab, page }: { tab: string; page: string }) {
+  const { orders } = await getOrders(tab, page, "6");
+
+  if (orders.length === 0) {
+    return (
+      <div className="py-16 text-center text-sm text-zinc-400">
+        No orders found.
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {orders.map((order) => {
+        const firstItem = order.items[0];
+        const totalUnits = order.items.reduce(
+          (acc, item) => acc + item.quantity,
+          0,
+        );
+
+        return (
+          <div
+            key={order.id}
+            className="bg-white border border-zinc-200 rounded-xl p-3 sm:p-4 flex gap-3 sm:gap-5"
+          >
+            {/* IMAGE */}
+            <div className="w-24 h-28 sm:w-28 sm:h-32 rounded-lg overflow-hidden border bg-zinc-50 shrink-0">
+              <Image
+                src={`http://localhost:3333${firstItem.image}`}
+                alt={firstItem.name}
+                width={0}
+                height={0}
+                className="w-full h-full object-cover"
+                unoptimized
+              />
+            </div>
+
+            {/* INFO */}
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between mb-1">
+                <p className="text-xs text-zinc-400">#{order.id}</p>
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs border ${
+                    statusStyles[order.status]
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${statusDot[order.status]}`}
+                  />
+                  {order.status}
+                </span>
+              </div>
+
+              <h3 className="font-semibold text-sm truncate">
+                {firstItem?.name}
+              </h3>
+
+              <p className="text-xs text-zinc-400 mb-3">
+                {new Date(order.createdAt).toLocaleDateString()}
+              </p>
+
+              <div className="flex gap-6 mb-4">
+                <div>
+                  <p className="text-xs text-zinc-400">Items</p>
+                  <p className="text-sm font-medium">{totalUnits}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-400">Total</p>
+                  <p className="text-sm font-medium">Rs. {order.totalPrice}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-400">Size</p>
+                  <p className="text-sm font-medium">{firstItem.size}</p>
+                </div>
+              </div>
+
+              <OrderDetailModal order={order} />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 // ---------------- PAGE ----------------
@@ -69,7 +157,7 @@ export default async function MyOrders({
   const activeTab = params.tab ?? "active";
   const currentPage = params.page ?? "1";
 
-  // fetch counts for all tabs (limit 1 is enough, we only need meta.total)
+  // fetch counts for all tabs (meta.total is tab-wide, independent of page)
   const [activeResult, pastResult, returnResult] = await Promise.all([
     getOrders("active", "1", "1"),
     getOrders("past", "1", "1"),
@@ -77,13 +165,10 @@ export default async function MyOrders({
   ]);
 
   const counts: Record<string, number> = {
-    active: activeResult.meta?.total ?? 0,   // ✅ use total from meta, not array length
+    active: activeResult.meta?.total ?? 0,
     past: pastResult.meta?.total ?? 0,
     returns: returnResult.meta?.total ?? 0,
   };
-
-  // fetch only active tab with correct page
-  const { orders, meta } = await getOrders(activeTab, currentPage, "6");
 
   return (
     <>
@@ -129,92 +214,18 @@ export default async function MyOrders({
         })}
       </div>
 
-      {/* EMPTY STATE */}
-      {orders.length === 0 ? (
-        <div className="py-16 text-center text-sm text-zinc-400">
-          No orders found.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {orders.map((order) => {
-            const firstItem = order.items[0];
-            const totalUnits = order.items.reduce(
-              (acc, item) => acc + item.quantity,
-              0,
-            );
-
-            return (
-              <div
-                key={order.id}
-                className="bg-white border border-zinc-200 rounded-xl p-3 sm:p-4 flex gap-3 sm:gap-5"
-              >
-                {/* IMAGE */}
-                <div className="w-24 h-28 sm:w-28 sm:h-32 rounded-lg overflow-hidden border bg-zinc-50 shrink-0">
-                  <Image
-                    src={`http://localhost:3333${firstItem.image}`}
-                    alt={firstItem.name}
-                    width={0}
-                    height={0}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                  />
-                </div>
-
-                {/* INFO */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between mb-1">
-                    <p className="text-xs text-zinc-400">#{order.id}</p>
-                    <span
-                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs border ${
-                        statusStyles[order.status]
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full ${statusDot[order.status]}`}
-                      />
-                      {order.status}
-                    </span>
-                  </div>
-
-                  <h3 className="font-semibold text-sm truncate">
-                    {firstItem?.name}
-                  </h3>
-
-                  <p className="text-xs text-zinc-400 mb-3">
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </p>
-
-                  <div className="flex gap-6 mb-4">
-                    <div>
-                      <p className="text-xs text-zinc-400">Items</p>
-                      <p className="text-sm font-medium">{totalUnits}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-zinc-400">Total</p>
-                      <p className="text-sm font-medium">
-                        Rs. {order.totalPrice}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-zinc-400">Size</p>
-                      <p className="text-sm font-medium">{firstItem.size}</p>
-                    </div>
-                  </div>
-
-                  <OrderDetailModal order={order} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <Pagination
-        total={meta?.total ?? 0}
-        limit={6}
-        currentPage={meta?.page ?? 1}
-        basePath={`/profile/orders?tab=${activeTab}`}// ✅ keeps tab in URL
-      />
+      {/* OrdersArea: shows skeleton on click, reveals content once nav completes */}
+      <OrdersArea>
+        <Suspense key={`${activeTab}-${currentPage}`} fallback={<OrdersListSkeleton />}>
+          <OrdersListContent tab={activeTab} page={currentPage} />
+        </Suspense>
+        <OrdersPagination
+          total={counts[activeTab]}
+          limit={6}
+          currentPage={Number(currentPage)}
+          activeTab={activeTab}
+        />
+      </OrdersArea>
     </>
   );
 }

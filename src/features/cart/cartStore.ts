@@ -68,7 +68,7 @@ export const userCartStore = create<CartStore>()(
       removeItem: (cartItemId) => {
         set(
           (state) => ({
-            items: state.items.filter((i) => i.cartItemId !== cartItemId),
+            items: state.items.filter((i) => i.id !== cartItemId),
           }),
           false,
           "removeItem",
@@ -80,7 +80,7 @@ export const userCartStore = create<CartStore>()(
         set(
           (state) => ({
             items: state.items.map((i) =>
-              i.cartItemId === cartItemsId ? { ...i, quantity } : i,
+              i.id === cartItemsId ? { ...i, quantity } : i,
             ),
           }),
           false,

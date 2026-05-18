@@ -1,11 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { arrow, cart, login, logo, logout, signup, user } from "../../assets";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import { userCartStore } from "@/src/features/cart/cartStore";
 
@@ -51,7 +50,8 @@ export function NavPage({ profile }: { profile: any }) {
 
   const pathname = usePathname();
   const isLoggedIn = !!profile;
-  const totalCount = userCartStore((s) => s.totalCount());
+  const cartItems  = userCartStore((s) => s.items);
+  const totalCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -122,7 +122,7 @@ export function NavPage({ profile }: { profile: any }) {
                   <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] font-bold rounded-full px-1.5">
                     {totalCount > 99 ? "99+" : totalCount}
                   </span>
-                )}  
+                )}
               </div>
 
               <p className="text-sm font-semibold group-hover:translate-x-0.5 transition">

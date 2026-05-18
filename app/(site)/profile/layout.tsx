@@ -1,4 +1,4 @@
-import ProfileSidebar from "@/src/components/ui/profileSidebar";
+﻿import ProfileSidebar from "@/src/components/ui/profileSidebar";
 import { fetchAPI } from "@/src/utils/apiService";
 import { cookies } from "next/headers";
 
@@ -23,11 +23,11 @@ export default async function ProfileLayout({
 
   console.log("user", user);
   return (
-    <div className="container mt-24">
-      <div className="flex gap-6">
+    <div className="container mt-24 flex gap-6 h-[calc(100vh-6rem)]">
+      <div className="shrink-0 sticky top-24 self-start">
         <ProfileSidebar user={user} />
-        <main className="flex-1 min-w-0">{children}</main>
       </div>
+      <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
     </div>
   );
 }

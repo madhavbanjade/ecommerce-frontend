@@ -92,13 +92,7 @@ const toFormData = (
 
 
 export const fetchAPI = async <TResponse = any, TData = unknown>({
-  endPoint = "",
-  method = "GET",
-  data, 
-  id,
-  slug,
-  setError, 
-  headers: customHeaders = {},
+  endPoint = "", method = "GET", data, id, slug, setError, headers: customHeaders = {},
 }: FetchAPIOptions<TData>): Promise<APIResponse<TResponse>> => {
     //Combines API_BASE + endpoint + id/slug to form the request URL.
   const urlParts = [API_BASE, endPoint];

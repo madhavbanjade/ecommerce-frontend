@@ -1,34 +1,50 @@
 "use client"
 
-import { usePathname, useSearchParams } from "next/navigation"
+import { useEffect, useRef } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface PaginationProps {
   total: number
   limit: number
   currentPage: number
-   basePath?: string  //
+  basePath?: string
+  scrollToId?: string
 }
 
-export default function Pagination({ total, limit, currentPage, basePath }: PaginationProps) {
+export default function Pagination({ total, limit, currentPage, basePath, scrollToId }: PaginationProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const router = useRouter()
+  const isFirstRender = useRef(true)
 
-    const base = basePath ?? pathname 
+  const base = basePath ?? pathname
 
-      const getHref = (page: number) => {
+  const getHref = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", String(page))
-    return `${base}?${params.toString()}`  // ✅ now uses /products
+    return `${base}?${params.toString()}`
   }
 
   const totalPages = Math.ceil(total / limit)
 
   const goTo = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("page", String(page))
-  window.location.href = `${pathname}?${params.toString()}` 
+    router.push(getHref(page), { scroll: false })
   }
+
+  useEffect(() => {
+    // skip scroll on initial mount — only scroll when page actually changes
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    if (!scrollToId) return
+    const el = document.getElementById(scrollToId)
+    if (!el) return
+    const NAV_HEIGHT = 64 // fixed nav h-16 = 64px
+    const top = el.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT - 16
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" })
+  }, [currentPage, scrollToId])
 
   if (totalPages <= 1) return null
 

@@ -45,7 +45,7 @@ export default async function Cart() {
   // try common response shapes
   const products = productsRes?.data?.data ?? [];
   return (
-    <>
+    <div className="mt-24">
       {/* ───── Breadcrumb ───── */}
       <Breadcrumb>
         <BreadcrumbList>
@@ -70,6 +70,6 @@ export default async function Cart() {
         products={products}
         isLoggedIn={false}
       />
-    </>
+    </div>
   );
 }

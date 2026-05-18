@@ -91,17 +91,17 @@ export default function Filter({
 
       {/* Gender */}
       <div className="space-y-3">
-        <h5 className="text-[10px] font-bold uppercase text-zinc-400">Gender</h5>
+        <h5 className="font-bold uppercase text-zinc-400">Gender</h5>
         <div className="space-y-2">
           {Gender.map((g) => (
-            <label key={g} className="flex items-center gap-3 cursor-pointer group">
+            <label key={g} className="flex items-center gap-2 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={selectedGenders.includes(g)}
                 onChange={(e) => updateParam("gender", g, e.target.checked)}
                 className="w-4 h-4 rounded border-zinc-300 accent-black cursor-pointer"
               />
-              <span className="text-xs text-zinc-600 group-hover:text-black transition-colors">{g}</span>
+              <span className="text-md text-zinc-600 group-hover:text-black transition-colors">{g}</span>
             </label>
           ))}
         </div>
@@ -112,14 +112,14 @@ export default function Filter({
         <h5 className="text-[10px] font-bold uppercase text-zinc-400">Category</h5>
         <div className="space-y-2">
           {Categories.map((cat) => (
-            <label key={cat} className="flex items-center gap-3 cursor-pointer group">
+            <label key={cat} className="flex items-center gap-2 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={selectedCategories.includes(cat)}
                 onChange={(e) => updateParam("category", cat, e.target.checked)}
                 className="w-4 h-4 rounded border-zinc-300 accent-black cursor-pointer"
               />
-              <span className="text-xs text-zinc-600 group-hover:text-black transition-colors">{cat}</span>
+              <span className="text-md text-zinc-600 group-hover:text-black transition-colors">{cat}</span>
             </label>
           ))}
         </div>
@@ -156,7 +156,7 @@ export default function Filter({
     <>
       {/* Mobile burger button */}
       <button
-         className="lg:hidden relative  flex items-center gap-2 border border-zinc-400 rounded-lg px-3 py-2 text-xs font-semibold  tracking-wider text-zinc-600 hover:border-zinc-900 transition mb-2"
+         className="lg:hidden relative flex items-center gap-2 border border-zinc-400 rounded-lg px-3 py-2 text-xs font-semibold tracking-wider text-zinc-600 hover:border-zinc-900 transition shrink-0"
         onClick={() => setOpen(true)}
       >
         <Image src={filter} alt="filter" width={16} height={16} />

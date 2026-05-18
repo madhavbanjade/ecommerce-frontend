@@ -14,7 +14,7 @@ interface UpdateCartPayload {
 //shape backend in cart items
 
 const mapToCartItem = (raw: any): CartItem => ({
-  cartItemId: raw.id,
+  id: raw.id,
   productId: raw.productId ?? raw.id,
   name: raw.name,
   slug: raw.slug ?? "",

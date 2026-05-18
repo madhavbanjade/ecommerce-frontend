@@ -1,4 +1,4 @@
-import Filter from "@/src/components/layout/filters";
+﻿import Filter from "@/src/components/layout/filters";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,7 +7,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/src/components/ui/breadcrumb";
-import FilterChips from "@/src/components/ui/filter-chips";
 import { use } from "react";
 
 function formatSlug(slug: string) {
@@ -35,9 +34,10 @@ export default function SlugLayout({
       : [];
 
   return (
-    <div className="text-dark">
+    // id here so pagination scrollIntoView lands at the very top (breadcrumb visible)
+    <div className="text-dark mt-24" id="products">
       {/* Breadcrumb */}
-      <div>
+      <div className="">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -66,19 +66,16 @@ export default function SlugLayout({
       </div>
 
       <div className="container">
-        {/* mobile */}
-    <div className="lg:hidden absolute">
-  <Filter initialGenders={initialGenders} />
-</div>
+        {/* Mobile filter button */}
+        <div className="lg:hidden mb-4">
+          <Filter initialGenders={initialGenders} />
+        </div>
 
-        {/* Desktop view */}
+        {/* Desktop two-column layout */}
         <div className="flex gap-6">
-          {/* Sidebar — filters only */}
           <div className="hidden lg:block w-64 shrink-0">
             <Filter initialGenders={initialGenders} />
           </div>
-
-          {/* Main content — chips, sort, title, grid */}
           <div className="flex-1 min-w-0">
             {children}
           </div>

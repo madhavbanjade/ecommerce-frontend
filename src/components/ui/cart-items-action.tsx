@@ -1,6 +1,6 @@
 "use client"
 
-import { Minus, Plus, Trash2, Tag } from "lucide-react"
+import { Minus, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { userCartStore } from "@/src/features/cart/cartStore"
 import { deleteCartItem, updateCartItem } from "@/src/features/cart/cartService"
@@ -15,6 +15,8 @@ interface CartItemActionsProps {
   initialQuantity: number
   size: string
   maxQuantity: number
+  qtyOnly?: boolean
+  trashOnly?: boolean
 }
 
 export default function CartItemActions({
@@ -22,6 +24,8 @@ export default function CartItemActions({
   initialQuantity,
   size,
   maxQuantity,
+  qtyOnly = false,
+  trashOnly = false,
 }: CartItemActionsProps) {
   const [quantity, setQuantity] = useState(initialQuantity)
   const [quantityLoading, setQuantityLoading] = useState(false)
@@ -44,11 +48,11 @@ export default function CartItemActions({
 
     if (success) {
       router.refresh()
-      toast.success("Cart updated") // ✅ Toastify
+      toast.success("Cart updated")
     } else {
       setQuantity(prevQty)
       zustandUpdate(itemId, prevQty)
-      toast.error("Failed to update cart") // ✅ Toastify
+      toast.error("Failed to update cart")
     }
 
     setQuantityLoading(false)
@@ -80,73 +84,102 @@ export default function CartItemActions({
     if (success) {
       zustandRemove(itemId)
       router.refresh()
-      toast.success("Item removed from cart") // ✅ Toastify
+      toast.success("Item removed from cart")
     } else {
       window.location.reload()
-      toast.error("Failed to remove item") // ✅ Toastify
+      toast.error("Failed to remove item")
     }
 
     setRemoveLoading(false)
   }
 
+  if (trashOnly) return (
+    <button
+      onClick={remove}
+      disabled={removeLoading}
+      className="w-7 h-7 flex items-center justify-center rounded-full text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-30 shrink-0"
+    >
+      {removeLoading ? (
+        <span className="inline-block w-3 h-3 border-2 border-zinc-200 border-t-red-400 rounded-full animate-spin" />
+      ) : (
+        <Trash2 className="w-3.5 h-3.5" />
+      )}
+    </button>
+  )
+
+  if (qtyOnly) return (
+    <div className="flex items-center rounded-full border border-zinc-200 bg-zinc-50 overflow-hidden shrink-0">
+      <button
+        onClick={() => update(quantity - 1)}
+        disabled={quantityLoading || quantity <= 1}
+        className="w-7 h-7 flex items-center justify-center hover:bg-zinc-200 transition-colors disabled:opacity-30"
+      >
+        <Minus className="w-3 h-3 text-zinc-600" />
+      </button>
+      <span className="w-6 text-center text-sm font-semibold text-zinc-900 select-none">
+        {quantityLoading ? (
+          <span className="inline-block w-2.5 h-2.5 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+        ) : quantity}
+      </span>
+      <button
+        onClick={() => update(quantity + 1)}
+        disabled={quantityLoading || quantity >= maxQuantity}
+        className="w-7 h-7 flex items-center justify-center hover:bg-zinc-200 transition-colors disabled:opacity-30"
+      >
+        <Plus className="w-3 h-3 text-zinc-600" />
+      </button>
+    </div>
+  )
+
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
 
-      {/* Quantity */}
-      <div className="flex items-center gap-2 border border-zinc-300 rounded-xl p-1.5">
-        <span className="text-[16px] text-zinc-400 uppercase tracking-wider">
-          Qty
-        </span>
+      {/* Size chip */}
+      <span className="text-[11px] font-bold uppercase tracking-wide bg-zinc-900 text-white px-2.5 py-1 rounded-full shrink-0">
+        {size}
+      </span>
 
+      {/* Qty stepper */}
+      <div className="flex items-center rounded-full border border-zinc-200 bg-zinc-50 overflow-hidden shrink-0">
         <button
           onClick={() => update(quantity - 1)}
           disabled={quantityLoading || quantity <= 1}
-          className="w-5 h-5 flex items-center justify-center rounded-md hover:bg-zinc-100 transition disabled:opacity-30"
+          className="w-7 h-7 flex items-center justify-center hover:bg-zinc-200 transition-colors disabled:opacity-30"
         >
-          <Minus className="cursor-pointer w-5 h-5 text-zinc-600" />
+          <Minus className="w-3 h-3 text-zinc-600" />
         </button>
-
-        <span className="text-lg font-semibold w-5 text-center">
+        <span className="w-6 text-center text-sm font-semibold text-zinc-900 select-none">
           {quantityLoading ? (
-            <span className="inline-block w-3 h-3 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
-          ) : (
-            quantity
-          )}
+            <span className="inline-block w-2.5 h-2.5 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+          ) : quantity}
         </span>
-
         <button
           onClick={() => update(quantity + 1)}
           disabled={quantityLoading || quantity >= maxQuantity}
-          className="w-5 h-5 flex items-center justify-center rounded-md hover:bg-zinc-100 transition disabled:opacity-30"
+          className="w-7 h-7 flex items-center justify-center hover:bg-zinc-200 transition-colors disabled:opacity-30"
         >
-          <Plus className="cursor-pointer w-5 h-5 text-zinc-600" />
+          <Plus className="w-3 h-3 text-zinc-600" />
         </button>
       </div>
 
-      {/* Size */}
-      <div className="flex items-center gap-1.5 border border-zinc-300 rounded-lg p-1.5">
-        <Tag className="w-5 h-5 text-zinc-400" />
-        <span className="text-[16px] font-semibold text-zinc-600 uppercase">
-          {size}
+      {/* Max stock badge */}
+      {quantity >= maxQuantity && (
+        <span className="text-[10px] font-semibold text-red-500 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded-full shrink-0">
+          Max
         </span>
-      </div>
-
-      {/* Max stock warning */}
-      <span
-        className={`text-[10px] text-red-500 transition-opacity ${
-          quantity >= maxQuantity ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        Max stock reached
-      </span>
+      )}
 
       {/* Delete */}
       <button
         onClick={remove}
         disabled={removeLoading}
-        className="ml-auto w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 group disabled:opacity-30"
+        className="w-7 h-7 flex items-center justify-center rounded-full text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-all disabled:opacity-30 shrink-0"
       >
-        <Trash2 className="cursor-pointer w-5 h-5 text-red-500 group-hover:text-red-900 transition-colors" />
+        {removeLoading ? (
+          <span className="inline-block w-3 h-3 border-2 border-zinc-200 border-t-red-400 rounded-full animate-spin" />
+        ) : (
+          <Trash2 className="w-3.5 h-3.5" />
+        )}
       </button>
     </div>
   )

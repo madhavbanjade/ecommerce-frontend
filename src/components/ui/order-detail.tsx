@@ -49,7 +49,7 @@ export default function OrderDetailModal({ order }: { order: Order }) {
           className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
           onClick={handleBackdrop}
         >
-          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl">
 
             {/* ── Header ── */}
             <div className="bg-zinc-950 text-white p-6">

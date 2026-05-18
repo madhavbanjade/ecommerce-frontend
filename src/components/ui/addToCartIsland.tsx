@@ -32,16 +32,26 @@ export default function AddToCartIsland({
 }: AddToCartIslandProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-
   const [error, setError] = useState<string | null>(null);
-  const { toggle, isWishlisted } = useWishlist();
 
+  const { toggle, isWishlisted } = useWishlist();
   const wishlisted = productId ? isWishlisted(productId) : false;
 
-  const addItem = userCartStore((s) => s.addItem);
+  const addItem   = userCartStore((s) => s.addItem);
+  const cartItems = userCartStore((s) => s.items);
+
+  // Subtract whatever is already in the cart from displayed stock
+  const effectiveStock = (size: Size) => {
+    const inCart = cartItems.find(
+      (i) => i.productId === productId && i.size === size.size
+    );
+    return Math.max(0, size.stockQuantity - (inCart?.quantity ?? 0));
+  };
+
+  const allOutOfStock = sizes.length > 0 && sizes.every((s) => effectiveStock(s) === 0);
 
   const selectedSizeData = sizes.find((s) => s.size === selectedSize);
-  const maxStock = selectedSizeData?.stockQuantity ?? 99;
+  const maxStock = selectedSizeData ? effectiveStock(selectedSizeData) : 99;
 
   const increment = () => setQuantity((q) => Math.min(q + 1, maxStock));
 
@@ -71,8 +81,8 @@ export default function AddToCartIsland({
     }
 
     addItem(cartItem);
+    setQuantity(1);
 
-    // ✅ SUCCESS TOAST (React Toastify)
     toast.success(`${name} added to cart`);
   };
 
@@ -87,7 +97,8 @@ export default function AddToCartIsland({
 
           <div className="flex gap-2 flex-wrap">
             {sizes.map((s) => {
-              const outOfStock = s.stockQuantity === 0;
+              const stock = effectiveStock(s);
+              const outOfStock = stock === 0;
               const isSelected = selectedSize === s.size;
 
               return (
@@ -116,7 +127,7 @@ export default function AddToCartIsland({
                       isSelected ? "text-gray-300" : "text-gray-400"
                     }`}
                   >
-                    ({s.stockQuantity})
+                    ({stock})
                   </span>
                 </button>
               );
@@ -166,13 +177,22 @@ export default function AddToCartIsland({
 
       {/* Actions */}
       <div className="flex w-full items-center gap-2">
-        <Button
-          asyncAction={handleAddToCart}
-          className="flex w-160 rounded-xl py-6 text-sm tracking-widest uppercase bg-gray-900 text-white hover:bg-black border-transparent"
-        >
-          <ShoppingCart className="w-4 h-4" />
-          Add to Cart
-        </Button>
+        {allOutOfStock ? (
+          <button
+            disabled
+            className="flex-1 rounded-xl py-4 text-sm tracking-widest uppercase bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+          >
+            Out of Stock
+          </button>
+        ) : (
+          <Button
+            asyncAction={handleAddToCart}
+            className="flex w-160 rounded-xl py-6 text-sm tracking-widest uppercase bg-gray-900 text-white hover:bg-black border-transparent"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Add to Cart
+          </Button>
+        )}
 
         <Button
           variant="outline"
