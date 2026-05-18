@@ -3,6 +3,7 @@
   import { Button } from "./button";
   import Image from "next/image";
   import { useRef, useState } from "react";
+  import { toast } from "sonner";
 
   interface ProfileProps {
     profile: any;
@@ -20,12 +21,14 @@
           method: "PATCH",
           data,
         })
-        console.log("ressss", res) 
-        alert("Profile Update")
-        if (res.success) window.location.reload()
-        else alert(res.error || "Failed to update")
+        if (res.success) {
+          toast.success("Profile updated!")
+          window.location.reload()
+        } else {
+          toast.error(res.error || "Failed to update")
+        }
       } catch {
-        alert("Something went wrong")
+        toast.error("Something went wrong")
       } finally {
         setLoading(false)
 

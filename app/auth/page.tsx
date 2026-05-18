@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import AuthLayout from "./AuthLayout";
 import { fetchAPI } from "@/src/utils/apiService";
+import { toast } from "sonner";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -76,12 +77,15 @@ if (isRegister) {
     });
     console.log("user", res)
     if (res.success) {
-      //after register switch to login
       if (isRegister) {
+        toast.success("Account created! Please log in.")
         router.replace("?auth=login");
       } else {
+        toast.success("Welcome back!")
         router.push("/");
       }
+    } else {
+      toast.error(res.error ?? "Something went wrong")
     }
     setLoading(false);
   }

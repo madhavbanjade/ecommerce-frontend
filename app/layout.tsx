@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner"; 
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,24 +29,7 @@ export default function RootLayout({
 
         {children}
 
-         <ToastContainer
-        position="bottom-right"
-        autoClose={2500}
-        hideProgressBar
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="light"
-        toastStyle={{
-          background: "rgba(255,255,255,0.75)",
-          color: "#111827",
-          border: "1px solid rgba(0,0,0,0.06)",
-          backdropFilter: "blur(14px)",
-          borderRadius: "14px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-          fontSize: "14px",
-        }}
-      />
+        <Toaster position="bottom-right" richColors closeButton />
 
 
 

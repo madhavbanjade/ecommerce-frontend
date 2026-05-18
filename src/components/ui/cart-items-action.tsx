@@ -7,8 +7,7 @@ import { deleteCartItem, updateCartItem } from "@/src/features/cart/cartService"
 import { useRouter } from "next/navigation"
 import Swal from "sweetalert2"
 
-// ✅ CHANGED IMPORT
-import { toast } from "react-toastify"
+import { toast } from "sonner"
 
 interface CartItemActionsProps {
   itemId: string

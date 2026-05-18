@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, ReactNode, useEffect } from "react"
+import { toast } from "sonner"
 
 interface WishlistContextType {
   wishlistIds: string[]
@@ -77,7 +78,7 @@ export function WishlistProvider({
           : prev.filter((id) => id !== productId)
       )
 
-      alert("You need to logged in first!")
+      toast.error("You need to be logged in first!")
     }
   }
 

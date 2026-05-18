@@ -6,13 +6,16 @@
   import Image from "next/image";
   import { naya } from "@/src/assets";
   import { fetchAPI } from "@/src/utils/apiService";
-  import { toast } from "react-toastify";
+  import { toast } from "sonner";
 
  
 
   export default function ProfileSidebar({ user }: { user: any }) {
     const pathname = usePathname();
     const router = useRouter();
+
+    if (!user) return null;
+
      const TABS = [
     { label: "My orders", href: "/profile/orders", Icon: Package, count: user?.ordersCount ??  0},
     { label: "My reviews", href: "/profile/reviews", Icon: Star, count: 6 },

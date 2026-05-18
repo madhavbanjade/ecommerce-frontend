@@ -1,4 +1,5 @@
 ﻿
+import Pagination from "@/src/components/ui/pagination";
 import ProductCard from "@/src/components/ui/product-card";
 import { fetchAPI } from "@/src/utils/apiService";
 import { cookies } from "next/headers";
@@ -33,6 +34,7 @@ console.log("wishlist", wishlist)
         <ProductCard key={item.id} product={item.product ?? item} />
       ))}
     </div>
+  
   </>
 ) : (
   <p>No products in wishlist</p>

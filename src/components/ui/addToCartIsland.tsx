@@ -7,8 +7,7 @@ import { userCartStore } from "@/src/features/cart/cartStore";
 import { addToCart } from "@/src/features/cart/cartService";
 import { useWishlist } from "@/src/context/wishlist-context";
 
-// ✅ CHANGED IMPORT
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 interface Size {
   size: string;
