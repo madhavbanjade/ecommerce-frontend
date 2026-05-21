@@ -17,9 +17,9 @@ interface Props {
 
 const SORT_OPTIONS = [
   { value: "",           label: "Sort by" },
-  { value: "price_asc",  label: "Price: Low → High" },
-  { value: "price_desc", label: "Price: High → Low" },
-  { value: "newest",     label: "Newest" },
+  { value: "price-asc",  label: "Price: Low → High" },
+  { value: "price-desc", label: "Price: High → Low" },
+  { value: "discount",     label: "Discount" },
 ];
 
 export default function   FilterChips({ title, activeFilters }: Props) {

@@ -48,7 +48,7 @@ async function getOrders(
     .join(";");
 
   const res = await fetchAPI({
-    endPoint: `orders?tab=${tab}&page=${page}&limit=${limit}`,
+    endPoint: `orders/?tab=${tab}&page=${page}&limit=${limit}`,
     headers: { Cookie: cookieHeader },
     revalidateSeconds: 0,
   });

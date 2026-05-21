@@ -17,6 +17,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const router = useRouter()
   const { toggle, isWishlisted } = useWishlist()
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [imgSrc, setImgSrc] = useState(product.images?.[1] || "/fallback.png")
 
   const wishlisted = product?.id ? isWishlisted(product.id) : false
 
@@ -46,11 +47,12 @@ export default function ProductCard({ product }: ProductCardProps) {
           transition={{ duration: 0.4 }}
         >
           <Image
-            src={product.images?.[0] || "/fallback.png"}
+            src={imgSrc}
             alt={product.name}
             fill
             unoptimized
-       onLoad={() => setTimeout(() => setImageLoaded(true), 1000)}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => { setImgSrc("/fallback.png"); setImageLoaded(true) }}
             className={`object-cover p-2 sm:p-4 transition-opacity duration-500 ${
               imageLoaded ? "opacity-100" : "opacity-0"
             }`}

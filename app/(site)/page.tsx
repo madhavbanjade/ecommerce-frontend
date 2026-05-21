@@ -1,14 +1,14 @@
 ﻿import Banner from "@/src/components/layout/banner";
 import Hero from "@/src/components/layout/hero";
-import ProductCard from "@/src/components/ui/product-card";
 import SliderSection from "@/src/components/layout/slider-section";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { fetchAPI } from "@/src/utils/apiService";
-import Pagination from "@/src/components/ui/pagination";
+import ProductsInfiniteScroll from "@/src/components/ui/products-infinite-scroll";
+import ProductCard from "@/src/components/ui/product-card";
 
-async function fetchProducts(page: number = 1) {
-  const res = await fetchAPI({ endPoint: `products?limit=6&page=${page}` });
+async function fetchProducts() {
+  const res = await fetchAPI({ endPoint: "products?page=1&limit=12" })
   const data = res?.data?.data ?? [];
   const meta = res?.data?.meta ?? null;
   return { data, meta };
@@ -88,12 +88,9 @@ function ProductSection({
 
 export const dynamic = "force-dynamic";
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
-  const { page } = await searchParams;
-  const currentPage = Number(page ?? 1);
-
+export default async function Home() {
   const [{ data: products, meta }, onSaleProducts, newProducts] = await Promise.all([
-    fetchProducts(currentPage),
+    fetchProducts(),
     fetchOnSaleProducts(),
     fetchNewProducts(),
   ]);
@@ -105,7 +102,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
       <div className="container py-6 sm:py-10 space-y-10 sm:space-y-14"  >
 
         {products.length > 0 ? (
-          <section id="all-products">
+          <section>
             <div className="flex items-center justify-between mb-6">
               <div className="relative">
                 <h4 className="text-xl font-bold tracking-tight text-zinc-900">
@@ -113,25 +110,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
                 </h4>
                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-[2px] rounded-sm bg-gradient-to-r from-transparent via-[#000000] to-transparent" />
               </div>
-
-              <span className="text-xs text-zinc-400 font-medium">
-                Page {currentPage} of {Math.ceil((meta?.total ?? 0) / 6)}
-              </span>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-              {products.map((product: any) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-
-            <Pagination
-              total={meta?.total ?? 0}
-              limit={6}
-              currentPage={currentPage}
-              basePath="/"
-              scrollToId="all-products"
-            />
+            <ProductsInfiniteScroll initialProducts={products} initialMeta={meta} />
           </section>
         ) : (
           <p className="text-zinc-400 text-sm text-center py-12">No products found</p>
