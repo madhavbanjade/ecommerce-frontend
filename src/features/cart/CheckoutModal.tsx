@@ -182,6 +182,7 @@ export function CheckoutModal({ open, setOpen, selectedIds, items, grandTotal }:
         return
       }
       setPlacedOrder(res?.data?.data)
+          await new Promise((r) => setTimeout(r, 500))
       clearCart()
       setStep(3)
     } catch {

@@ -199,7 +199,7 @@ export default function ProductDetails() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
         >
-          <Reviews reviews={reviews} summary={summary} />
+          <Reviews reviews={reviews} summary={summary} productId={product.id} />
         </motion.div>
       </div>
     </motion.div>

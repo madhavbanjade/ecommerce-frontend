@@ -39,6 +39,15 @@ export default function AddToCartIsland({
   const addItem   = userCartStore((s) => s.addItem);
   const cartItems = userCartStore((s) => s.items);
 
+  // deduplicate — merge duplicate size entries by summing stock
+  const uniqueSizes = Object.values(
+    sizes.reduce<Record<string, Size>>((acc, s) => {
+      if (acc[s.size]) acc[s.size].stockQuantity += s.stockQuantity;
+      else acc[s.size] = { ...s };
+      return acc;
+    }, {})
+  );
+
   // Subtract whatever is already in the cart from displayed stock
   const effectiveStock = (size: Size) => {
     const inCart = cartItems.find(
@@ -47,9 +56,9 @@ export default function AddToCartIsland({
     return Math.max(0, size.stockQuantity - (inCart?.quantity ?? 0));
   };
 
-  const allOutOfStock = sizes.length > 0 && sizes.every((s) => effectiveStock(s) === 0);
+  const allOutOfStock = uniqueSizes.length > 0 && uniqueSizes.every((s) => effectiveStock(s) === 0);
 
-  const selectedSizeData = sizes.find((s) => s.size === selectedSize);
+  const selectedSizeData = uniqueSizes.find((s) => s.size === selectedSize);
   const maxStock = selectedSizeData ? effectiveStock(selectedSizeData) : 99;
 
   const increment = () => setQuantity((q) => Math.min(q + 1, maxStock));
@@ -95,7 +104,7 @@ export default function AddToCartIsland({
           </p>
 
           <div className="flex gap-2 flex-wrap">
-            {sizes.map((s) => {
+            {uniqueSizes.map((s) => {
               const stock = effectiveStock(s);
               const outOfStock = stock === 0;
               const isSelected = selectedSize === s.size;

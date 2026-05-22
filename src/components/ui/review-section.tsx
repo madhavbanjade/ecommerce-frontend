@@ -77,7 +77,7 @@ export default function Reviews({ reviews, summary }: ReviewsProps) {
       {reviews.length === 0 ? (
         <p className="text-sm text-zinc-400 text-center py-6">No reviews yet. Be the first!</p>
       ) : (
-        <div className="flex flex-col gap-3 max-h-[520px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex flex-col gap-3 max-h-130 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {reviews.map((r) => (
             <div key={r.id} className="flex flex-col gap-3 border border-gray-200 hover:border-zinc-300 rounded-2xl p-4 transition-all duration-200">
               <div className="flex items-start justify-between">

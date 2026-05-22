@@ -4,11 +4,10 @@ import SliderSection from "@/src/components/layout/slider-section";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { fetchAPI } from "@/src/utils/apiService";
-import ProductsInfiniteScroll from "@/src/components/ui/products-infinite-scroll";
 import ProductCard from "@/src/components/ui/product-card";
 
 async function fetchProducts() {
-  const res = await fetchAPI({ endPoint: "products?page=1&limit=12" })
+  const res = await fetchAPI({ endPoint: "products?page=1&limit=12" });
   const data = res?.data?.data ?? [];
   const meta = res?.data?.meta ?? null;
   return { data, meta };
@@ -89,34 +88,38 @@ function ProductSection({
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [{ data: products, meta }, onSaleProducts, newProducts] = await Promise.all([
-    fetchProducts(),
-    fetchOnSaleProducts(),
-    fetchNewProducts(),
-  ]);
+  const [{ data: products, meta }, onSaleProducts, newProducts] =
+    await Promise.all([
+      fetchProducts(),
+      fetchOnSaleProducts(),
+      fetchNewProducts(),
+    ]);
 
   return (
     <>
-      <Hero  />
+      <Hero />
 
-      <div className="container py-6 sm:py-10 space-y-10 sm:space-y-14"  >
+      <div className="container py-6 sm:py-10 space-y-10 sm:space-y-14">
+     {products.length > 0 ? (
+  <section>
+    <div className="flex items-center justify-between mb-6">
+      <div className="relative">
+        <h4 className="text-xl font-bold tracking-tight text-zinc-900">
+          All Products
+        </h4>
+        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-[2px] rounded-sm bg-gradient-to-r from-transparent via-[#000000] to-transparent" />
+      </div>
+    </div>
 
-        {products.length > 0 ? (
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <div className="relative">
-                <h4 className="text-xl font-bold tracking-tight text-zinc-900">
-                  All Products
-                </h4>
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-28 h-[2px] rounded-sm bg-gradient-to-r from-transparent via-[#000000] to-transparent" />
-              </div>
-            </div>
-
-            <ProductsInfiniteScroll initialProducts={products} initialMeta={meta} />
-          </section>
-        ) : (
-          <p className="text-zinc-400 text-sm text-center py-12">No products found</p>
-        )}
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+      {products.map((product: any) => (
+        <ProductCard key={product.id} product={product} />
+      ))}
+    </div>
+  </section>
+) : (
+  <p className="text-zinc-400 text-sm text-center py-12">No products found</p>
+)}
 
         <ProductSection
           title="Stay On Your Budget"
