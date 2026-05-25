@@ -114,7 +114,7 @@ async function OrdersListContent({ tab, page }: { tab: string; page: string }) {
               </div>
 
               <h3 className="font-semibold text-sm truncate">
-                {firstItem?.name}
+                {firstItem?.name} 
               </h3>
 
               <p className="text-xs text-zinc-400 mb-3">

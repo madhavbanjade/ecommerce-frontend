@@ -57,7 +57,7 @@ export default function Footer() {
 
         {/* Collections */}
         <div className="grid content-start">
-          <h5 className="font-bold uppercase border-b border-black/10 pb-3">
+          <h5 className="font-bold uppercase  border-black/10 pb-3">
             Collections
           </h5>
           <ul className="grid gap-3">
@@ -73,8 +73,8 @@ export default function Footer() {
         </div>
 
         {/* Service */}
-        <div className="grid  content-start">
-          <h5 className="font-bold uppercase border-b border-black/10 pb-3">
+        <div className="grid content-start">
+          <h5 className="font-bold uppercase  border-black/10 pb-3">
             Service
           </h5>
           <ul className="grid gap-3">
@@ -91,7 +91,7 @@ export default function Footer() {
 
         {/* Legal */}
         <div className="grid  content-start">
-          <h5 className="font-bold uppercase border-b border-black/10 pb-3">
+          <h5 className="font-bold uppercase pb-3">
             Legal
           </h5>
           <ul className="grid gap-3">
